@@ -1,0 +1,1 @@
+function SeededRandom(e){this.seed=e,this.counter=0,this.random=function(){var e=1e4*Math.sin(this.seed+this.counter++);return e-Math.floor(e)}}function getSeedFromURL(e=3405691582){let t=window.location.search,n=new URLSearchParams(t),F=n.get("seed"),o=parseInt(F,16);return Number.isInteger(o)&&o>=0&&o<=9007199254740991?o:e}

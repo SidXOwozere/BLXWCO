@@ -1,0 +1,92 @@
+body,
+html {
+    background-size: cover;
+background-repeat: no-repeat;
+background-position: center center;
+height: 100vh; /* Ensures the background covers the full height of the viewport */
+width: 100vw; /* Ensures the background covers the full width of the viewport */
+margin: 0;
+padding: 0;
+}
+
+canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+    background-color: transparent;
+    image-rendering:optimizespeed;
+    will-change: transform, opacity;
+    transform: translateZ(0);
+}
+
+@font-face {
+    font-family: 'xoblk';
+    src: url('https://arweave.net/OyB2RYKnZYhUsRBfrA9Bhx5WQIX3P0yuowVp_Q3BEUo') format('woff2'),
+        url('https://arweave.net/6tYVmXIYwHU7XKTzSgTBKzKrgQ7VkEkvYKa4v5Igqfw') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'xoxb';
+    src: url('https://arweave.net/GO7xgqK4iWq3YUlPpy0P0jlNZ5gBcaLEtNYFsKMDZYc') format('woff2'),
+        url('https://arweave.net/6tYVmXIYwHU7XKTzSgTBKzKrgQ7VkEkvYKa4v5Igqfw') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'xoend';
+    src: url('https://arweave.net/Rg9MNWdhgXIDPL6A8cQ6A2c_JiRu2GIO43fnnBC6LaI') format('woff2'),
+        url('https://arweave.net/37WEqfxqYTVppj1SPlu3mRF_gUj6j6jFNBxtNaI1UtQ') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+#overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 24px;
+    font-family: 'xoxb', monospace;
+    z-index: 9;
+}
+
+#begin {
+    background-color: #ffffff;
+    border: 2px solid #009cde;
+    padding: 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 24px;
+    margin: 4px 2px;
+    color: #009cde;
+    border-radius: 4px;
+    z-index: 10;
+}
+
+#begin:hover {
+    cursor: progress;
+    /* Initially disabled */
+}
+
+#begin span {
+    font-family: 'xoblk', monospace;
+}
+
+#begin.enabled:hover {
+    cursor: pointer;
+    /* Enable cursor when button is enabled */
+}

@@ -1,0 +1,3260 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="height=device-height, initial-scale=1">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://arweave.net https://*.arweave.net https://nftcdn.sidxo.com; script-src 'self' 'unsafe-inline' https://arweave.net https://*.arweave.net https://nftcdn.sidxo.com; style-src 'self' 'unsafe-inline' https://arweave.net https://*.arweave.net https://nftcdn.sidxo.com; connect-src 'self' https://arweave.net https://*.arweave.net https://nftcdn.sidxo.com; font-src 'self' https://arweave.net https://*.arweave.net https://nftcdn.sidxo.com blob:; child-src 'self' https://arweave.net https://*.arweave.net https://nftcdn.sidxo.com blob:; worker-src 'self' https://arweave.net https://*.arweave.net https://nftcdn.sidxo.com blob:;">
+
+
+    <link rel="stylesheet" href="/jvXVH0o6ZQ_40RdrxxvieI7POvQ-oUno66mQELLRpR0">
+    <link rel="apple-touch-icon" sizes="180x180" href="/eO2atx4p8ZU-4wN19HHTCFfrZnerTnMobmom3TxGFQg">
+<link rel="icon" type="image/png" sizes="32x32" href="/DzvY3TnpipWOSF7a2IPJDliyUicpl7V9OGut4VTwMVs">
+<link rel="icon" type="image/png" sizes="16x16" href="/1nAM1Ma0DGuRBYk9bcllBX-wgZgdSu8mMfmy2UA_epM">
+    <title>SidXO BLXWCO</title>
+</head>
+
+<body>
+    <div id="canvasContainer" style="position: relative; width: 100%; height: 100%;">
+        <canvas id="artCanvas" width="100%" height="100%"
+            style="position: absolute; top: 0; left: 0; z-index: 1;"></canvas>
+        <canvas id="textCanvas" width="100%" height="100%"
+            style="position: absolute; top: 0; left: 0; z-index: 2;"></canvas>
+        <canvas id="blocksCanvas" width="100%" height="100%"
+        style="position: absolute; top: 0; left: 0; z-index: 3;"></canvas>
+</div>
+<div id="overlay">
+    <button id="begin">LOADING <span>BLXWCO...</span></button>
+</div>
+
+    <script src="/NOFOHRWypZw6nY7K-J8jl5eR7rKas3pA9SqmnlT1ego"></script>
+    <script src="/GejH3nHejA8FhxVRRmrLMzi6jxNDYhJ93Nf-YHybMzg"></script>
+<script defer>
+    
+    function isSafari() {
+            return /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+        }
+    let fontBlobs = {};
+    async function loadFonts(fonts) {
+            const fontPromises = Object.entries(fonts).map(async ([name, url]) => {
+                const fontFace = new FontFace(name, `url(${url})`);
+                await fontFace.load();
+                document.fonts.add(fontFace);
+                return { name, url };
+            });
+            return Promise.all(fontPromises);
+        }
+
+        window.addEventListener('load', async () => {
+            const fonts = {
+                xoblk: "https://nftcdn.sidxo.com/OyB2RYKnZYhUsRBfrA9Bhx5WQIX3P0yuowVp_Q3BEUo",
+                xoxb: "https://nftcdn.sidxo.com/GO7xgqK4iWq3YUlPpy0P0jlNZ5gBcaLEtNYFsKMDZYc",
+                xoend: "https://nftcdn.sidxo.com/Rg9MNWdhgXIDPL6A8cQ6A2c_JiRu2GIO43fnnBC6LaI"
+            };
+
+            const loadedFonts = await loadFonts(fonts);
+
+            
+            loadedFonts.forEach(({ name, url }) => {
+                const fontBlob = new Blob([`@font-face { font-family: ${name}; src: url(${url}); }`], { type: 'font/woff2' });
+                /*if(!isSafari()){
+                    fontBlobs[name] = fonts[name];
+                }else{
+                    fontBlobs[name] = URL.createObjectURL(fontBlob);
+                }*/
+                fontBlobs[name] = fonts[name];
+            });
+        
+    const workerScript = `
+    function SeededRandom(e) {
+    this.seed = e,
+    this.counter = 0,
+    this.random = function() {
+        var e = 1e4 * Math.sin(this.seed + this.counter++);
+        return e - Math.floor(e)
+    }
+}
+function getSeedFromURL(e=3405691582) {
+    let t = window.location.search
+      , n = new URLSearchParams(t)
+      , F = n.get("seed")
+      , o = parseInt(F, 16);
+    return Number.isInteger(o) && o >= 0 && o <= 9007199254740991 ? o : e
+}
+let allWords = ["Awe", "Reverence", "Glory", "Exaltation", "Magnificence", "Splendor", "Resonance", "Harmony", "Radiance", "Majesty", "Adoration", "Wonder", "Praise", "Worship", "Glorification", "Exultation", "Devotion", "Sanctity", "Blessing", "Hallelujah", "Divinity", "Holiness", "Sanctification", "Transcendence", "Gratitude", "Elevation", "Elation", "Jubilation", "Ecstasy", "Celebration", "Illumination", "Enlightenment", "Rapture", "Fulfillment", "Consecration", "Glorify", "Adulation", "Veneration", "Homage", "Acclamation", "Triumph", "Rejoicing", "Devotion", "Elated", "Exulted", "Sanctified", "Exuberance", "Resplendence", "Benediction", "Reverence", "Splendid", "Transcendent", "Anointed", "Majestic", "Celestial", "Heavenly", "Blessed", "Exalted", "Holy", "Radiant", "Sublime", "Illuminated", "Euphoric", "Blessing", "Divine", "Hallowed", "Adored", "Praised", "Rejoiced", "Sanctify", "Wondrous", "Glorified", "Revelation", "Prophetic", "Reverent", "Worshipful", "Uplifted", "Consecrated", "Illustrious", "Magnificent", "Glorious", "Jubilant", "Elevated", "Exultant", "Ecstatic", "Raptured", "Transfigured", "Gloried", "Worshipped", "Triumphant", "Revered", "Eulogized", "Enraptured", "Resplendent", "Harmonised", "Synchronized", "Adorned", "Ornamented", "Resonated", "Proclaimed"], ctx = null, artCtx = null, textCtx = null, spiralIndices, characters = [], lastUpdateTime = 0, frameCounter = 0, letterIndex = 0, currentWordIndex = 0, cellWidth = 0, cellHeight = 0, lastEvenBeatTime = 0, currentNoteIndex = 0, lastStartTime = 0, currentTime = 0, snakePosition = -1, snakeLength = 0, fps = 60, snakeIndices = [], frameSeed, arts, charType, glitchFrames, colors, layoutType, seededRandom, portraitSeed, landscapeSeed, squareSeed, frameInterval, delayBetweenBlocks, processing, millisecondsPerBeat, framesPerBeat, framesPerHalfBeat, framesPerQuarterBeat, framesPerEighthBeat, framesPerSixteenthBeat, dropAnimationDuration, processingAnimationDuration, lastOddBeatTime, flashStartTime, transactionBlocks, transactionId, flashDurationgridHeight, gridWidth, snakeTraversalCompleted, hideBlocks, initBlocksStarted, textDrawn = !1, blocksAnimated = new Set, lastTransactionId = null;
+const transactionColors = {};
+let currentHoveredChar = null;
+const decayDuration = 60
+  , layoutConfig = {
+    "12x12": {
+        columns: 12,
+        rows: 12
+    },
+    "9x16": {
+        columns: 9,
+        rows: 16
+    },
+    "16x9": {
+        columns: 16,
+        rows: 9
+    }
+}
+  , colorPalettes = {
+    sunrise: ["#ffd100", "#ff7244", "#e03e52", "#8246af", "#991e66"],
+    sunset: ["#7d55c7", "#ff7244", "#ff3eb5", "#330072", "#f57eb6"],
+    noon: ["#009cde", "#fbfb76", "#71dbd4", "#f5e1cc", "#205c40"],
+    midnight: ["#ffff2e", "#ff5c39", "#ff5256", "#ff3eb5", "#00bf6f", "#330072", "#002b49"],
+    txs: ["#2d2926", "#545859", "#5b6770", "#545859", "#97999b", "#b9bbbb", "#ffffff", "#f2eeca"],
+    other: ["#2d2926", "#545859", "#5b6770", "#545859", "#97999b", "#b9bbbb", "#ffffff", "#f2eeca", "#f7d674", "#fbd872", "#ffd100", "#fbfb76", "#bfb000", "#ba9b37", "#c69214", "#f5e1cc", "#ff8f1c", "#c27237", "#ff7244", "#ffff2e", "#ff5c39", "#ff8da1", "#ff5256", "#e03e52", "#bd6074", "#be6e58", "#9d2235", "#b7312c", "#991e66", "#893b67", "#f57eb6", "#a56d95", "#eab8e4", "#ffbe9f", "#b97e90", "#d8a5f3", "#ff3eb5", "#8246af", "#725899", "#856ca2", "#7d55c7", "#b46b7a", "#c07d59", "#bb8459", "#572d2d", "#7c3a2d", "#3e4827", "#205c40", "#009a44", "#169387", "#57a499", "#659959", "#00bf6f", "#78be21", "#80e0a7", "#71dbd4", "#009cde", "#69caf8", "#5bc2e7", "#4694af", "#5d99ae", "#006caa", "#0072ce", "#002b49", "#330072"],
+    exyozy: ["#f622b3", "#ffd100", "#fe5e0a", "#0d0c5a", "#bcf901", "#5d99ae", "#0071f1", "#f57eb6", "#7d55c7", "#d8a5f3", "#0221a0", "#f7142f", "#e7a6d0", "#4d0d00", "#5abfa1", "#e6c289", "#d8d8d4", "#1c1e1d", "#ff5256", "#5d99ae", "#1cd673", "#5bc2e7"]
+};
+let canvasState = {
+    canvas: null,
+    artCanvas: null,
+    textCanvas: null
+}
+  , extras = {
+    bpm: 0,
+    seededRandomSeed: 0,
+    width: 0,
+    height: 0,
+    fonts: null
+};
+const visitedIndices = new Set;
+function initializeSeeds(e, t) {
+    charType = Math.floor(10 * (seededRandom = new SeededRandom(e)).random());
+    for (let a = 0; a < Math.floor(5 + 15 * seededRandom.random()); a++)
+        arts += getRandomCharacter(charType);
+    portraitSeed = 16 * seededRandom.random() / 9,
+    landscapeSeed = 9 * seededRandom.random() / 16,
+    currentWordIndex = Math.floor(seededRandom.random() * allWords.length),
+    squareSeed = seededRandom.random(),
+    frameInterval = 1e3 / 30,
+    delayBetweenBlocks = parseInt(t),
+    processing = parseInt(4 * t),
+    millisecondsPerBeat = 6e4 / t,
+    framesPerBeat = parseInt(fps * (60 / t)),
+    framesPerHalfBeat = parseInt(framesPerBeat / 2),
+    framesPerQuarterBeat = parseInt(framesPerBeat / 4),
+    framesPerEighthBeat = parseInt(framesPerBeat / 8),
+    framesPerSixteenthBeat = parseInt(framesPerBeat / 16),
+    dropAnimationDuration = millisecondsPerBeat / 4,
+    processingAnimationDuration = millisecondsPerBeat / 2,
+    lastOddBeatTime = millisecondsPerBeat / 2,
+    flashDuration = 2 * dropAnimationDuration
+}
+function begin() {
+    requestAnimationFrame(()=>{
+        initializeCharacters(),
+        requestAnimationFrame(animate)
+    }
+    )
+}
+function getCurrentTimePalette() {
+    let e = new Date
+      , t = e.getHours()
+      , a = e.getMinutes()
+      , n = 60 * t + a;
+    return n >= 360 && n < 370 ? colorPalettes.sunrise : n >= 1080 && n < 1090 ? colorPalettes.sunset : n >= 720 && n < 750 ? colorPalettes.noon : n >= 0 && n < 30 ? colorPalettes.midnight : colorPalettes.exyozy
+}
+function updateColors() {
+    colors = getCurrentTimePalette(),
+    characters.forEach(e=>{
+        e.bgColor = getRandomColor(),
+        e.fgColor = getRandomColor(e.bgColor)
+    }
+    ),
+    refreshCanvas()
+}
+function resizeCanvas(e, t) {
+    canvasState.canvas.width = e,
+    canvasState.canvas.height = t,
+    canvasState.artCanvas.width = canvasState.canvas.width,
+    canvasState.artCanvas.height = canvasState.canvas.height,
+    canvasState.textCanvas.width = canvasState.canvas.width,
+    canvasState.textCanvas.height = canvasState.canvas.height,
+    configureGrid()
+}
+function configureGrid() {
+    let e = cellWidth
+      , t = cellHeight;
+    canvasState.canvas.width / canvasState.canvas.height > 1.3 ? (gridWidth = 16,
+    gridHeight = 9,
+    frameSeed = landscapeSeed,
+    layoutType = "16x9") : canvasState.canvas.width / canvasState.canvas.height < .75 ? (gridWidth = 9,
+    gridHeight = 16,
+    frameSeed = portraitSeed,
+    layoutType = "9x16") : (gridWidth = 12,
+    gridHeight = 12,
+    frameSeed = squareSeed,
+    layoutType = "12x12"),
+    columns = layoutConfig[layoutType].columns,
+    spiralIndices = getSpiralIndices(rows = layoutConfig[layoutType].rows, columns),
+    cellWidth = Math.ceil(canvasState.canvas.width / gridWidth),
+    cellHeight = Math.ceil(canvasState.canvas.height / gridHeight);
+    let a = getRandomColor();
+    glitchFrames = createGlitchedFrames(),
+    characters.forEach(a=>{
+        a.x = a.x / e * cellWidth,
+        a.y = a.y / t * cellHeight,
+        a.finalY = a.finalY / t * cellHeight,
+        a.fontSize = 4 * Math.min(cellWidth, cellHeight)
+    }
+    )
+}
+function refreshCanvas() {
+    ctx.clearRect(0, 0, canvasState.canvas.width, canvasState.canvas.height),
+    characters.forEach(drawCharacter)
+}
+function getRandomCharacter(e) {
+    if (9 == e)
+        return .5 > seededRandom.random() ? "✗" : "⚬";
+    let[t,a] = [[19968, 40869], [12353, 12447], [12449, 12543], [33, 126], [161, 255], [1536, 1791], [1872, 1919], [1024, 1279], [1280, 1327]][e];
+    return String.fromCharCode(Math.floor(seededRandom.random() * (a - t + 1)) + t)
+}
+function initializeCharacters() {
+    let e = getCurrentTimeIndex()
+      , t = canvasState.canvas.height
+      , a = 0;
+    for (let n = gridHeight - 1; n >= 0; n--)
+        for (let o = 0; o < gridWidth; o++) {
+            let r = getRandomColor()
+              , l = getRandomColor(r);
+            characters.push({
+                index: a,
+                x: o * cellWidth,
+                y: n * cellHeight - t,
+                finalY: n * cellHeight,
+                bgColor: r,
+                fgColor: l,
+                char: getRandomCharacter(charType),
+                fontSize: 4 * Math.min(cellWidth, cellHeight),
+                startTime: lastStartTime,
+                rotation: 360 * seededRandom.random() * Math.PI / 180,
+                active: !1,
+                spinning: !0,
+                rotationSpeed: .25,
+                rotationDirection: a % 2 == 0 ? 1 : -1,
+                isVisible: !0,
+                inSnake: !1,
+                wasInSnake: !1,
+                cellWidth: cellWidth,
+                cellHeight: cellHeight,
+                isNow: a == e
+            }),
+            lastStartTime += dropAnimationDuration,
+            a++
+        }
+}
+function setupAndDraw() {
+    let e = extras.width,
+        t = extras.height;
+    
+    // Clear the canvas before drawing
+    artCtx.clearRect(0, 0, e, t);
+    
+    // Set fill style and fill the entire canvas
+    artCtx.fillStyle = colors[Math.floor(seededRandom.random() * colors.length)];
+    artCtx.fillRect(0, 0, e, t);
+
+    let a = Math.max(e, t),
+        n = arts.split("").map(n => {
+            let o = Math.floor(a + a / 1.5 * seededRandom.random()),
+                r = new OffscreenCanvas(e, t),
+                l = r.getContext("2d"),
+                i = seededRandom.random() * (e - o / 8),
+                s = seededRandom.random() * (t - o / 8),
+                d = Math.floor(seededRandom.random() * colors.length);
+
+            drawArt(l, n, i, s, o, colors[d]);
+
+            return {
+                canvas: r,
+                char: n
+            };
+        });
+
+    n.forEach(e => {
+        // Debugging: Log the content of each OffscreenCanvas before drawing
+        console.log('Drawing character:', e.char);
+        console.log('Canvas size:', e.canvas.width, e.canvas.height);
+        artCtx.drawImage(e.canvas, 0, 0);
+    });
+
+    let o = [];
+    for (let r = 0; r < n.length; r++) {
+        for (let l = r + 1; l < n.length; l++) {
+            let i = new OffscreenCanvas(e, t),
+                s = i.getContext("2d");
+            
+            s.globalCompositeOperation = "source-over";
+            s.drawImage(n[r].canvas, 0, 0);
+            s.globalCompositeOperation = "source-in";
+            s.drawImage(n[l].canvas, 0, 0);
+
+            let d = Math.floor(seededRandom.random() * colors.length);
+            s.fillStyle = colors[d];
+            s.globalCompositeOperation = "source-atop";
+            s.fillRect(0, 0, e, t);
+            
+            o.push(i);
+        }
+    }
+
+    o.forEach(e => {
+        artCtx.drawImage(e, 0, 0);
+    });
+
+    artCtx.globalCompositeOperation = "source-over";
+}
+function drawArt(e, t, a, n, o, r) {
+    let l = 360 * seededRandom.random() * Math.PI / 180
+      , i = o / 4;
+    e.save(),
+    e.translate(a, n),
+    e.rotate(l),
+    e.font = \`bolder \${o}px "xoblk"\`,
+    e.fillStyle = r,
+    e.fillText(t, -i, i),
+    e.restore()
+}
+function applyAudioGlitchEffects(e) {}
+function resetGlitchEffects() {}
+function applyGlitchEffect(e, t=1) {
+    let a = e.data
+      , n = e.width
+      , o = e.height
+      , r = 0 === Math.floor(2 * seededRandom.random()) ? -10 : 10
+      , l = r * (t + 40)
+      , i = new Uint8ClampedArray(a);
+    if (.5 > seededRandom.random())
+        for (let s = 0; s < o; s++)
+            for (let d = 0; d < n; d++) {
+                let c = (s * n + d) * 4
+                  , f = (d + l) % n
+                  , $ = (d - l) % n
+                  , m = (d + Math.floor(l / 2)) % n
+                  , h = (s * n + f) * 4
+                  , g = (s * n + $) * 4
+                  , x = (s * n + m) * 4;
+                a[c] = i[h],
+                a[c + 1] = i[g + 1],
+                a[c + 2] = i[x + 2],
+                a[c + 3] = 255
+            }
+    if (.2 > seededRandom.random()) {
+        if (.5 > seededRandom.random()) {
+            for (let u = 0; u < o; u++)
+                if (.3 > seededRandom.random()) {
+                    let C = Math.floor(seededRandom.random() * (n / 2) + n / 4)
+                      , p = Math.floor(60 * seededRandom.random() + 10)
+                      , v = Math.floor(seededRandom.random() * (n - C))
+                      , _ = Math.floor(20 * seededRandom.random() - 10);
+                    for (let S = 0; S < p && u + S < o; S++)
+                        for (let b = v; b < v + C; b++) {
+                            let R = ((u + S) * n + b) * 4
+                              , w = ((u + S) * n + (b + _ + n) % n) * 4;
+                            a[R] = a[w],
+                            a[R + 1] = a[w + 1],
+                            a[R + 2] = a[w + 2],
+                            a[R + 3] = 255
+                        }
+                    u += p - 1
+                }
+        } else {
+            let y = Math.floor(50 * seededRandom.random() + 20);
+            for (let P = 0; P < o; P += y)
+                for (let k = 0; k < n; k += y)
+                    if (.3 > seededRandom.random()) {
+                        let I = Math.floor(seededRandom.random() * (n - y))
+                          , T = Math.floor(seededRandom.random() * (o - y))
+                          , B = artCtx.getImageData(I, T, y, y)
+                          , E = B.data;
+                        for (let H = 0; H < y; H++)
+                            for (let A = 0; A < y; A++) {
+                                let W = ((P + H) * n + (k + A)) * 4
+                                  , D = (H * y + A) * 4;
+                                a[W] = E[D],
+                                a[W + 1] = E[D + 1],
+                                a[W + 2] = E[D + 2],
+                                a[W + 3] = 255
+                            }
+                    }
+        }
+    }
+    return e
+}
+function resortGlitchEffect(e, t, a, n) {
+    let o = [];
+    for (let r = 0; r < t.height; r += n)
+        for (let l = 0; l < t.width; l += a) {
+            let i = e.getImageData(l, r, a, n);
+            o.push({
+                x: l,
+                y: r,
+                piece: i
+            })
+        }
+    for (let s = o.length - 1; s > 0; s--) {
+        let d = Math.floor(seededRandom.random() * (s + 1));
+        [o[s],o[d]] = [o[d], o[s]]
+    }
+    o.forEach(t=>{
+        e.putImageData(t.piece, t.x, t.y)
+    }
+    )
+}
+function createGlitchedFrames() {
+    let e = []
+      , t = Math.floor(1 * seededRandom.random()) + 1;
+    for (let a = 0; a < t; a++) {
+        setupAndDraw();
+        let n = artCtx.getImageData(0, 0, extras.width, extras.height);
+        let m = applyGlitchEffect(n);
+        e.push(m);
+    }
+    return e
+}
+function animateFrames(e, t, a, n) {
+    let o = 1;
+    let r = 500 / n;
+    let localFrameCounter = 0;
+
+    function frameStep() {
+        if (localFrameCounter % (2 * parseInt(r)) == 0) {
+            o += 2;
+            let n = t.getImageData(0, 0, a.width, a.height);
+            n = applyGlitchEffect(n, o);
+            t.putImageData(n, 0, 0);
+            resortGlitchEffect(t, a, cellWidth, cellHeight);
+            if (!textDrawn) {
+                drawText();
+                textDrawn = !0;
+            }
+        }
+
+        if (o > 60) {
+            startAnimation = !0;
+            glitchFrames = createGlitchedFrames();
+            stopAnimation = !1;
+            textDrawn = !1;
+            frameCycleCounter = 0;
+            decayFrameCounter = 0;
+            decayStarted = !1;
+            visitedIndices.clear();
+            snakeIndices = [];
+            resetAndStartOver();
+            return;
+        }
+
+        localFrameCounter++;
+        requestAnimationFrame(frameStep);
+    }
+
+    frameStep();
+}
+function drawText() {
+    let e = extras.width
+      , t = extras.height;
+    textCtx.clearRect(0, 0, e, t);
+    let a = allWords[currentWordIndex]
+      , n = a[letterIndex];
+    ++letterIndex == a.length && (n = a,
+    letterIndex = 0);
+    let o = t / 20;
+    textCtx.font = \`\${o}em "xoend"\`;
+    let r = textCtx.measureText(n).width;
+    for (; r > e && o > 0; )
+        o -= .1,
+        textCtx.font = \`\${o}em "xoend"\`,
+        r = textCtx.measureText(n).width;
+    let l = 16 * o;
+    textCtx.font = \`\${o}em "xoend"\`;
+    let i = 360 * seededRandom.random();
+    textCtx.save(),
+    textCtx.translate(e / 2, t / 2),
+    textCtx.rotate(i * Math.PI / 180);
+    let s = .5 > seededRandom.random()
+      , d = s ? n.toUpperCase() : n.toLowerCase()
+      , c = (seededRandom.random() - .5) * l * .1;
+    textCtx.fillStyle = "white",
+    textCtx.textAlign = "center",
+    textCtx.fillText(d, 0, c),
+    textCtx.restore();
+    let f = textCtx.getImageData(0, 0, e, t)
+      , $ = f.data;
+    textCtx.clearRect(0, 0, e, t);
+    let m = artCtx.getImageData(0, 0, e, t)
+      , h = textCtx.createImageData(e, t)
+      , g = h.data;
+    for (let x = 0; x < $.length; x += 4)
+        $[x + 3] > 0 ? (g[x] = m.data[x],
+        g[x + 1] = m.data[x + 1],
+        g[x + 2] = m.data[x + 2],
+        g[x + 3] = m.data[x + 3]) : g[x + 3] = 0;
+    textCtx.putImageData(h, 0, 0)
+}
+function getSpiralIndices(e, t) {
+    let a = [spiralPath, zigzagPath, diagonalPath, snakePath, horizontalWavePath, verticalWavePath, checkerboardPath, randomPath]
+      , n = Math.floor(seededRandom.random() * a.length);
+    return a[n](e, t)
+}
+function spiralPath(e, t) {
+    let a = []
+      , n = 0
+      , o = e - 1
+      , r = 0
+      , l = t - 1;
+    for (; n <= o && r <= l; ) {
+        for (let i = r; i <= l; i++)
+            a.push(n * t + i);
+        n++;
+        for (let s = n; s <= o; s++)
+            a.push(s * t + l);
+        if (l--,
+        n <= o)
+            for (let d = l; d >= r; d--)
+                a.push(o * t + d);
+        if (o--,
+        r <= l)
+            for (let c = o; c >= n; c--)
+                a.push(c * t + r);
+        r++
+    }
+    return a
+}
+function zigzagPath(e, t) {
+    let a = [];
+    for (let n = 0; n < e; n++)
+        if (n % 2 == 0)
+            for (let o = 0; o < t; o++)
+                a.push(n * t + o);
+        else
+            for (let r = t - 1; r >= 0; r--)
+                a.push(n * t + r);
+    return a
+}
+function diagonalPath(e, t) {
+    let a = [];
+    for (let n = e + t - 2; n >= 0; n--) {
+        let o = Math.max(0, n - e + 1)
+          , r = Math.min(n + 1, Math.min(t - o, e));
+        for (let l = 0; l < r; l++)
+            a.push((Math.min(e, n + 1) - l - 1) * t + o + l)
+    }
+    return a
+}
+function snakePath(e, t) {
+    let a = [];
+    for (let n = 0; n < t; n++)
+        if (n % 2 == 0)
+            for (let o = 0; o < e; o++)
+                a.push(o * t + n);
+        else
+            for (let r = e - 1; r >= 0; r--)
+                a.push(r * t + n);
+    return a
+}
+function horizontalWavePath(e, t) {
+    let a = [];
+    for (let n = 0; n < t; n++)
+        for (let o = 0; o < e; o++)
+            a.push(o * t + n);
+    return a
+}
+function verticalWavePath(e, t) {
+    let a = [];
+    for (let n = 0; n < e; n++)
+        for (let o = 0; o < t; o++)
+            a.push(n * t + o);
+    return a
+}
+function checkerboardPath(e, t) {
+    let a = [];
+    for (let n = 0; n < e; n++)
+        for (let o = 0; o < t; o++)
+            (n + o) % 2 == 0 && a.push(n * t + o);
+    for (let r = 0; r < e; r++)
+        for (let l = 0; l < t; l++)
+            (r + l) % 2 != 0 && a.push(r * t + l);
+    return a
+}
+function randomPath(e, t) {
+    let a = [];
+    for (let n = 0; n < e; n++)
+        for (let o = 0; o < t; o++)
+            a.push(n * t + o);
+    return a.sort(()=>seededRandom.random() - .5)
+}
+function getSnakeIndices(e, t) {
+    let a = [];
+    for (let n = 0; n < t; n++)
+        a.push(spiralIndices[(e + n) % spiralIndices.length]);
+    return a
+}
+function drawCharacter(e, t) {
+    if (!e.isVisible)
+        return;
+    let a = e.startTime + 1e3 * framesPerSixteenthBeat / 60;
+    if (t > e.startTime && !e.active && (e.active = !0),
+    void 0 === e.lastRotationTime && (e.lastRotationTime = 0),
+    void 0 === e.targetRotation && (e.targetRotation = e.rotation),
+    e.spinning && (e.index % 3 == 0 ? t - e.lastRotationTime >= 2e3 * framesPerHalfBeat / 60 && (e.targetRotation += Math.PI / 2,
+    e.lastRotationTime = t + 2e3 * framesPerHalfBeat / 60) : t - e.lastRotationTime >= 1e3 * framesPerHalfBeat / 60 && (e.targetRotation -= Math.PI / 2,
+    e.lastRotationTime = t + 1e3 * framesPerHalfBeat / 60),
+    e.rotation += (e.targetRotation - e.rotation) * .05),
+    e.active && e.y < e.finalY) {
+        let n = a - t;
+        if (n > 0) {
+            let o = e.finalY - e.y;
+            e.y += o / n * (1e3 / 60) / 8,
+            e.y > e.finalY && (e.y = e.finalY)
+        } else
+            e.y = e.finalY;
+        let r = getRandomColor()
+          , l = getRandomColor(r);
+        e.bgColor = r,
+        e.fgColor = l,
+        ctx.fillStyle = e.bgColor,
+        ctx.fillRect(e.x, e.y, cellWidth, cellHeight)
+    } else {
+        if (e.inSnake) {
+            let i = getRandomColor()
+              , s = getRandomColor(i);
+            e.bgColor = i,
+            e.fgColor = s
+        } else if (visitedIndices.has(e.index)) {
+            let d = transactionColors[e.transactionId];
+            e.bgColor = d.bgColor,
+            e.fgColor = d.fgColor
+        }
+        ctx.fillStyle = e.bgColor,
+        ctx.fillRect(e.x, e.y, cellWidth, cellHeight)
+    }
+    e.active && e.y >= e.finalY && (e.y = e.finalY,
+    e.soundPlayed || (e.soundPlayed = !0)),
+    ctx.save(),
+    ctx.beginPath(),
+    ctx.rect(e.x, e.y, cellWidth, cellHeight),
+    ctx.clip(),
+    ctx.translate(e.x + cellWidth / 2, e.y + cellHeight / 2),
+    ctx.rotate(e.rotation),
+    ctx.fillStyle = e.fgColor,
+    initBlocksStarted && e.inSnake ? (ctx.font = \`\${e.fontSize / 3}px "xoblk"\`,
+    ctx.textAlign = "center",
+    ctx.textBaseline = "middle",
+    e.isNow ? ctx.fillText("𓎥", 0, 0) : ctx.fillText("✗⚬", 0, 0)) : (ctx.font = \`\${e.fontSize}px "xoxb"\`,
+    ctx.textAlign = "center",
+    ctx.textBaseline = "middle",
+    ctx.fillText(e.char, 0, 0)),
+    ctx.restore()
+}
+function animate(e) {
+    if (!currentTime) currentTime = e;
+    let t = e - currentTime,
+        a = getSnakeIndices(snakePosition, snakeLength),
+        n = true,
+        o = 0;
+
+    if (snakeTraversalCompleted) {
+        snakeTraversalCompleted = false;
+        hideBlocks = false;
+        decayStarted = true;
+        return;
+    }
+
+    ctx.clearRect(0, 0, canvasState.canvas.width, canvasState.canvas.height);
+
+    if (frameCounter % framesPerBeat === 0 && !initBlocksStarted) {
+        let r = getRandomColor();
+        self.postMessage({
+            command: "updateBackground",
+            data: r
+        });
+    }
+
+    frameCounter++;
+
+    characters.forEach((e, r) => {
+        if (e.y < e.finalY) n = false;
+        if (!e.isVisible) o++;
+
+        if (initBlocksStarted) {
+            if (a.includes(r)) {
+                e.inSnake = true;
+                visitedIndices.add(r);
+                if (visitedIndices.has(r)) {
+                    e.spinning = false;
+                    if (hideBlocks) e.spinning = true;
+                }
+                e.bgColor = getRandomColor();
+                e.fgColor = getRandomColor(e.bgColor);
+            } else {
+                e.inSnake = false;
+                if (visitedIndices.has(r) && hideBlocks && e.spinning) e.isVisible = false;
+            }
+        }
+
+        drawCharacter(e, t);
+    });
+
+    if (n) {
+        if (initBlocksStarted) {
+            if (performance.now() - lastUpdateTime > 200 * framesPerBeat / 60) {
+                if (snakeLength < 8 && snakePosition < spiralIndices.length - snakeLength) {
+                    snakeLength++;
+                } else if (snakeLength > 0 && snakePosition > spiralIndices.length - (snakeLength + 2)) {
+                    snakeLength--;
+                }
+
+                if (!snakeTraversalCompleted) {
+                    snakePosition = (snakePosition + 1) % spiralIndices.length;
+                    lastUpdateTime = performance.now();
+                }
+            }
+
+            if (snakePosition === spiralIndices.length - 1) {
+                if (!hideBlocks) {
+                    textCtx.clearRect(0, 0, canvasState.canvas.width, canvasState.canvas.height);
+                    animateFrames(glitchFrames, artCtx, ctx.canvas, 15);
+                    self.postMessage({
+                        command: "hideArtCanvas"
+                    });
+                }
+                snakeLength = 0;
+                hideBlocks = true;
+                if (o == spiralIndices.length) snakeTraversalCompleted = true;
+            }
+        } else {
+            initBlocksStarted = true;
+            let l = 0,
+                i = Math.floor(16 * seededRandom.random()) + 1;
+
+            characters.forEach((e, t) => {
+                if (i <= 0) {
+                    l++;
+                    i = Math.floor(16 * seededRandom.random()) + 1;
+                }
+                i--;
+                e.transactionId = l;
+                e.animated = false;
+                if (!transactionColors[l]) {
+                    transactionColors[l] = {
+                        bgColor: "#1c1e1d",
+                        fgColor: "#d8d8d4"
+                    };
+                }
+            });
+
+            activeTransactions = new Set(characters.map(e => e.transactionId));
+        }
+    }
+
+    requestAnimationFrame(animate);
+}
+function getRandomColor(e) {
+    let t = colors;
+    e && (t = colors.filter(t=>t !== e));
+    let a = Math.floor(seededRandom.random() * t.length);
+    return t[a]
+}
+function getCharacterAtPosition(e, t) {
+    return characters.find(a=>e >= a.x && e <= a.x + cellWidth && t >= a.y && t <= a.y + cellHeight)
+}
+function swapColors(e) {
+    if (e.colorsSwapped) {
+        let t = e.bgColor;
+        e.bgColor = e.fgColor,
+        e.fgColor = t,
+        e.colorsSwapped = !1
+    } else {
+        let a = e.bgColor;
+        e.bgColor = e.fgColor,
+        e.fgColor = a,
+        e.colorsSwapped = !0
+    }
+    drawCharacter(e)
+}
+function getCurrentTimeIndex() {
+    let e = new Date
+      , t = e.getHours()
+      , a = e.getMinutes()
+      , n = 12 * t + Math.floor(a / 5);
+    return n > 143 ? n - 143 : n
+}
+function refreshCanvas() {
+    ctx.clearRect(0, 0, canvasState.canvas.width, canvasState.canvas.height),
+    characters.forEach(e=>{
+        drawCharacter(e)
+    }
+    )
+}
+function resetAndStartOver() {
+    initBlocksStarted = !1,
+    updateColors(),
+    lastStartTime = 0,
+    currentTime = 0,
+    characters = [],
+    activeTransactions.clear(),
+    initializeCharacters(),
+    requestAnimationFrame(animate),
+    self.postMessage({
+        command: "resetTrack"
+    })
+}
+// async function loadFonts(e){let t=Object.keys(e).map(t=>new FontFace(t,\`url(\${e[t]})\`));await Promise.all(t.map(e=>e.load())),t.forEach(e=>{self.fonts.add(e)})}
+async function loadFonts(fonts) {
+    const fontPromises = Object.entries(fonts).map(async([name,url])=>{
+        const fontFace = new FontFace(name,\`url(\${url})\`);
+        await fontFace.load();
+        self.fonts.add(fontFace);
+    }
+    );
+    return Promise.all(fontPromises);
+}
+self.onmessage = async function(e) {
+    let {
+        command: t,
+        canvas: a,
+        artCanvas: n,
+        textCanvas: o,
+        bpm: r,
+        seededRandomSeed: l,
+        width: i,
+        height: s,
+        fonts: z
+    } = e.data;
+
+    if (a) canvasState.canvas = a;
+    if (n) canvasState.artCanvas = n;
+    if (o) canvasState.textCanvas = o;
+    if (r) extras.bpm = r;
+    if (l) extras.seededRandomSeed = l;
+    if (i) extras.width = i;
+    if (s) extras.height = s;
+    if (z) extras.fonts = z;
+
+    if (canvasState.canvas && !ctx) {
+        ctx = canvasState.canvas.getContext("2d", {
+            willReadFrequently: true,
+            imageSmoothingEnabled: true
+        });
+    }
+
+    if (canvasState.artCanvas && !artCtx) {
+        artCtx = canvasState.artCanvas.getContext("2d", {
+            willReadFrequently: true,
+            imageSmoothingEnabled: true
+        });
+    }
+
+    if (canvasState.textCanvas && !textCtx) {
+        textCtx = canvasState.textCanvas.getContext("2d", {
+            willReadFrequently: true,
+            imageSmoothingEnabled: true
+        });
+    }
+
+    switch (t) {
+        case "glitched":
+            initializeSeeds(extras.seededRandomSeed, extras.bpm);
+            updateColors();
+            let randomColor = getRandomColor();
+            self.postMessage({
+                command: "updateBackground",
+                data: randomColor
+            });
+            await loadFonts(extras.fonts);
+            textCtx.font = 'bold 20px "xoxb"';
+            artCtx.font = 'bolder 20px "xoblk"';
+            resizeCanvas(extras.width, extras.height);
+            self.postMessage({
+                command: "workerReady"
+            });
+            break;
+        
+        case "begin":
+            begin();
+            break;
+
+        case "resetAndStartOver":
+            resetAndStartOver();
+            break;
+
+        case "resize":
+            resizeCanvas(extras.width, extras.height);
+            break;
+
+        default:
+            console.error("Unknown command:", t);
+    }
+};`;
+
+    const blob = new Blob([workerScript], { type: 'application/javascript' });
+    const manifest = {"manifest":"arweave/paths","version":"0.1.0","index":{"path":"index.html"},"paths":{"manifest.json":{"id":"TOr9Y_fBePuz8vXJMx0VJDwDScnr3JrgK1sK0aX1pb0"},"C4.mp3":{"id":"VgVZm5eQ9_HwYrRz0UTenFE8KO2qqYh3-barLsPlbic"},"perc-808.mp3":{"id":"qT2Y3BTCNU7GfeUSA4tbdjtIWOI3QSAMhNBUV71QVL8"},"kick-deep.mp3":{"id":"leCEJguCW399eVX45axBld8disAsu-_YLvNUnsZw__M"},"hihat-digital.mp3":{"id":"XmOazOsH6LY1zOAsdpmiVKVFgOODxfBrTfrt5C7fM4o"},"Asnare.mp3":{"id":"tAEBK3ikF-EE1K6CEAvU6NxO9xtL-wB51XuHLpq6haw"},"melody12.mp3":{"id":"16Xv3f8rbXFzB3IEfnETMLTxkiYbRkY2oV9pZgkbSL0"},"snare-dist03.mp3":{"id":"RHpwZA0ghkNCEu9oRFEMgD7iqmMXRG6gIza_nI8KvQ8"},"snare-vinyl02.mp3":{"id":"FuPImu0tiFU8AOpObPIzCkU3VqvNHKks3VHUjNP2jVg"},"pop.mp3":{"id":"c7sH1lZiqccWNHR2fLZ-qtnLm806Dwg0NPBToYucWgU"},"Akick.mp3":{"id":"DtpEW91kWx-WuE5eTnY9G7DABoHrASikw3lOIddJ-hU"},"melody4.mp3":{"id":"xR_geCAnYE-KQPYzZlDJgl1VYfY9bud9BR5Ibf2wwJQ"},"snare-lofi01.mp3":{"id":"9OirUfPwWLiPA4PiTFzruPFkrHuk4-Wyv2EhTTIzeHY"},"hihat-dist01.mp3":{"id":"fOF1B8Ev6AXSJQoJIJ2604MwelyAphmbj8ZhidT9p0k"},"kick-gritty.mp3":{"id":"EtPFn4mADbHKWY6Tkuf0j1D4fM7eJ1ebkXvpsj9JDW0"},"snare-smasher.mp3":{"id":"RYGKr_-xhfAU5jV6-9skHZ_rnQZN6UsZFf4QSdCKYEA"},"snare-pinch.mp3":{"id":"uwGhlSB7LGbamrNJMvZ_1pNMEVhD0Jw6zTHJZybV2EA"},"hum8.mp3":{"id":"lHw1mDuJx2bWrN2DuLfLJtLbZRxW5a6e6LAGnmyEwEU"},"cowbell-808.mp3":{"id":"qXXSmBetAu_73rLsmwej8XW5mmpqOaqRaUJxWJGdbZk"},"melody47.mp3":{"id":"_sdnmUyqNAS_-RaiCt2y5fyhLBWNKy9005-AOPO_QW8"},"chord14.mp3":{"id":"15C-1285uK2he3EuqZ87lzktbpbNmvpFfOz2pphIP6Q"},"shaker-analog.mp3":{"id":"5LcVWrEYEpjQkuu54TBsbzNFkUvdxSDm1bqeBlvFTkA"},"melody50.mp3":{"id":"mbF4nJJpJQjFiAT4pcDAV985mdaxLhwJXchES410D4E"},"melody54.mp3":{"id":"3CpBD9J18SzM-REdSsFk_44RMaoAXHIUY_aVj6UJpvc"},"ride-acoustic01.mp3":{"id":"thJbGvkuhEodUYMUvbPOPTcM302rseq9fs3WpAuBqMg"},"openhihat.mp3":{"id":"2x3Lx_gBqSE5TOO1ludJkNhdbaPumbQEP5pseges2Kc"},"melody48.mp3":{"id":"xd9kaJkV8I3ctnlUo7emyh_yt7yk7e2aAoLncDAwL9E"},"kick-slapback.mp3":{"id":"F6k4VXYrbyZ8_CLD3gk5pZyc_I-fDZqmkC3b_zQeU9M"},"xoBlack.woff2":{"id":"OyB2RYKnZYhUsRBfrA9Bhx5WQIX3P0yuowVp_Q3BEUo"},"Ahihat.mp3":{"id":"4GMOhBZx7RJVUZWvNYGuvsrrAUH-12JXRXa_Ctbgk5A"},"kick-heavy.mp3":{"id":"BZcPi7Xwgngyl6fVpS4P4Kaut1RUxgYLZMDAeonBTCA"},"kick-electro02.mp3":{"id":"8LJdQa2B9oXNpZ41_Mndr3T-iHjQj0hoD8C5wTJUOGg"},"melody26.mp3":{"id":"OXzUTVKF3ZkeTuKUHjwt2ok-IfbGuVQ-JQNdlgjFly8"},"melody49.mp3":{"id":"7pl6YcvyVPOHxsGUBgXAQQlOU68quT0xR7oEjiW8iAo"},"melody46.mp3":{"id":"ZoLeYzQ6NAWA5fJQVEFS7n0wktAhb1xF7EDhEK5lYOM"},"melody77.mp3":{"id":"WCmOoQ99q88n4QRp1YcUJ_n_zu5kVzEU0csWGoOgSE4"},"snare.mp3":{"id":"Pa-rOw3GJdDRr6UxDzNU25KYkHii03OPd63N74OFfuE"},"snare-modular.mp3":{"id":"Ev199tjR5RBfg12tRVAvkTRBzyi9j2troZbcmzaqef4"},"kick-thump.mp3":{"id":"7AG4NhiR--a5Eprpuj9c9qZE3pf80q3pqfOZrZnaiJ8"},"tom-short.mp3":{"id":"c88vCnwwmTpGNisGR-6tp-p10x7nGrHlKo8sPieI5bE"},"favicon.ico":{"id":"xeUo5wa_bzv3WBPAzpAg-Nh275Y85lLXiFw2bV3ubB0"},"exyboxy.woff":{"id":"KU5QBQzz4b4htKw-galBcs8ni7OTb32cFCk5Y7exJQU"},"xoend.woff":{"id":"37WEqfxqYTVppj1SPlu3mRF_gUj6j6jFNBxtNaI1UtQ"},"Bclap.mp3":{"id":"uzSCr3AG07GO-P-Jbcda0pxUdD_I940bYm2SvCOIkLc"},"chord9.mp3":{"id":"waO0DTaLMVqfc3402qDD40pJ38MylLevLR-nEK0sBGI"},"melody2.mp3":{"id":"6NxL8K6Q1OS8YC0BMkXQ1RbOwA8VhlPXU9UsOpQ52Vc"},"melody31.mp3":{"id":"TfnysYfEZotptNqfw7kdbKbx9OuE7P-nkngsPDDFieo"},"kick.mp3":{"id":"QP1ybh2YETviP8Gy7vBHrMD6rzBorCWrBh1weaGxtIs"},"kick-softy.mp3":{"id":"reJinunSI6-V5mvHjD8Xozczjij_W9bAWo7I2YG9lqk"},"melody59.mp3":{"id":"oCrrKz5NQf7LqhWHyal9B17WjhWDIFr6OFL-Hck5naM"},"chord3.mp3":{"id":"mJErEyx7fhrOABLUrbRCGy8gab2N6Ilz2d9m1t8QFqE"},"melody13.mp3":{"id":"dtOjmXKAHn3lBNwf6sZyhLDr_jMfHfSQjttHhvMFPPc"},"melody14.mp3":{"id":"hkc-Qn4jQH2V-guO4Xgbh9_457SFtqZc9FtVeXFOHwU"},"tom-lofi.mp3":{"id":"oGKzrvWpKuYqWZvp1viY1WaN60-bOzJ2xlQlVscYNgY"},"Aclap.mp3":{"id":"r4UQee0_A6ojKLOwdLaBpGo84v7c0iWKUW4N2XFWoB0"},"melody68.mp3":{"id":"PGHXz2Hs0P4lYpJfsD7mE_XK4tNhpPejwwtGYy8OiUE"},"kick-big.mp3":{"id":"sP075CX6h55Tr_h-FblVhc5rZYaRqQiIf9ueue94XWM"},"snare-acoustic01.mp3":{"id":"H_8YTxsiLOz5DeRbhvYUa7CR_BcIxNxOpCqcuRVPCGU"},"melody0.mp3":{"id":"alq0LYrukx2wtdRihKJyGa97ekKIAGAQjyh1xcGkOE0"},"melody1.mp3":{"id":"99EU7tIllsaJjdezKHhIMMfrIGrT3LWTcr6_X38AAT4"},"hihat-ring.mp3":{"id":"K25H0RxsQVo3dq9l7tYmOgPRB2sGTmpvjkP8CYxn9Fo"},"perc-hollow.mp3":{"id":"bvJHpEdK12mLFjmyK4CqNZSb_j-crH39riQ2AXOgiMA"},"bass4.mp3":{"id":"GHbo1QQDKSH2bNKNlGQGByQwvu22Dh26cbLb_qPCjp8"},"clap-crushed.mp3":{"id":"taavzc5ICAfsxnhUIJYBTzoWkz2riekXBR45SGbXS6E"},"seeded.js":{"id":"GejH3nHejA8FhxVRRmrLMzi6jxNDYhJ93Nf-YHybMzg"},"xoend.woff2":{"id":"Rg9MNWdhgXIDPL6A8cQ6A2c_JiRu2GIO43fnnBC6LaI"},"melody64.mp3":{"id":"w6HsCmlQnrl5xz_U0rOaybhErWSA-6YRobJv6EUx8gA"},"snare-acoustic02.mp3":{"id":"RIx4IlFZaHdGwevJs45XGXn15JRfL6E7dKd4kNF-SLU"},"melody10.mp3":{"id":"D3lsymq_Beikeaav-fihSWYW8tz4gjgPN9w37amrF5E"},"android-chrome-512x512.png":{"id":"KpYgzSR0LL8Q8JHLkqZh8JHbNq_n_piIDANG34wFVIo"},"snare-electro.mp3":{"id":"uBZa8E8ej8n5mAZNl086EZ2B-YgQ1GFsbATJtH8FTuE"},"melody3.mp3":{"id":"Hs5AMXsQuXntBeWb7tLIfJFWfmweXsjVfO-4kq5o6G4"},"perc-tribal.mp3":{"id":"0Ox9StBtwWINTZZ7ecbxq9TFEWAJukbd58_eUru41kg"},"melody58.mp3":{"id":"RsBWnVetT0l2WvFDdXaw9Gwy5DomK8kP_kgoc_wqpBs"},"hihat-analog.mp3":{"id":"h2lqDZJVXg4XDbulgLvGibRXTXS4IeXykJCR0IyIIOw"},"hum5.mp3":{"id":"VOPn-5bW5_VXorhi_DU99juYJxzOjrNkqGvoFWjvshY"},"snap.mp3":{"id":"fJYOe0h4T6D0rlk0SVtPFbUW785ulEUB8elxNbrxIrU"},"perc-short.mp3":{"id":"F9JMpPJQI9s9oZ_eaGaeCDq-EOaKAL7iCgvnocRTcwg"},"bass1.mp3":{"id":"tUdHyg0wuWO0-ywoqp38Wgw07YvPLxHW4ZEf5DWb1QU"},"perc-chirpy.mp3":{"id":"MG0nMD_0sj5CUec9KXgVdc8i_hAraEwcamhZnSkGH3E"},"melody69.mp3":{"id":"orYa0yf-NuYEARzMaPTLLk8IFtzcKdTuomTr_DByNAc"},"melody45.mp3":{"id":"n0RRLJzHq-p13bh65KAXEtGnd6yxMyTFORxmXbBKDg0"},"HiraMaruProN-W4-AlphaNum.woff":{"id":"hlm71dazehZAZ7qLbHalvwwaoFuS3HZKhRCkGhgvBWg"},"audioWorker.js":{"id":"fLQdF9yf3CEf2JLHgkMIX6-YkasJUuM-pGj_B45n4KA"},"chord8.mp3":{"id":"ZD7taVbuSoyUyXc4foopSIK9KZjvkOt8dqT-mnkVdbE"},"kick-electro01.mp3":{"id":"EUQc0fzYEGSERIuMcVdDOK7kfjfeCj3TBKtV0EzU_I4"},"kick-dry.mp3":{"id":"RuaqGI9g99AcQbLg6vVoXiGaUGaHgBrL3AEMw-RWpIM"},"hihat-plain.mp3":{"id":"1LoVIrC9Ldw4zXdKp-FtmcQ7RTm4hBn7-HQFB8rFQzk"},"hum2.mp3":{"id":"T1A1mg66LHIL8yxg3XbZW3hzq7ogCa_DSFev31ekt7M"},"hum11.mp3":{"id":"oEtMzemzxfP4xsYCeoIn91R1kmar27o_FSP5_UUgiiE"},"kick-cultivator.mp3":{"id":"JGJiCIAXgpOPxzHEkvwvMvolIQ3EOf8gp8Wn2UFkhmI"},"audio.js":{"id":"wVw8vQ2YlNz4hzpfejUcYWA0xjhG6wu-5E9XDk7oB58"},"Aride.mp3":{"id":"JeWwMbUK47uJ6Xhde5s_2X6XdNyNgPI9nZ91tBRsOHA"},"melody16.mp3":{"id":"zP_NeOK51SYigUowHhSuY1KYLiRngzFa0EBhbhWh3OU"},"melody72.mp3":{"id":"muhsqdnfcyP61OYqdv7sOS5bUEAFkzbv9puXC04zbFk"},"chord10.mp3":{"id":"MZJ_5Su3t2LU9ToMXQvW5qg_0RgxUDkkUgk6El7Y6QM"},"melody66.mp3":{"id":"wGZuDaMCK76cq9Syco9QOGfSvtc7kY4K8BeIdAhSdp8"},"melody75.mp3":{"id":"n_q4hgBfb8a4MOJO0dHz8xhmWaUItfB0eEQrHcCu-z4"},"xoBlack.woff":{"id":"6tYVmXIYwHU7XKTzSgTBKzKrgQ7VkEkvYKa4v5Igqfw"},"openhat-slick.mp3":{"id":"Tme71jMDcvE5lQPLxA065TVtmRQW_0Hyosga3FSzPw0"},"kick-floppy.mp3":{"id":"molvC5LXPV6yKLjeUErdkDPyKgoAZDObxkXdUZYWUsw"},"Bperc1.mp3":{"id":"ABYEPl7Xl_9GY6DB615JeZRKxegVec3hPcqUob-PY0E"},"Bride.mp3":{"id":"dyLDOM2FhK-UbBwxEVIEbLd35z5kMCXREAYgVYihXRc"},"ride-acoustic02.mp3":{"id":"5dsgDl7S2xdz_0Ak2mcSyqmV8qiEuGLXpa4q-zQXCeA"},"melody70.mp3":{"id":"ks1M1wzHG0SzDZSFA4dMXm7a3CBaBnNvtN_1cdk5kpo"},"snare-analog.mp3":{"id":"gvwGa-9eEfADbbDUH4mwkp7t9DdwahYl1gvOruiAMtE"},"kick-808.mp3":{"id":"qNAKP-y0okOQnB0TMkQajsfjzk9I6ubfhNadM8j4oSs"},"perc-metal.mp3":{"id":"jgMaP1gFQfwnZ6YFYAeSejgfZLNE5VXu1IIRbDOekBA"},"chord6.mp3":{"id":"CnM5Q_O9wgLO4ThWtytw2LBkD6atFWnbYcwEN2Q7g9U"},"xoExtraBold.woff":{"id":"tBKzdVTNE78rxg4knWh3ATVGMSiqTf5G5sonHMEvbU0"},"perc-nasty.mp3":{"id":"VX931r1YKjwi37o383pOwqv5232QTHSRVF9Je5H9O0s"},"chord4.mp3":{"id":"6FwhuWR0VEy-F0N76N-hx0w8sfEDghR-YMKkoszIKlc"},"hihat-acoustic02.mp3":{"id":"Fiw4ya4L4qN10kAYwHNhM7mauXBhbNgb-kBq9e8BvI8"},"gamehighC.mp3":{"id":"GUIDmMMka5E4LxmWFeEF8eQ0unPB1h4Pca5mSuHYy9Y"},"kick-tape.mp3":{"id":"rRt6j9EzSLYy8ECZFm_1XXAfOVZZYrs-cG6XzZ8kpbo"},"favicon-32x32.png":{"id":"DzvY3TnpipWOSF7a2IPJDliyUicpl7V9OGut4VTwMVs"},"kick-classic.mp3":{"id":"N7Yjz5AHGE5S2V9tAoo9DYKNhtDIC7l9q30gDK8KIEw"},"melody42.mp3":{"id":"Mj4XzFOijJbZiMIvgAEiRFBND6SYhW6Qalm18OId5Rc"},"Bkick.mp3":{"id":"GozFi-MQJHI6nY0fzdS7wc0AR7GkCBNRLD_QWtZcU24"},"snare-noise.mp3":{"id":"AqYPujFEItAyMQ8RLwSg_VC_kxfHZFMfGrBW3utwKLA"},"melody51.mp3":{"id":"qj83hl2uPNmOiFviaYHL2aUjmJ2mbS014-n55Nfum4E"},"bass7.mp3":{"id":"HyGjR4eXa6pFDZshloElmTJcqUZ_VV_9J0nrWj_hQus"},"perc-tambo.mp3":{"id":"oS9GL8BgMvjAMNqktTpA_k45ZyrCLhnd4-AEQGHMlw4"},"crash-acoustic.mp3":{"id":"-UNS7zajEW1FlB3ayGZk09IdveSPj7Lg3Fe2R1-Xy1w"},"snare-dist02.mp3":{"id":"Wf-YxSCWyH5kmUTtiZrPNvCmxdmxe-BLr-h4BFflI70"},"tom-fm.mp3":{"id":"B2nzozwb2ze9I0dNhIqRII3SuP1Ump5ZVDpON2GBmgI"},"chord2.mp3":{"id":"S87Rq5-nvRoHYJ6-PWxXxZHvyBIi8xEwUVs-HUXE5rY"},"tom-acoustic01.mp3":{"id":"q15GRNC7UuakszMZAAombqoe00o9zJcyWyfOXI_JUQ4"},"hihat-808.mp3":{"id":"-72AObU_JsRR6BK48-N5gOi7H-6hFjrj2hpEofHoRKA"},"melody30.mp3":{"id":"WWVF9ZdPsvI7d2MIBemzrjprqU231ORCqh8bX9akomY"},"apple-touch-icon.png":{"id":"eO2atx4p8ZU-4wN19HHTCFfrZnerTnMobmom3TxGFQg"},"favicon-16x16.png":{"id":"1nAM1Ma0DGuRBYk9bcllBX-wgZgdSu8mMfmy2UA_epM"},"Bperc.mp3":{"id":"8CBGV3fuIMqEtLytovGDanZ3CrL1ly966BVOI69HZPY"},"clap-808.mp3":{"id":"t7QmW-CrB3PJ8T6Wr5Uk2od5trHTG5gDgpTU34xrGvc"},"melody43.mp3":{"id":"eSAqd5YqMp-i3wVmuyuvjCt0UUiwPBJr68r7InZRV-w"},"shaker-suckup.mp3":{"id":"GCNBfOp7DSOUrSKykJLyRpaNINx36dbzeAWDeT0NA4w"},"Aopenhat.mp3":{"id":"V-C9fQzeUiFHyZBwHp27ElTh5baz0hnDQguvgJqkLVM"},"chord11.mp3":{"id":"ZITQmQCk33TpcZXYtsBfJboEYIRqkiqN-Y2AojoUSd8"},"tom-analog.mp3":{"id":"agEtkvs7DELUhf6AqbvVUcBkrkUvG0G8-2tZdghuMtE"},"melody34.mp3":{"id":"shAaUkRUDsZhGIv5siSbA0EMJKLmKkhFiDKD6YvH4d8"},"melody76.mp3":{"id":"saWn3_VtwITwsYOnMccsDSp3fQcblIBgv3QoiAz7H2A"},"melody38.mp3":{"id":"611Drq-sPkqzu3QB-QNOMYwO321QVTIsZWWgBw6ZC2o"},"kick-vinyl02.mp3":{"id":"B4uPIHyfN_py8YKznsHxZAvB6kBuEmqvWe-OKZE7T08"},"crash-808.mp3":{"id":"a62Zlp7QjNkwWJs3EtjZ1xNbdb2-PNdrKCDCTxjqUC4"},"snare-brute.mp3":{"id":"-YAQuopmrBIE244m_iSG6ccWcUQ_EvDgI9fe6JrHg1A"},"melody28.mp3":{"id":"3rKG_uj_RcR3WlCnI4oUz0M9wARz3L0NZAvGeCZLVFA"},"chord1.mp3":{"id":"tlK4juDtlQElDHsJKm701QfFKbb8De7Jhs5K42iN7EA"},"clap-fat.mp3":{"id":"-bohX_MRw88TGPr7EHghCy1r3fr_A-vEaMJuHwNMn1I"},"kick-acoustic01.mp3":{"id":"UxRAujc1jpGv1WU1uGNdOD4McoXgJ6aKaOzL_jDNoJA"},"melody62.mp3":{"id":"YdPR6ehItbggqHGaUcVMP4Dty_TTsZJma53hOkKmFZs"},"melody71.mp3":{"id":"2L8Kktni7re4zf19My69_-wx_y6bDhFlbUX-O7xLbEw"},"snare-lofi02.mp3":{"id":"PmUSWzpHM34lXXLXWw3-8lo6G2FXZ1KkkS2eQdOhHto"},"melody27.mp3":{"id":"7tw2w4_zTTQ7nchwmDiyxphXbGuUadVJuavb3qMayCM"},"melody25.mp3":{"id":"wIUHQ4jgsBDl4tnUYuXirJcSUCuq9x60gcT2zQ9puSQ"},"melody18.mp3":{"id":"lMsQR0k6ZcYAic0cbeMYeXi1BSrPIRzDXePKjllKNXk"},"melody74.mp3":{"id":"IXCZmlqLBMyseiCSwL4wUfgcA4Lr-61XL8DLpReRygM"},"melody21.mp3":{"id":"ChLGYSMEkh4UtjY5kxBH3_LCNtaK_xW3tq0SyrnNjWY"},"snare-vinyl01.mp3":{"id":"Yr4n5nl9Xj5teb6ffjnHKg-CPqCoELGeYDMOIx92vZ8"},"melody55.mp3":{"id":"whQFPC11kNptpJaul-vjDqdzsf9OvKmvw7iY7w1CTVI"},"crash-noise.mp3":{"id":"box0uGaWxUuYiTKzqNVOUuVjGFQmUjcoDCT8bSbJSnQ"},"melody29.mp3":{"id":"nymEpjynRJFpNjN6JcRQSUoB4OzzW_oT8sEDRJ5cc9g"},"HiraMaruProN-W4-AlphaNum.woff2":{"id":"F4WDYWwDbIksYP1Un0pKF5JJgdC2jt1dvOmXq1Lor9k"},"kick-tight.mp3":{"id":"mmML5CZTrMIBRGOcZ0psvhJOy1X0uAPOKPDYwNG1uEo"},"melody73.mp3":{"id":"DHwrh4llkcTdqiuX63h6hk_2VoICMQEFMZsuiXDB5Ls"},"openhat-analog.mp3":{"id":"BQJeiGHROuS05GOeyVavTawhSSbhq2PY_w84Uh0I030"},"kick-plain.mp3":{"id":"6OgsYlDBE2b577xbn5zvqURLvu-OasAb2wBnsOc5qqw"},"hum4.mp3":{"id":"1xIGpUXRnx3crqxp0F8CxdkcbI0NvpEBmeYr-VZUMeY"},"Tone.js":{"id":"NOFOHRWypZw6nY7K-J8jl5eR7rKas3pA9SqmnlT1ego"},"hum1.mp3":{"id":"gisU-WlaNTiqc5M8wYTxxot5bb-c3Hjz8UctCK-nU1o"},"melody36.mp3":{"id":"RTwofJT79_beCMpTE1D2sdrgnmy9In_CUd8KN0ObRz4"},"chord12.mp3":{"id":"RRJirHYmYSHldOh4KNsIadJhE4xAZHnFNUKQkXb3ukA"},"melody9.mp3":{"id":"IJh8puYOrYfUn65cgFIx68MoOzSWqrHMeN4NWd5jtqY"},"snare-808.mp3":{"id":"hqDXIdgBNRheQBrQdsu0849QK60EZdINelrCKcmYY-Q"},"hum12.mp3":{"id":"6U1H7QSddhNSRggJNbZxfXKnyVDQTjpOSw2oh73j4Ys"},"Bhihat.mp3":{"id":"AqvDCzRZ3nGgvmDHLlLucC8JeTppA1img_eCj2UAIws"},"shaker-shuffle.mp3":{"id":"B7J-a0QarHLyyvG8-AWdz8TTuL3xsdk_mDNCOTBkYrI"},"clap-analog.mp3":{"id":"gLofoUWSnGiG3xj3ziCp6svmBlJVsXvSrtf6lR7FCTc"},"melody32.mp3":{"id":"qUn4r7rkEoVxImryvbdph-A_twxh42JJ0msLqqi7Z-8"},"kick-vinyl01.mp3":{"id":"NEDOuN662qxfrzGJZWV7VP2p70kNqH9PmhUsk-VSRmg"},"crash-tape.mp3":{"id":"fqaHc0fw1EbW88mnMNlUmgyDhjAdMvlFHAhZexOqzMQ"},"melody44.mp3":{"id":"TyF8vmCzme59QmVSDk-9Rfx6geKCIsBBX7ax5NXO16w"},"snare-big.mp3":{"id":"aaVV3xR4oziLi6auq9ddgYZKRo_HEPZXkj8zofT_l1g"},"shake.mp3":{"id":"N2On63fAJfDxvsS7_HN8eU2vHIbV1HpHA5mCSiXnEvI"},"hum10.mp3":{"id":"0VHTRJAqy2eJHj-P_9cKfo-TuEjjGFrBVD5-OPQblH4"},"hum14.mp3":{"id":"3MyQLsxopPSIlgpmOOAkYQJz17zSMZzId3zrSrZODZc"},"snare-dist01.mp3":{"id":"NPDw_yA0HJoSadKthlkLYEVLo3o5PagqDAjM-ZqaUPw"},"kick-oldschool.mp3":{"id":"-7bGqMoOVFT1tf5I4FgYeZpXa1fld34rSTntLe12eBc"},"chord13.mp3":{"id":"RQoMmlC4WQLdnGnDPLxFERqmqeblVKfBBS6pHiV5ktE"},"tom-acoustic02.mp3":{"id":"WM3EIYgul9S18Qi6X3z_v9t4ux6CH0a66U51rzldHrY"},"tom-chiptune.mp3":{"id":"BXhAMZ4ewo8JSaJNhECi5MzDUmW7QnqekldtVaBfvn0"},"xoExtraBold.woff2":{"id":"GO7xgqK4iWq3YUlPpy0P0jlNZ5gBcaLEtNYFsKMDZYc"},"hum3.mp3":{"id":"ZqLI71AdUqM4iihztKXhLhSwyGve334dYmH60YIOUAc"},"snare-punch.mp3":{"id":"9fJR73dkVvcnBcTXJVzl9mi_7OMS2ONJlJ71YsmdRBU"},"melody37.mp3":{"id":"LFgXgh8vwZu4PvYLtR_QsHC--xFLhIImdYK81DcJ0YI"},"chord0.mp3":{"id":"NkVPzqFEByN4mJrJeMLPcmSA09a3N4WQ9tEHCw9mrDY"},"melody8.mp3":{"id":"BO7UkyVdA8WLfOcwzNC_szCFwnYjB1UD61AFU7ME_B4"},"bass3.mp3":{"id":"NIMP6Skov1RP9mDwfC4Qghym4Hiih77eu4_KqMrUp4U"},"hum7.mp3":{"id":"p9oU2YqJKNdoe-UeGkmkAnTyBsu33eBLbOsXftcs3nY"},"melody23.mp3":{"id":"TUv3DzM-zsU0FTMEhY4mGdfXZImc_6g_CA2QeE-Dv1c"},"bass9.mp3":{"id":"xLcHMtzvmuBpZ49bhB__VZ013_4vSl_ajzuOJTXeiAs"},"melody53.mp3":{"id":"OibssoRQPpHMeJGNMFKG0csJpekFfiiZV4HPUeWlBUs"},"melody17.mp3":{"id":"aW1JFqyPEZZOC2009VQ-TNy_Y0bwjGuRmGJo4PNrW08"},"chord5.mp3":{"id":"_bS6Jju4-jpbS-OCEJywjhaQe-niHFb8GH6Gdz72wlY"},"clap-slapper.mp3":{"id":"XinBZjJ5SeHEx4Bs1UaXcrF8NFhVFml2Ionnw74sNoI"},"clap-tape.mp3":{"id":"Qra4604MxpS6pWkYDwsfkHThfH154UySPUDwgv18ypw"},"exyboxy.woff2":{"id":"jL_Z07kySVPUghEjFlxlwXvSeGR537kOKK6I7LYWSo4"},"bass6.mp3":{"id":"KYIgzL3ajFQjp8vV0nyMDFHQ8PS9g07k_nx92SW3p78"},"bass5.mp3":{"id":"O-pCAt9D3eZvFFzAVUq6S_wchhYxDvKGHTxehd1FAj4"},"kick-zapper.mp3":{"id":"gPzZgibFh-5sxH6GClut8uxlxfOF-_3sGunPMIzrb1s"},"hum9.mp3":{"id":"ydDFTLOW4fAGi6vWuj7jRiR05gFL8V9T6-bYP_Ts8rc"},"melody24.mp3":{"id":"QN4pR67OGimSEICZQsAJcgOU1gR0ixJAPD54ALrxJxQ"},"tom-808.mp3":{"id":"tEPN6TNHomVFUY6YSLgCgkaWwdUUiHJExHrbzsH8iN8"},"melody11.mp3":{"id":"nMYU3_LvUOmNauTQs5w-9alaTpIqp7StInnm4Sc6bYQ"},"android-chrome-192x192.png":{"id":"KkIGboIANbXWfEpGnI-D99656qzE2gpHOTWeGnkQYqA"},"melody6.mp3":{"id":"Ounqgiwf9QfsY6exbj55aHGRWy8FS2UkjVF9DUYpt7E"},"melody52.mp3":{"id":"XVM1cDAD7FOh2yCyHabwqpfASeAoqcYE1iPEA-Ugdhk"},"bass8.mp3":{"id":"4bvUd58IB_tPACVCg0wew_gwF6Hy5383sOE0C_NJW6E"},"animationWorker.js":{"id":"85vRP4Fuhc3ClrJqoaZuFjtpG9ouEMZbwcUAvrur__E"},"hum0.mp3":{"id":"fWkjH5xC_bhHlSGYhM8HpLcvCBZ7IOwimqhSULS7CW4"},"kick-acoustic02.mp3":{"id":"c8qtk5tt-u_ANh4Ssyibr-uVIUOpQhRzIQsKF5DrgeA"},"hihat-reso.mp3":{"id":"IT14QaSFDirhZ_zieJueA9kC7HtnLc5Px-Nn7YiVoyQ"},"perc-laser.mp3":{"id":"PXz6QPTwtlC2cc3a5XaNvz4ODykiDoN2Pxo2GZ31Es4"},"melody22.mp3":{"id":"VGheg3TZGifiZRygU3sKmBU3_AhvzWWyU2sQrW7ENMc"},"openhat-tight.mp3":{"id":"ZeXb8pfqsjOgrFaXKdkCBx7138xZsVzODadV0MntA68"},"melody40.mp3":{"id":"ndA6H0jqHIGJ6IX3y-3JptD1eMmQpfe5ecpOWwGXLsc"},"melody20.mp3":{"id":"pp_YdHt3eMw6ZNoanG493QDpt07xzeBJlMzYTyBEO7M"},"kick-newwave.mp3":{"id":"nXOdOMjMPAJnbg3pQI1qPipt0o-DjZ5uR5NLccUXmT4"},"chord7.mp3":{"id":"rJU4q1Y4RzFHwXth2gIbh3WwcWy1KsFHgyLqivZVTx8"},"Aperc.mp3":{"id":"bKRfKAUcVozXedyTHDDbnA367B2zXHRdXFwqC5lLfrU"},"melody56.mp3":{"id":"DYNXkKlEWE0iBrdZ7KLwqc8f6llr_AHxZkIjHReULQ4"},"melody5.mp3":{"id":"Rg3t2cKzWS4e5ff8BmV0-poyQlKmG1XZr7IkQO7qvg8"},"melody65.mp3":{"id":"07enxodZyoC0XOk0xIle9z5xHj6-RPEv88pDtC5AagM"},"clap.mp3":{"id":"Nr_Ii_wjS9LoGqszFbvKtEad8y1RIy4F4NqrAszV6lI"},"hihat-electro.mp3":{"id":"jq6lY4Ghq10awOKmEdW8EWIg_Olkq7vSDABQg3jeJOE"},"melody57.mp3":{"id":"4v233kJTcnby_-MHQp81lZHdcBAmt0qCxqX8YUMbfKs"},"index.html":{"id":"7sPlV2ptTFU_dLxCICpKB1_TcstYdZN1Sv9dbw3RBXg"},"hihat.mp3":{"id":"zcXvM54Gcrmx3zmsf1Ol3jEHTJ5EnCbFc064QNsq3dk"},"bass2.mp3":{"id":"iTFKDsuAVsDjTGkGoy9oqkRwfUzSa0l2jYt0Ulhk_kE"},"openhat-acoustic01.mp3":{"id":"96mAsy7dohpRtxAT77JajON4JQDejWVgVrLI4xSlflo"},"snare-tape.mp3":{"id":"FVP_qwiu-CjmvockrZ7_5oxdyKZaQCfzwZ-ql8ZhSTA"},"hihat-acoustic01.mp3":{"id":"Vm9B_UCbFT25mjP3v3RXwT0-BPVN3vrgzK4YPaUYvY0"},"melody15.mp3":{"id":"wTQFtTAFFs_ccH9VKE0lPfmd5Uou8fd9lA61NpLw8uY"},"melody67.mp3":{"id":"GPEalFxOiXyO5q7z0nRDK1w4pP84m0XGWBwVriLmpQY"},"hum6.mp3":{"id":"Cck4mIYsbDtpNIetI2v-ev7zBlyPBC-9VrQrnYx84bo"},"melody39.mp3":{"id":"3uQ787Yc8MjlK4WT13MOboqGk6dxAveTeayfdGRyTCg"},"openhat-808.mp3":{"id":"aoUGr_jCXiiuEWTH478UjIHYqQArYExraqNZl8OppJ4"},"kick-tron.mp3":{"id":"RGVQk9PwUoUcp2CqtX0tPEPVrKI0g21_25ioJcm__n4"},"Atom.mp3":{"id":"72gAmFn-oU5G9fm7qYup5Mw_I035H1XLQSEjer5-MbQ"},"snare-sumo.mp3":{"id":"w0z36vY3UvXOaU41RaP42Z2oH2nMYi1F5Py_pn0Aq5A"},"Bcrash.mp3":{"id":"SAQePIZzKZNSxr7Maigk0d-xOUDwxBosL6YEAuGkT8I"},"snare-block.mp3":{"id":"zihtTtB3Oc22NiZjV1aIAeUIglDgHeXMeSXH8-6T4aA"},"melody35.mp3":{"id":"_X38SltsuzMBXn9BwYYKnXDut51t25vLrhhQyhNLBOE"},"melody7.mp3":{"id":"h6Az9gRLnEZakbcuSFaKYbZ6qkmgGdUBFbaufVkm_N4"},"tom-rototom.mp3":{"id":"Lk_DpKNuygolETp7VADFMcCEiZohLP82yXq8we3AfY0"},"melody63.mp3":{"id":"iNWcCyBO_N3Zo-LKtvJhAXVtsa0mX2aohBSdtDbzjMo"},"Bhatopen.mp3":{"id":"DvqgwLua8g6KL-P_NvmQQy7ZIbdV-nGe51uDgr00srI"},"melody19.mp3":{"id":"9DbjaKCQ1Ny2XdhrNFElLn7gHtJxtvXhCqy2XVvqD8c"},"kick-stomp.mp3":{"id":"6FxjyPGxtOXP9tbHS4W8FEltMvRE3wGBpQK0BF7HHAE"},"melody41.mp3":{"id":"XeOtSCcP8sAxLYqOPIVkK0TMsDWHQAWLfV6kAUnX1yg"},"Bsnare.mp3":{"id":"z4nOkPMqIIhALR5srDowMj5WRB2hR0A3wJz6CKlSlw8"},"hihat-dist02.mp3":{"id":"A97MT031rGzl0cYcjfSaBqOWn4KaKXgXpbn1Z8WI74c"},"perc-weirdo.mp3":{"id":"dFfBU6bnEbrsmCoB8Fw9Xh3lhElyImIr3EB8hX1Fa1s"},"melody33.mp3":{"id":"cWMfzNqo9EL3rYPsbsJUV6trizKKC0m74duuPEPauHE"},"melody61.mp3":{"id":"31XDeqBwjH2RjexYFi_45qWDc78pQTxVkcbbe41ci7I"},"bass0.mp3":{"id":"AxHhJAZ_KHMOY74RqL7o82F_eietul0VNUV_f_FF0H8"},"melody60.mp3":{"id":"Aw1h_fL5gAaRWw1Eazmdcb7Mai0BL_nuwCogHczqsTI"},"hum13.mp3":{"id":"fJw1DnJUHosesudnzkgI7z6_1aM8b-32U7hsghi44vQ"}}}
+    const seededRandom = new SeededRandom(getSeedFromURL())
+                  , initialArtSeed = seededRandom.random();
+                function getRandomCharacter($) {
+                    if (9 == $)
+                        return .5 > seededRandom.random() ? "✗" : "⚬";
+                    let[e,i] = [[19968, 40869], [12353, 12447], [12449, 12543], [33, 126], [161, 255], [1536, 1791], [1872, 1919], [1024, 1279], [1280, 1327]][$];
+                    return String.fromCharCode(Math.floor(seededRandom.random() * (i - e + 1)) + e)
+                }
+                function getaudioPart($) {
+                    let e = window.location.search
+                      , i = new URLSearchParams(e)
+                      , t = i.get($);
+                    return null === t ? -1 : parseInt(t)
+                }
+
+                class SongGenerator {
+                    constructor($, e, i="/") {
+                        this.style = $,
+                        this.scale = new Scale($,e),
+                        this.audioBaseUrl = i,
+                        this.patternLength = 16,
+                        this.loadedSamplers = 0,
+                        this.initialized = !1,
+                        this.songParts = [],
+                        this.samplesLoaded = !1,
+                        this.chordSampleUrls = this.loadChordSamples(),
+                        this.chordSampler = this.createSampler(this.chordSampleUrls, "chordSamplesLoaded", "Chord samples loaded and ready to play."),
+                        this.bassSampleUrls = this.loadBassSamples(),
+                        this.basslineSampler = this.createSampler(this.bassSampleUrls, "bassSamplesLoaded", "Bass samples loaded and ready to play."),
+                        this.melodySampleUrls = this.loadPianoSamples(),
+                        this.melodySampler = this.createSampler(this.melodySampleUrls, "melodySamplesLoaded", "Piano samples loaded and ready to play."),
+                        this.intro = [],
+                        this.verse = [],
+                        this.chorus = [],
+                        this.prechorus = [],
+                        this.bridge = [],
+                        this.melody1 = [],
+                        this.melody2 = [],
+                        this.nextMelody = [],
+                        this.bassline2 = [],
+                        this.nextBassline = [],
+                        this.chords1 = [],
+                        this.chords2 = [],
+                        this.nextChords = [],
+                        this.melodyFilter = new Tone.BiquadFilter(2e3,"lowpass").toDestination(),
+                        this.bassFilter = new Tone.BiquadFilter(200,"highpass").toDestination(),
+                        this.chordFilter = new Tone.BiquadFilter(1e3,"bandpass").toDestination(),
+                        this.songPlaying = !1,
+                        this.sequenceIndex = 0,
+                        this.drumPlayers = {},
+                        this.loadDrumKit(),
+                        this.songStructures = [["Verse", "Chorus", "Verse", "Chorus", "Bridge", "Chorus"], ["Verse", "Chorus", "Verse", "Bridge", "Chorus", "Outro"], ["Intro", "Verse", "Chorus", "Verse", "Chorus", "Outro"]],
+                        this.song = null
+                    }
+                    createSampler($, e, i) {
+                        return new Tone.Sampler({
+                            urls: $,
+                            baseUrl: this.audioBaseUrl,
+                            release: 1,
+                            onload: ()=>{
+                                this[e] = !0,
+                                this.loadedSamplers++,
+                                this.loadedSamplers >= Object.keys(this.drumPlayers).length + 3 && (this.samplesLoaded = !0)
+                            }
+                            ,
+                            onerror($) {}
+                        }).toDestination()
+                    }
+                    loadChordSamples() {
+                        let $ = getaudioPart("chord");
+                        return -1 == $ && ($ = Math.floor(9 * seededRandom.random())),
+                        {
+                            C4: manifest.paths[`chord${$}.mp3`].id
+                        }
+                    }
+                    loadBassSamples() {
+                        let $ = getaudioPart("bass");
+                        return -1 == $ && ($ = Math.floor(9 * seededRandom.random())),
+                        {
+                            C2: manifest.paths[`bass${$}.mp3`].id
+                        }
+                    }
+                    loadPianoSamples() {
+                        let $ = getaudioPart("melody");
+                        return -1 == $ && ($ = Math.floor(77 * seededRandom.random())),
+                        {
+                            C4: manifest.paths[`melody${$}.mp3`].id
+                        }
+                    }
+                    loadDrumKit() {
+                        let $ = [{
+                            name: "Kit 808",
+                            urls: {
+                                clap: "clap-808.mp3",
+                                crash: "crash-808.mp3",
+                                hihat: "hihat-808.mp3",
+                                kick: "kick-808.mp3",
+                                openhat: "openhat-808.mp3",
+                                perc: "perc-808.mp3",
+                                snare: "snare-808.mp3",
+                                tom: "tom-808.mp3"
+                            }
+                        }, {
+                            name: "Kit Acoustic",
+                            urls: {
+                                clap: "clap-analog.mp3",
+                                crash: "crash-noise.mp3",
+                                hihat: "hihat-plain.mp3",
+                                kick: "kick-acoustic01.mp3",
+                                openhat: "openhat-acoustic01.mp3",
+                                perc: "perc-tambo.mp3",
+                                snare: "snare-acoustic01.mp3",
+                                tom: "tom-acoustic01.mp3"
+                            }
+                        }, {
+                            name: "Kit Fat",
+                            urls: {
+                                clap: "clap-tape.mp3",
+                                crash: "crash-tape.mp3",
+                                hihat: "hihat-808.mp3",
+                                kick: "kick-big.mp3",
+                                openhat: "openhat-tight.mp3",
+                                perc: "perc-tambo.mp3",
+                                snare: "snare-big.mp3",
+                                tom: "tom-chiptune.mp3"
+                            }
+                        }, {
+                            name: "Sid Test",
+                            urls: {
+                                clap: "clap.mp3",
+                                crash: "shake.mp3",
+                                hihat: "perc-tribal.mp3",
+                                kick: "kick-oldschool.mp3",
+                                openhat: "openhihat.mp3",
+                                perc: "snap.mp3",
+                                snare: "snare.mp3",
+                                tom: "pop.mp3"
+                            }
+                        }, {
+                            name: "dub",
+                            urls: {
+                                clap: "Aclap.mp3",
+                                crash: "Aperc.mp3",
+                                hihat: "Ahihat.mp3",
+                                kick: "Akick.mp3",
+                                openhat: "Aopenhat.mp3",
+                                perc: "Aride.mp3",
+                                snare: "Asnare.mp3",
+                                tom: "Atom.mp3"
+                            }
+                        }, {
+                            name: "dip",
+                            urls: {
+                                clap: "Bclap.mp3",
+                                crash: "Bcrash.mp3",
+                                hihat: "Bhihat.mp3",
+                                kick: "Bkick.mp3",
+                                openhat: "Bhatopen.mp3",
+                                perc: "Bperc.mp3",
+                                snare: "Bsnare.mp3",
+                                tom: "Bperc1.mp3"
+                            }
+                        }]
+                          , e = getaudioPart("drum");
+                        -1 == e && (e = Math.floor(seededRandom.random() * $.length));
+                        let i = $[e]
+                          , t = new Tone.BiquadFilter({
+                            type: "peaking",
+                            frequency: 440,
+                            Q: 1
+                        });
+                        t.channelCount = 2,
+                        t.channelCountMode = "explicit",
+                        Object.entries(i.urls).forEach(([$,e])=>{
+                            this.drumPlayers[$] = new Tone.Player({
+                                url: `${this.audioBaseUrl}${manifest.paths[e].id}`,
+                                onload: ()=>{
+                                    this.loadedSamplers++,
+                                    this.loadedSamplers >= Object.keys(this.drumPlayers).length + 3 && (this.samplesLoaded = !0)
+                                }
+                            }).connect(t).toDestination()
+                        }
+                        )
+                    }
+                    playDrum($, e) {
+                        "bpmRange" != $ && this.drumPlayers[$] && this.drumPlayers[$].start(e)
+                    }
+                    convertToToneTiming($) {
+                        let e = {
+                            "1n": 1,
+                            "2n": .5,
+                            "4n": .25,
+                            "8n": .125,
+                            "16n": .0625,
+                            "32n": .03125
+                        }
+                          , i = "4n"
+                          , t = 1 / 0;
+                        for (let a of ["1n", "2n", "4n", "8n", "16n", "32n"]) {
+                            let n = Math.abs($ - e[a]);
+                            n < t && (t = n,
+                            i = a)
+                        }
+                        return i
+                    }
+                    ensureNoteHasOctave($, e="chords") {
+                        if ("chords" == e)
+                            return $ + "3";
+                        let i = {
+                            1: .05,
+                            2: .35,
+                            3: .4,
+                            4: .25,
+                            5: 0
+                        }
+                          , t = 0
+                          , a = seededRandom.random();
+                        for (let n in i)
+                            if (a < (t += i[n]))
+                                return $ + n;
+                        return $ + "4"
+                    }
+                    scheduleBeats($, e) {
+                        let i;
+                        i = e || this.scale.generateBeat();
+                        let t = 0;
+                        Tone.Transport.scheduleRepeat($=>{
+                            let e = Math.floor(Tone.Transport.seconds * Tone.Transport.bpm.value / 60 * 4) % this.patternLength;
+                            e !== t && (Object.keys(i).forEach(t=>{
+                                "x" === i[t][e] && this.playDrum(t, $)
+                            }
+                            ),
+                            t = e)
+                        }
+                        , "16n", $)
+                    }
+                    playMelody($, e, i) {
+                        if (!this.samplesLoaded || !i || !(i.length > 0))
+                            return;
+                        this.melody1 = i;
+                        let t = 0
+                          , a = e
+                          , n = $=>{
+                            t >= this.melody1.length && (t = 0);
+                            let e = this.melody1[t];
+                            if (e) {
+                                let i = e.note + e.octave
+                                  , o = e.duration ? e.duration : "8n";
+                                this.melodySampler.triggerAttackRelease(i, o, $),
+                                a += Tone.Time(o).toSeconds(),
+                                Tone.Transport.scheduleOnce(n, a)
+                            }
+                            t++
+                        }
+                        ;
+                        n(e),
+                        this.songPlaying || (this.songPlaying = !0,
+                        "started" !== Tone.Transport.state && Tone.Transport.start())
+                    }
+                    playBassline($, e, i) {
+                        if (!this.samplesLoaded)
+                            return;
+                        i ? this.bassline1 = i : this.bassline1 = this.scale.generateBassline($);
+                        let t = 0
+                          , a = e
+                          , n = $=>{
+                            t >= this.bassline1.length && (t = 0);
+                            let e = this.bassline1[t];
+                            if (e) {
+                                let i = e.note + e.octave
+                                  , o = e.duration ? e.duration : "8n";
+                                this.basslineSampler.triggerAttackRelease(i, o, $),
+                                a += Tone.Time(o).toSeconds(),
+                                Tone.Transport.scheduleOnce(n, a)
+                            }
+                            t++
+                        }
+                        ;
+                        n(e),
+                        "started" !== Tone.Transport.state && Tone.Transport.start()
+                    }
+                    getRandomOctave() {
+                        return Math.floor(4 * seededRandom.random()) + 2
+                    }
+                    async initSongParts() {
+                        if (this.initialized)
+                            return;
+                        let $ = this.scale.mode;
+                        this.verse = await this.generateSection($),
+                        this.chorus = await this.generateSection($),
+                        this.prechorus = await this.generateSection($),
+                        this.bridge = await this.generateSection($),
+                        this.outro = await this.generateSection($),
+                        this.intro = await this.generateSection($),
+                        this.songParts = this.chooseSongStructure(),
+                        this.song = await this.compileSong(),
+                        this.initialized = !0
+                    }
+                    chooseSongStructure() {
+                        let $ = this.songStructures[Math.floor(seededRandom.random() * this.songStructures.length)];
+                        return $.map($=>this[$.toLowerCase()])
+                    }
+                    generateSection($, e=0) {
+                        let i = this.generateChords($)
+                          , t = this.generateBassline(i, $)
+                          , a = this.generateMelody(i, t, $)
+                          , n = this.scale.generateBeat();
+                        return {
+                            melody: a,
+                            bassline: t,
+                            chords: i,
+                            beats: n
+                        }
+                    }
+                    generateChords($) {
+                        let e = ["C", "C#", "D", "Eb", "E", "F", "F#", "G", "Ab", "A", "Bb", "B"]
+                          , i = []
+                          , t = 0;
+                        for (; t < 8; ) {
+                            let a = .5 > seededRandom.random() ? 4 : 3
+                              , n = this.scale.getChordPattern(a)
+                              , o = this.scale.getDurationPattern(a)
+                              , r = 0;
+                            for (let s of n) {
+                                let I = this.scale.chordForPattern[`${$}Chords`][s];
+                                if (!I)
+                                    continue;
+                                let l = this.scale.getTransposedScale(e.indexOf(this.scale.key))
+                                  , _ = I.map($=>{
+                                    let[i,t] = $.match(/([A-G][#b]?)(\d?)/).slice(1, 3);
+                                    t = t ? parseInt(t) : 3;
+                                    let a = e.indexOf(i);
+                                    if (-1 === a)
+                                        return;
+                                    let n = this.ensureNoteHasOctave(l[a], t, e.indexOf(this.scale.key));
+                                    return n
+                                }
+                                ).filter($=>void 0 !== $);
+                                i.push({
+                                    notes: _,
+                                    duration: this.convertToToneTiming(o[r % o.length])
+                                }),
+                                r++
+                            }
+                            t += a <= 4 ? 2 : 4
+                        }
+                        return i = i.slice(0, 8),
+                        i = this.splitDurations(i)
+                    }
+                    splitDurations($) {
+                        let e = [];
+                        for (let i of $)
+                            if (.5 > Math.random()) {
+                                let t = i.duration / 2;
+                                e.push({
+                                    notes: i.notes,
+                                    duration: t
+                                }),
+                                e.push({
+                                    notes: i.notes,
+                                    duration: t
+                                })
+                            } else
+                                e.push(i);
+                        return e
+                    }
+                    generateChords($) {
+                        let e = ["C", "C#", "D", "Eb", "E", "F", "F#", "G", "Ab", "A", "Bb", "B"]
+                          , i = []
+                          , t = 0;
+                        for (; t < 8; ) {
+                            let a = .25 > seededRandom.random()
+                              , n = [];
+                            for (let o of (a && t <= 4 && n.push(this.scale.pickRandomPattern($)),
+                            n.push(this.scale.pickRandomPattern($)),
+                            n)) {
+                                let r = o.length
+                                  , s = this.scale.durationsCombinations[3 === r ? "twoBars" : "fourBars"][Math.floor(seededRandom.random() * this.scale.durationsCombinations[3 === r ? "twoBars" : "fourBars"].length)];
+                                for (let I = 0; I < o.length; I++) {
+                                    let l = o[I]
+                                      , _ = this.scale.chordForPattern[`${$}Chords`][l];
+                                    if (!_)
+                                        continue;
+                                    let m = this.scale.getTransposedScale(e.indexOf(this.scale.key))
+                                      , h = _.map($=>{
+                                        let[i,t] = $.match(/([A-G][#b]?)(\d?)/).slice(1, 3);
+                                        t = t ? parseInt(t) : 3;
+                                        let a = e.indexOf(i);
+                                        if (-1 === a)
+                                            return;
+                                        let n = this.ensureNoteHasOctave(m[a], t, e.indexOf(this.scale.key));
+                                        return n
+                                    }
+                                    ).filter($=>void 0 !== $);
+                                    i.push({
+                                        notes: h,
+                                        duration: this.convertToToneTiming(s[I % s.length])
+                                    })
+                                }
+                                t += r <= 4 ? 2 : 4
+                            }
+                        }
+                        return i.slice(0, 8)
+                    }
+                    generateBassline($, e) {
+                        let i = [];
+                        for (let t of $) {
+                            let a = this.scale.bassDurations[2 === t.duration.length ? "twoBars" : "fourBars"][Math.floor(seededRandom.random() * this.scale.bassDurations[2 === t.duration.length ? "twoBars" : "fourBars"].length)];
+                            for (let n of a)
+                                i.push({
+                                    note: this.scale.getBassNoteFromChord(t.notes, e),
+                                    duration: n
+                                })
+                        }
+                        return i
+                    }
+                    generateMelody($, e, i) {
+                        let t = [];
+                        for (let a of $) {
+                            let n = this.scale.melodyDurations[2 === a.duration.length ? "twoBars" : "fourBars"][Math.floor(seededRandom.random() * this.scale.melodyDurations[2 === a.duration.length ? "twoBars" : "fourBars"].length)];
+                            for (let o of n)
+                                t.push({
+                                    note: this.scale.getMelodyNoteFromChord(a.notes, i),
+                                    duration: o
+                                })
+                        }
+                        return t
+                    }
+                    playChords($, e, i) {
+                        if (!this.samplesLoaded || !i || !(i.length > 0))
+                            return;
+                        this.chords1 = i;
+                        let t = 0
+                          , a = e
+                          , n = $=>{
+                            t >= this.chords1.length && (t = 0);
+                            let e = this.chords1[t];
+                            if (e && e.notes) {
+                                let i = e.notes.map($=>$);
+                                if (i.length > 0) {
+                                    let o = e.duration ? e.duration : "4n";
+                                    this.chordSampler.triggerAttackRelease(i, o, $),
+                                    a += Tone.Time(o).toSeconds(),
+                                    Tone.Transport.scheduleOnce(n, a)
+                                }
+                            }
+                            t++
+                        }
+                        ;
+                        n(e),
+                        "started" !== Tone.Transport.state && Tone.Transport.start()
+                    }
+                    async compileSong() {
+                        let $ = {
+                            melody: [],
+                            bassline: [],
+                            chords: [],
+                            beats: {
+                                kick: [],
+                                snare: [],
+                                hihat: [],
+                                openhat: [],
+                                clap: [],
+                                crash: [],
+                                perc: [],
+                                tom: []
+                            }
+                        };
+                        return this.songParts.forEach(e=>{
+                            e && e.melody && e.melody.length > 0 && ($.melody = $.melody.concat(e.melody),
+                            $.bassline = $.bassline.concat(e.bassline),
+                            $.chords = $.chords.concat(e.chords),
+                            Object.keys($.beats).forEach(i=>{
+                                e.beats[i] && ($.beats[i] = $.beats[i].concat(e.beats[i]))
+                            }
+                            ))
+                        }
+                        ),
+                        $
+                    }
+                    async startMusic() {
+                        await this.initSongParts(),
+                        this.song && (this.playSong(),
+                        Tone.Transport.start())
+                    }
+                    stopSong() {
+                        Tone.Transport.cancel(),
+                        this.songPlaying = !1
+                    }
+                    playSong() {
+                        let $ = Tone.now()
+                          , e = 0
+                          , i = t=>{
+                            e >= this.songParts.length && (e = 0);
+                            let a = this.songParts[e]
+                              , n = this.calculateSectionDuration(a);
+                            this.scheduleBeats($, a.beats),
+                            this.playChords(a.chords.length, $, a.chords),
+                            this.playMelody(a.melody.length, $, a.melody),
+                            this.playBassline(a.bassline.length, $, a.bassline),
+                            $ += n,
+                            Tone.Transport.scheduleOnce(i, $),
+                            e++
+                        }
+                        ;
+                        i($),
+                        "started" !== Tone.Transport.state && Tone.Transport.start()
+                    }
+                    calculateSectionDuration($) {
+                        let e = {
+                            "1n": 1,
+                            "2n": 2,
+                            "4n": 4,
+                            "8n": 8,
+                            "16n": 16
+                        }
+                          , i = Math.max($.melody.length, $.bassline.length, $.chords.length)
+                          , t = 0;
+                        for (let a = 0; a < i; a++) {
+                            let n = $.melody[a]
+                              , o = $.bassline[a]
+                              , r = $.chords[a];
+                            n && (t += 1 / e[n.duration]),
+                            o && (t += 1 / e[o.duration]),
+                            r && (t += 1 / e[r.duration])
+                        }
+                        return t
+                    }
+                }
+                class Scale {
+                    constructor($) {
+                        this.style = $,
+                        this.chordForPattern = {
+                            majorChords: {
+                                I: ["C", "E", "G"],
+                                ii: ["D", "F", "A"],
+                                iii: ["E", "G", "B"],
+                                IV: ["F", "A", "C"],
+                                V: ["G", "B", "D"],
+                                vi: ["A", "C", "E"],
+                                "vii\xb0": ["B", "D", "F"],
+                                I6: ["E", "G", "C"],
+                                ii7: ["D", "F", "A", "C"],
+                                V6: ["B", "D", "G"],
+                                V7: ["G", "B", "D", "F"],
+                                vi7: ["A", "C", "E", "G"],
+                                "I6/4": ["G", "C", "E"],
+                                IV7: ["F", "A", "C", "E"],
+                                I7: ["C", "E", "G", "B"],
+                                VII: ["B", "D", "F"],
+                                "V7/ii": ["A", "C#", "E", "G"],
+                                "V7/iii": ["B", "Eb", "F#", "A"],
+                                "V7/IV": ["C", "E", "G", "Bb"],
+                                "V7/V": ["D", "F#", "A", "C"],
+                                "V7/vi": ["E", "Ab", "B", "D"]
+                            },
+                            minorChords: {
+                                i: ["C", "Eb", "G"],
+                                "ii\xb0": ["D", "F", "Ab"],
+                                III: ["Eb", "G", "Bb"],
+                                iv: ["F", "Bb", "Eb"],
+                                v: ["G", "Bb", "Eb"],
+                                VI: ["Ab", "C", "F"],
+                                VII: ["Bb", "D", "G"],
+                                i7: ["C", "Eb", "G", "Bb"],
+                                "ii\xb07": ["D", "F", "Ab", "Bb"],
+                                III7: ["Eb", "G", "Bb", "D"],
+                                iv7: ["F", "Bb", "Eb", "G"],
+                                v7: ["G", "Bb", "Eb", "F"],
+                                VI7: ["Ab", "C", "F", "Bb"],
+                                VII7: ["Bb", "D", "G", "C"],
+                                i6: ["Eb", "G", "C"],
+                                "v7/ii": ["D", "F", "Ab", "Bb"],
+                                "v7/III": ["Eb", "G", "Bb", "D"],
+                                "v7/iv": ["F", "Bb", "Eb", "G"],
+                                "v7/V": ["G", "Bb", "Eb", "F"]
+                            },
+                            mixolydianChords: {
+                                I: ["C", "E", "G"],
+                                ii: ["D", "F", "A"],
+                                "iii\xb0": ["E", "G", "Bb"],
+                                IV: ["F", "A", "C"],
+                                v: ["G", "Bb", "D"],
+                                vi: ["A", "C", "E"],
+                                VII: ["Bb", "D", "F"],
+                                I7: ["C", "E", "G", "Bb"],
+                                ii7: ["D", "F", "A", "C"],
+                                "iii\xb07": ["E", "G", "Bb", "D"],
+                                IV7: ["F", "A", "C", "E"],
+                                v7: ["G", "Bb", "D", "F"],
+                                vi7: ["A", "C", "E", "G"],
+                                VII7: ["Bb", "D", "F", "A"],
+                                I6: ["E", "G", "C"],
+                                "v7/ii": ["D", "F", "A", "C"],
+                                "v7/iii": ["E", "G", "Bb", "D"],
+                                "v7/iv": ["F", "A", "C", "E"],
+                                "v7/V": ["G", "Bb", "D", "F"],
+                                III: ["E", "G", "Bb"]
+                            },
+                            dorianChords: {
+                                i: ["D", "F", "A"],
+                                ii: ["E", "G", "B"],
+                                III: ["F", "A", "C"],
+                                IV: ["G", "B", "D"],
+                                v: ["A", "C", "E"],
+                                "vi\xb0": ["B", "D", "F"],
+                                VII: ["C", "E", "G"],
+                                i7: ["D", "F", "A", "C"],
+                                ii7: ["E", "G", "B", "D"],
+                                III7: ["F", "A", "C", "E"],
+                                IV7: ["G", "B", "D", "F"],
+                                v7: ["A", "C", "E", "G"],
+                                "vi\xb07": ["B", "D", "F", "A"],
+                                VII7: ["C", "E", "G", "B"],
+                                i6: ["F", "A", "D"],
+                                "v7/ii": ["E", "G", "B", "D"],
+                                "v7/III": ["F", "A", "C", "E"],
+                                "v7/iv": ["G", "B", "D", "F"],
+                                "v7/V": ["A", "C", "E", "G"],
+                                VI: ["B", "D", "F#"],
+                                iv: ["G", "Bb", "D"],
+                                I: ["D", "F#", "A"]
+                            },
+                            lydianChords: {
+                                I: ["C", "E", "G"],
+                                II: ["D", "F#", "A"],
+                                iii: ["E", "G", "B"],
+                                "#iv\xb0": ["F#", "A", "C"],
+                                V: ["G", "B", "D"],
+                                vi: ["A", "C", "E"],
+                                vii: ["B", "D", "F#"],
+                                I7: ["C", "E", "G", "B"],
+                                II7: ["D", "F#", "A", "C"],
+                                iii7: ["E", "G", "B", "D"],
+                                "#iv\xb07": ["F#", "A", "C", "E"],
+                                V7: ["G", "B", "D", "F#"],
+                                vi7: ["A", "C", "E", "G"],
+                                vii7: ["B", "D", "F#", "A"],
+                                I6: ["E", "G", "C"],
+                                "v7/ii": ["D", "F#", "A", "C"],
+                                "v7/iii": ["E", "G", "B", "D"],
+                                "v7/iv": ["F#", "A", "C", "E"],
+                                "v7/V": ["G", "B", "D", "F#"],
+                                VII: ["B", "Eb", "F#"],
+                                ii: ["Eb", "F#", "Bb"],
+                                IV: ["F#", "Bb", "C#"]
+                            },
+                            phrygianChords: {
+                                i: ["C", "Eb", "G"],
+                                II: ["C#", "F", "Ab"],
+                                III: ["Eb", "G", "Bb"],
+                                iv: ["F", "Ab", "C"],
+                                "v\xb0": ["G", "Bb", "C#"],
+                                VI: ["Ab", "C", "Eb"],
+                                vii: ["Bb", "C#", "F"],
+                                i7: ["C", "Eb", "G", "Bb"],
+                                II7: ["C#", "F", "Ab", "C"],
+                                III7: ["Eb", "G", "Bb", "C#"],
+                                iv7: ["F", "Ab", "C", "Eb"],
+                                "v\xb07": ["G", "Bb", "C#", "F"],
+                                VI7: ["Ab", "C", "Eb", "G"],
+                                vii7: ["Bb", "C#", "F", "Ab"],
+                                i6: ["Eb", "G", "C"],
+                                "v7/ii": ["C#", "F", "Ab", "C"],
+                                "v7/III": ["Eb", "G", "Bb", "C#"],
+                                "v7/iv": ["F", "Ab", "C", "Eb"],
+                                "v7/V": ["G", "Bb", "C#", "F"],
+                                V: ["G", "Bb", "D"],
+                                VII: ["Bb", "D", "F"]
+                            },
+                            locrianChords: {
+                                "i\xb0": ["B", "C#", "F"],
+                                II: ["C", "Eb", "F#"],
+                                iii: ["C#", "F", "Ab"],
+                                iv: ["Eb", "F#", "Bb"],
+                                v: ["F", "Ab", "C"],
+                                VI: ["F#", "Bb", "C#"],
+                                VII: ["Ab", "C", "Eb"],
+                                "i\xb07": ["B", "C#", "F", "Ab"],
+                                II7: ["C", "Eb", "F#", "Bb"],
+                                iii7: ["C#", "F", "Ab", "B"],
+                                iv7: ["Eb", "F#", "Bb", "C#"],
+                                v7: ["F", "Ab", "C", "Eb"],
+                                VI7: ["F#", "Bb", "C#", "F"],
+                                VII7: ["Ab", "C", "Eb", "F#"],
+                                i6: ["C#", "F", "B"],
+                                "v7/ii": ["C", "Eb", "F#", "Bb"],
+                                "v7/iii": ["C#", "F", "Ab", "B"],
+                                "v7/iv": ["Eb", "F#", "Bb", "C#"],
+                                "v7/V": ["F", "Ab", "C", "Eb"],
+                                IV: ["Eb", "G", "Bb"],
+                                ii: ["C#", "F", "Ab"]
+                            }
+                        },
+                        this.chordPatterns = {
+                            major3: [["I", "IV", "V"], ["I", "V", "IV"], ["I", "vi", "IV"], ["I", "IV", "vi"], ["I", "IV", "ii"], ["I", "V", "ii"], ["IV", "V", "I"], ["vi", "IV", "I"], ["IV", "I", "V"], ["vi", "V", "IV"], ["ii", "V", "I"], ["I", "IV", "I"], ["IV", "I", "vi"], ["V", "IV", "I"], ["I", "vi", "V"], ["I", "ii", "V"], ["V", "vi", "IV"], ["vi", "I", "IV"], ["IV", "vi", "V"], ["vi", "IV", "V"]],
+                            minor3: [["i", "VII", "VI"], ["i", "iv", "v"], ["i", "VI", "VII"], ["i", "v", "iv"], ["i", "VII", "v"], ["i", "iv", "VI"], ["i", "VI", "v"], ["VII", "VI", "i"], ["i", "v", "VII"], ["iv", "VII", "i"], ["VI", "VII", "i"], ["i", "VII", "iv"], ["VII", "i", "VI"], ["i", "VI", "iv"], ["iv", "v", "i"], ["v", "VII", "i"], ["VII", "v", "i"], ["VI", "iv", "i"], ["iv", "VI", "VII"], ["v", "VI", "VII"]],
+                            mixolydian3: [["I", "VII", "IV"], ["I", "v", "IV"], ["I", "IV", "VII"], ["I", "v", "I"], ["I", "IV", "v"], ["I", "VII", "v"], ["I", "VII", "ii"], ["I", "ii", "VII"], ["I", "III", "VII"], ["I", "VII", "III"], ["I", "VII", "vi"], ["I", "vi", "VII"]],
+                            dorian3: [["i", "IV", "v"], ["i", "v", "IV"], ["i", "IV", "VII"], ["i", "IV", "i"], ["i", "v", "i"], ["i", "v", "VII"], ["i", "III", "IV"], ["i", "IV", "III"], ["i", "VI", "VII"], ["i", "VII", "VI"], ["i", "iv", "VII"], ["i", "VII", "iv"]],
+                            lydian3: [["I", "II", "V"], ["I", "V", "II"], ["I", "V", "I"], ["I", "VII", "V"], ["I", "V", "VII"], ["I", "II", "iii"], ["I", "iii", "II"], ["I", "ii", "V"], ["I", "V", "ii"], ["I", "IV", "V"], ["I", "V", "IV"]],
+                            phrygian3: [["i", "II", "v\xb0"], ["i", "II", "III"], ["i", "iv", "II"], ["i", "iv", "III"], ["i", "VI", "III"], ["i", "III", "VI"], ["i", "V", "II"], ["i", "II", "V"], ["i", "III", "VII"], ["i", "VII", "III"]],
+                            locrian3: [["i\xb0", "II", "v"], ["i\xb0", "II", "iii"], ["i\xb0", "iv", "II"], ["i\xb0", "iv", "iii"], ["i\xb0", "v", "IV"], ["i\xb0", "IV", "v"], ["i\xb0", "VII", "v"], ["i\xb0", "v", "VII"], ["i\xb0", "ii", "v"], ["i\xb0", "v", "ii"]],
+                            major4: [["I", "V", "vi", "IV"], ["I", "IV", "V", "I"], ["vi", "IV", "I", "V"], ["I", "V", "IV"], ["I", "vi", "IV", "V"], ["I", "IV", "I", "V"], ["IV", "I", "V", "vi"], ["I", "IV", "V", "IV"], ["I", "IV", "ii", "V"], ["I", "V", "ii", "IV"], ["vi", "V", "IV", "V"], ["I", "ii", "iii", "IV"], ["IV", "V", "iii", "vi"], ["vi", "V", "IV", "I"], ["I", "IV", "V", "vi"], ["I", "iii", "IV", "V"], ["vi", "IV", "V", "I"], ["ii", "V", "I", "vi"], ["I", "IV", "V", "V7"], ["IV", "V", "I", "vi"]],
+                            minor4: [["i", "VII", "VI", "VII"], ["i", "iv", "v", "i"], ["i", "VI", "III", "VII"], ["i", "VII", "VI", "v"], ["i", "iv", "VII", "III"], ["i", "v", "iv", "i"], ["i", "VI", "III", "v"], ["i", "iv", "v", "VII"], ["i", "VII", "III", "VI"], ["i", "VI", "iv", "v"], ["i", "v", "VI", "III"], ["i", "iv", "III", "VI"], ["i", "VI", "VII", "i"], ["i", "iv", "VI", "v"], ["i", "v", "VII", "VI"], ["i", "VII", "VI", "v"], ["i", "VII", "iv", "v"], ["i", "v", "iv", "III"], ["i", "VI", "v", "VII"], ["i", "v", "VI", "VII"]],
+                            mixolydian4: [["I", "VII", "IV", "I"], ["I", "v", "IV", "I"], ["I", "IV", "VII", "I"], ["I", "v", "I", "IV"], ["I", "v", "IV", "v"], ["I", "IV", "I", "VII"], ["I", "v", "I", "VII"], ["I", "IV", "v", "IV"], ["I", "v", "IV", "VII"], ["I", "VII", "I", "IV"], ["I", "IV", "VII", "v"], ["I", "VII", "I", "v"], ["I", "v", "IV", "IV"], ["I", "VII", "IV", "v"], ["I", "VII", "v", "I"], ["I", "IV", "v", "I"], ["I", "VII", "IV", "I"]],
+                            dorian4: [["i", "IV", "v", "VII"], ["i", "v", "IV", "VII"], ["i", "IV", "VII", "i"], ["i", "v", "IV", "v"], ["i", "IV", "i", "VII"], ["i", "v", "IV", "i"], ["i", "v", "i", "VII"], ["i", "IV", "VII", "IV"], ["i", "v", "IV", "v"], ["i", "IV", "i", "v"], ["i", "v", "VII", "i"], ["i", "IV", "VII", "v"], ["i", "v", "i", "IV"], ["i", "IV", "v", "VII"], ["i", "v", "i", "v"], ["i", "IV", "v", "I"], ["i", "IV", "i", "IV"]],
+                            lydian4: [["I", "II", "V", "I"], ["I", "V", "II", "I"], ["I", "II", "V", "II"], ["I", "V", "I", "II"], ["I", "V", "II", "V"], ["I", "II", "V", "II"], ["I", "V", "I", "V"], ["I", "V", "II", "V"], ["I", "II", "V", "II"], ["I", "II", "V", "V"], ["I", "II", "V", "IV"], ["I", "IV", "V", "I"], ["I", "II", "IV", "V"], ["I", "V", "IV", "I"], ["I", "V", "V", "II"], ["I", "II", "IV", "V"]],
+                            phrygian4: [["i", "II", "v\xb0", "i"], ["i", "II", "III", "i"], ["i", "iv", "II", "i"], ["i", "II", "v\xb0", "II"], ["i", "iv", "III", "i"], ["i", "II", "v\xb0", "v\xb0"], ["i", "II", "III", "v\xb0"], ["i", "II", "v\xb0", "III"], ["i", "iv", "v\xb0", "i"], ["i", "iv", "II", "v\xb0"], ["i", "iv", "v\xb0", "II"], ["i", "II", "v\xb0", "v\xb0"]],
+                            locrian4: [["i\xb0", "II", "v", "i\xb0"], ["i\xb0", "II", "iii", "i\xb0"], ["i\xb0", "iv", "II", "i\xb0"], ["i\xb0", "II", "v", "II"], ["i\xb0", "iv", "iii", "i\xb0"], ["i\xb0", "II", "v", "v"], ["i\xb0", "II", "iii", "v"], ["i\xb0", "iv", "v", "i\xb0"], ["i\xb0", "iv", "ii", "v"], ["i\xb0", "II", "iv", "v"], ["i\xb0", "v", "ii", "iv"], ["i\xb0", "iv", "iii", "ii"]],
+                            major5: [["I", "V", "vi", "IV", "I"], ["I", "IV", "V", "I", "V"], ["vi", "IV", "I", "V", "I"], ["I", "V", "IV", "I", "IV"], ["IV", "I", "V", "IV", "I"], ["I", "V", "ii", "IV", "I"], ["vi", "V", "IV", "V", "I"], ["IV", "V", "I", "vi", "IV"], ["I", "vi", "IV", "V", "IV"], ["ii", "V", "I", "vi", "V"], ["I", "IV", "V", "vi", "I"], ["I", "iii", "IV", "V", "I"], ["vi", "IV", "V", "I", "V"], ["ii", "IV", "I", "V", "I"], ["IV", "V", "I", "V", "I"], ["I", "V", "vi", "IV", "V"], ["vi", "V", "IV", "I", "IV"], ["I", "IV", "V", "I", "V7"], ["IV", "V", "I", "IV", "V"], ["I", "IV", "V", "ii", "V"]],
+                            minor5: [["i", "VII", "VI", "v", "i"], ["i", "iv", "v", "VII", "i"], ["i", "VI", "VII", "i", "v"], ["i", "VII", "iv", "VI", "v"], ["i", "v", "iv", "VII", "i"], ["i", "VII", "v", "i", "VI"], ["i", "VI", "iv", "v", "i"], ["i", "iv", "VII", "VI", "i"], ["i", "VII", "iv", "v", "i"], ["i", "v", "VII", "VI", "v"], ["i", "VI", "v", "VII", "i"], ["i", "VII", "VI", "iv", "i"], ["i", "iv", "v", "i", "VII"], ["i", "VII", "v", "VI", "iv"], ["i", "v", "iv", "VI", "v"], ["i", "VII", "iv", "VI", "v"], ["i", "v", "VII", "iv", "i"], ["i", "VI", "iv", "v", "VII"], ["i", "iv", "VII", "i", "v"], ["i", "v", "VI", "VII", "i"]],
+                            mixolydian5: [["I", "VII", "IV", "v", "I"], ["I", "v", "IV", "VII", "I"], ["I", "IV", "VII", "v", "I"], ["I", "v", "IV", "v", "I"], ["I", "IV", "I", "VII", "I"], ["I", "v", "I", "VII", "I"], ["I", "IV", "v", "IV", "I"], ["I", "VII", "I", "IV", "I"], ["I", "IV", "VII", "I", "v"], ["I", "VII", "I", "v", "I"], ["I", "v", "IV", "IV", "I"], ["I", "VII", "IV", "v", "I"], ["I", "v", "I", "IV", "I"], ["I", "IV", "VII", "IV", "I"], ["I", "VII", "v", "I", "IV"], ["I", "IV", "v", "I", "v"], ["I", "VII", "IV", "I", "IV"], ["I", "v", "I", "IV", "VII"]],
+                            dorian5: [["i", "IV", "v", "VII", "III"], ["i", "v", "IV", "VII", "i"], ["i", "IV", "VII", "i", "IV"], ["i", "v", "IV", "v", "VII"], ["i", "IV", "i", "VII", "i"], ["i", "v", "IV", "i", "IV"], ["i", "IV", "v", "VII", "IV"], ["i", "v", "i", "VII", "IV"], ["i", "IV", "VII", "IV", "v"], ["i", "v", "IV", "VII", "IV"], ["i", "IV", "i", "v", "IV"], ["i", "v", "VII", "i", "IV"], ["i", "IV", "VII", "v", "IV"], ["i", "v", "i", "IV", "v"], ["i", "IV", "v", "VII", "III"], ["i", "v", "IV", "v", "III"], ["i", "IV", "v", "VII", "III"], ["i", "v", "i", "v", "IV"]],
+                            lydian5: [["I", "II", "V", "I", "II"], ["I", "V", "II", "I", "V"], ["I", "II", "V", "II", "I"], ["I", "V", "I", "II", "V"], ["I", "V", "II", "V", "II"], ["I", "II", "V", "I", "V"], ["I", "V", "I", "V", "II"], ["I", "II", "V", "II", "V"], ["I", "V", "II", "I", "II"], ["I", "II", "V", "I", "II"], ["I", "II", "V", "IV", "II"], ["I", "V", "II", "IV", "I"], ["I", "IV", "V", "I", "II"], ["I", "II", "IV", "V", "II"], ["I", "IV", "V", "II", "I"]],
+                            phrygian5: [["i", "II", "v\xb0", "i", "II"], ["i", "II", "III", "i", "II"], ["i", "iv", "II", "i", "II"], ["i", "II", "v\xb0", "II", "i"], ["i", "iv", "III", "i", "II"], ["i", "II", "v\xb0", "v\xb0", "II"], ["i", "II", "III", "v\xb0", "II"], ["i", "II", "v\xb0", "III", "II"], ["i", "iv", "II", "v\xb0", "II"], ["i", "iv", "III", "v\xb0", "II"], ["i", "iv", "v\xb0", "i", "II"]],
+                            locrian5: [["i\xb0", "II", "v", "i\xb0", "II"], ["i\xb0", "II", "iii", "i\xb0", "II"], ["i\xb0", "iv", "II", "i\xb0", "II"], ["i\xb0", "II", "v", "II", "i\xb0"], ["i\xb0", "iv", "iii", "i\xb0", "II"], ["i\xb0", "II", "v", "v", "II"], ["i\xb0", "II", "iii", "v", "II"], ["i\xb0", "iv", "v", "i\xb0", "II"], ["i\xb0", "iv", "ii", "v", "II"], ["i\xb0", "II", "iv", "v", "II"], ["i\xb0", "v", "ii", "iv", "II"]]
+                        },
+                        this.durationsCombinations = {
+                            twoBars: [[7 / 16, 9 / 16], [9 / 16, 7 / 16], [6 / 16, .625], [.625, 6 / 16], [.5, .5], [1]],
+                            fourBars: [[7 / 16, 9 / 16, 7 / 16, 9 / 16], [9 / 16, 7 / 16, 9 / 16, 7 / 16], [6 / 16, .625, 6 / 16, .625], [.625, 6 / 16, .625, 6 / 16], [.5, .5, .5, .5], [1, 1]]
+                        },
+                        this.bassDurations = {
+                            twoBars: [[.25, .25, .25, .25], [.5, .5], [6 / 16, .625], [5 / 16, 11 / 16], [7 / 16, 9 / 16], [.625, 6 / 16]],
+                            fourBars: [[.25, .25, .25, .25, .25, .25, .25, .25], [.5, .5, .5, .5], [6 / 16, .625, 6 / 16, .625], [5 / 16, 7 / 16, 5 / 16, 7 / 16, 5 / 16, 7 / 16, 5 / 16, 7 / 16], [7 / 16, 9 / 16, 7 / 16, 9 / 16], [.625, 6 / 16, .625, 6 / 16]]
+                        },
+                        this.melodyDurations = {
+                            twoBars: [[2 / 16, 2 / 16, 2 / 16, 2 / 16, 2 / 16, 2 / 16, 2 / 16, 2 / 16], [.25, .25, .25, .25], [.5, .5], [3 / 16, 3 / 16, 3 / 16, 3 / 16, .25], [2 / 16, .25, 2 / 16, .25, 2 / 16, 2 / 16], [6 / 16, 6 / 16, .25]],
+                            fourBars: [[2 / 16, 2 / 16, 2 / 16, 2 / 16, 2 / 16, 2 / 16, 2 / 16, 2 / 16, 2 / 16, 2 / 16, 2 / 16, 2 / 16, 2 / 16, 2 / 16, 2 / 16, 2 / 16], [.25, .25, .25, .25, .25, .25, .25, .25], [.5, .5, .5, .5], [6 / 16, 6 / 16, .25, .25], [5 / 16, 5 / 16, 6 / 16, 6 / 16, 2 / 16, 2 / 16], [3 / 16, 3 / 16, 3 / 16, 3 / 16, .25, .25, 2 / 16, 2 / 16]]
+                        },
+                        this.patternDurations = {
+                            3: this.durationsCombinations.twoBars,
+                            4: this.durationsCombinations.fourBars,
+                            5: this.durationsCombinations.fourBars
+                        },
+                        this.probabilityMappings = {
+                            chords: [{
+                                position: 0,
+                                probability: .9
+                            }, {
+                                position: 4,
+                                probability: .8
+                            }, {
+                                position: 8,
+                                probability: .7
+                            }, {
+                                position: 12,
+                                probability: .6
+                            }],
+                            melody: [{
+                                position: 0,
+                                probability: .9
+                            }, {
+                                position: 2,
+                                probability: .8
+                            }, {
+                                position: 4,
+                                probability: .7
+                            }, {
+                                position: 6,
+                                probability: .6
+                            }, {
+                                position: 8,
+                                probability: .7
+                            }, {
+                                position: 10,
+                                probability: .6
+                            }, {
+                                position: 12,
+                                probability: .5
+                            }, {
+                                position: 14,
+                                probability: .4
+                            }],
+                            beats: [{
+                                position: 0,
+                                probability: 1
+                            }, {
+                                position: 4,
+                                probability: .8
+                            }, {
+                                position: 8,
+                                probability: 1
+                            }, {
+                                position: 12,
+                                probability: .8
+                            }],
+                            bass: [{
+                                position: 0,
+                                probability: .9
+                            }, {
+                                position: 4,
+                                probability: .8
+                            }, {
+                                position: 8,
+                                probability: .7
+                            }, {
+                                position: 12,
+                                probability: .6
+                            }]
+                        },
+                        this.enharmonicMap = {
+                            Db: "C#",
+                            "D#": "Eb",
+                            Gb: "F#",
+                            "G#": "Ab",
+                            "A#": "Bb"
+                        },
+                        this.scaleDefinitions = {
+                            major: {
+                                notes: ["C", "D", "E", "F", "G", "A", "B"],
+                                chords: {
+                                    I: ["C", "E", "G"],
+                                    IV: ["F", "A", "C"],
+                                    V: ["G", "B", "D"]
+                                },
+                                probabilities: {
+                                    C: {
+                                        G: .5,
+                                        Am: .3,
+                                        F: .2
+                                    },
+                                    G: {
+                                        Am: .4,
+                                        F: .4,
+                                        C: .2
+                                    },
+                                    Am: {
+                                        F: .5,
+                                        C: .3,
+                                        G: .2
+                                    },
+                                    F: {
+                                        C: .6,
+                                        G: .3,
+                                        Am: .1
+                                    }
+                                }
+                            },
+                            minor: {
+                                notes: ["C", "D", "D#", "F", "G", "G#", "A#"],
+                                chords: {
+                                    i: ["C", "D#", "G"],
+                                    iv: ["F", "A#", "D#"],
+                                    v: ["G", "A#", "D#"]
+                                },
+                                probabilities: {
+                                    C: {
+                                        G: .4,
+                                        "A#": .6
+                                    },
+                                    G: {
+                                        C: .4,
+                                        "D#": .6
+                                    },
+                                    "A#": {
+                                        C: .4,
+                                        F: .6
+                                    },
+                                    "D#": {
+                                        G: .5,
+                                        "A#": .5
+                                    },
+                                    F: {
+                                        C: .4,
+                                        "A#": .6
+                                    }
+                                }
+                            },
+                            pentatonicMajor: {
+                                notes: ["C", "D", "E", "G", "A"],
+                                chords: {
+                                    I: ["C", "E", "G"],
+                                    IV: ["F", "A", "C"],
+                                    V: ["G", "B", "D"]
+                                },
+                                probabilities: {
+                                    C: {
+                                        D: .3,
+                                        E: .7
+                                    },
+                                    D: {
+                                        E: .5,
+                                        G: .5
+                                    },
+                                    E: {
+                                        G: .5,
+                                        A: .5
+                                    },
+                                    G: {
+                                        A: .4,
+                                        C: .6
+                                    },
+                                    A: {
+                                        C: .7,
+                                        D: .3
+                                    }
+                                }
+                            },
+                            pentatonicMinor: {
+                                notes: ["C", "Eb", "F", "G", "Bb"],
+                                chords: {
+                                    Cm: ["C", "Eb", "G"],
+                                    Fm: ["F", "Bb", "Eb"],
+                                    Gm: ["G", "Bb", "C"]
+                                },
+                                probabilities: {
+                                    Cm: {
+                                        Fm: .5,
+                                        Gm: .5
+                                    },
+                                    Fm: {
+                                        Gm: .6,
+                                        Cm: .4
+                                    },
+                                    Gm: {
+                                        Cm: .7,
+                                        Fm: .3
+                                    }
+                                }
+                            },
+                            blues: {
+                                notes: ["C", "Eb", "F", "F#", "G", "Bb"],
+                                chords: {
+                                    I: ["C", "Eb", "G"],
+                                    IV: ["F", "Bb", "C"],
+                                    V: ["G", "Bb", "D"]
+                                },
+                                probabilities: {
+                                    C: {
+                                        Eb: .4,
+                                        G: .6
+                                    },
+                                    Eb: {
+                                        F: .5,
+                                        G: .5
+                                    },
+                                    F: {
+                                        "F#": .5,
+                                        Bb: .5
+                                    },
+                                    "F#": {
+                                        G: 1
+                                    },
+                                    G: {
+                                        Bb: .8,
+                                        C: .2
+                                    },
+                                    Bb: {
+                                        C: 1
+                                    }
+                                }
+                            },
+                            harmonicMinor: {
+                                notes: ["C", "D", "Eb", "F", "G", "Ab", "B"],
+                                chords: {
+                                    Cm: ["C", "Eb", "G"],
+                                    Daug: ["D", "F#", "B"],
+                                    Ebm: ["Eb", "Gb", "Bb"],
+                                    Faug: ["F", "A", "C#"],
+                                    G: ["G", "B", "D"],
+                                    Ab: ["Ab", "C", "Eb"],
+                                    Bdim: ["B", "D", "F"]
+                                },
+                                probabilities: {
+                                    Cm: {
+                                        Daug: .3,
+                                        G: .7
+                                    },
+                                    Daug: {
+                                        Ebm: .5,
+                                        Faug: .5
+                                    },
+                                    Ebm: {
+                                        Faug: .5,
+                                        G: .5
+                                    },
+                                    Faug: {
+                                        G: .5,
+                                        Ab: .5
+                                    },
+                                    G: {
+                                        Ab: .3,
+                                        Bdim: .7
+                                    },
+                                    Ab: {
+                                        Bdim: .5,
+                                        Cm: .5
+                                    },
+                                    Bdim: {
+                                        Cm: 1
+                                    }
+                                }
+                            },
+                            dorian: {
+                                notes: ["C", "D", "Eb", "F", "G", "A", "Bb"],
+                                chords: {
+                                    Cm7: ["C", "Eb", "G", "Bb"],
+                                    Dm7: ["D", "F", "A", "C"],
+                                    Ebmaj7: ["Eb", "G", "Bb", "D"],
+                                    F7: ["F", "A", "C", "Eb"],
+                                    Gm7: ["G", "Bb", "D", "F"],
+                                    Am7b5: ["A", "C", "Eb", "G"],
+                                    Bbmaj7: ["Bb", "D", "F", "A"]
+                                },
+                                probabilities: {
+                                    Cm7: {
+                                        Dm7: .4,
+                                        Gm7: .6
+                                    },
+                                    Dm7: {
+                                        Ebmaj7: .3,
+                                        F7: .7
+                                    },
+                                    Ebmaj7: {
+                                        F7: .4,
+                                        Gm7: .6
+                                    },
+                                    F7: {
+                                        Gm7: .6,
+                                        Am7b5: .4
+                                    },
+                                    Gm7: {
+                                        Am7b5: .5,
+                                        Bbmaj7: .5
+                                    },
+                                    Am7b5: {
+                                        Bbmaj7: .7,
+                                        Cm7: .3
+                                    },
+                                    Bbmaj7: {
+                                        Cm7: 1
+                                    }
+                                }
+                            },
+                            lydian: {
+                                notes: ["C", "D", "E", "F#", "G", "A", "B"],
+                                chords: {
+                                    "Cmaj7#11": ["C", "E", "G", "B", "F#"],
+                                    D6: ["D", "F#", "A", "B"],
+                                    Em7: ["E", "G", "B", "D"],
+                                    "F#m7": ["F#", "A", "C#", "E"],
+                                    Gmaj7: ["G", "B", "D", "F#"],
+                                    A7: ["A", "C#", "E", "G"],
+                                    Bm7: ["B", "D", "F#", "A"]
+                                },
+                                probabilities: {
+                                    "Cmaj7#11": {
+                                        D6: .4,
+                                        Gmaj7: .6
+                                    },
+                                    D6: {
+                                        Em7: .3,
+                                        "F#m7": .7
+                                    },
+                                    Em7: {
+                                        "F#m7": .4,
+                                        Gmaj7: .6
+                                    },
+                                    "F#m7": {
+                                        Gmaj7: .6,
+                                        A7: .4
+                                    },
+                                    Gmaj7: {
+                                        A7: .5,
+                                        Bm7: .5
+                                    },
+                                    A7: {
+                                        Bm7: .7,
+                                        "Cmaj7#11": .3
+                                    },
+                                    Bm7: {
+                                        "Cmaj7#11": 1
+                                    }
+                                }
+                            },
+                            mixolydian: {
+                                notes: ["C", "D", "E", "F", "G", "A", "Bb"],
+                                chords: {
+                                    C7: ["C", "E", "G", "Bb"],
+                                    Dm: ["D", "F", "A"],
+                                    Em7: ["E", "G", "B", "D"],
+                                    Fmaj7: ["F", "A", "C", "E"],
+                                    Gm7: ["G", "Bb", "D", "F"],
+                                    Am7: ["A", "C", "E", "G"],
+                                    Bb6: ["Bb", "D", "F", "G"]
+                                },
+                                probabilities: {
+                                    C7: {
+                                        Dm: .4,
+                                        Gm7: .6
+                                    },
+                                    Dm: {
+                                        Em7: .3,
+                                        Fmaj7: .7
+                                    },
+                                    Em7: {
+                                        Fmaj7: .4,
+                                        Gm7: .6
+                                    },
+                                    Fmaj7: {
+                                        Gm7: .6,
+                                        Am7: .4
+                                    },
+                                    Gm7: {
+                                        Am7: .5,
+                                        Bb6: .5
+                                    },
+                                    Am7: {
+                                        Bb6: .7,
+                                        C7: .3
+                                    },
+                                    Bb6: {
+                                        C7: 1
+                                    }
+                                }
+                            },
+                            phrygian: {
+                                notes: ["C", "Db", "Eb", "F", "G", "Ab", "Bb"],
+                                chords: {
+                                    Cm: ["C", "Eb", "G"],
+                                    Dbmaj7: ["Db", "F", "Ab", "C"],
+                                    Ebaug: ["Eb", "G", "Bb"],
+                                    Fm7: ["F", "Ab", "C", "Eb"],
+                                    Gdim: ["G", "Bb", "Db"],
+                                    Abmaj7: ["Ab", "C", "Eb", "F"],
+                                    Bb7: ["Bb", "Db", "F", "Ab"]
+                                },
+                                probabilities: {
+                                    Cm: {
+                                        Dbmaj7: .4,
+                                        Fm7: .6
+                                    },
+                                    Dbmaj7: {
+                                        Ebaug: .3,
+                                        Gdim: .7
+                                    },
+                                    Ebaug: {
+                                        Fm7: .4,
+                                        Abmaj7: .6
+                                    },
+                                    Fm7: {
+                                        Abmaj7: .6,
+                                        Bb7: .4
+                                    },
+                                    Gdim: {
+                                        Abmaj7: .5,
+                                        Bb7: .5
+                                    },
+                                    Abmaj7: {
+                                        Bb7: .7,
+                                        Cm: .3
+                                    },
+                                    Bb7: {
+                                        Cm: 1
+                                    }
+                                }
+                            },
+                            locrian: {
+                                notes: ["C", "Db", "Eb", "F", "Gb", "Ab", "Bb"],
+                                chords: {
+                                    Cdim: ["C", "Eb", "Gb"],
+                                    Dbm: ["Db", "F", "Ab"],
+                                    Ebm7: ["Eb", "Gb", "Bb", "Db"],
+                                    Fm7b5: ["F", "Ab", "Bb", "Db"],
+                                    Gbmaj7: ["Gb", "Bb", "Db", "F"],
+                                    Ab7: ["Ab", "C", "Eb", "Gb"],
+                                    Bbm6: ["Bb", "Db", "F", "Gb"]
+                                },
+                                probabilities: {
+                                    Cdim: {
+                                        Dbm: .4,
+                                        Gbmaj7: .6
+                                    },
+                                    Dbm: {
+                                        Ebm7: .3,
+                                        Fm7b5: .7
+                                    },
+                                    Ebm7: {
+                                        Fm7b5: .4,
+                                        Ab7: .6
+                                    },
+                                    Fm7b5: {
+                                        Ab7: .6,
+                                        Bbm6: .4
+                                    },
+                                    Gbmaj7: {
+                                        Ab7: .5,
+                                        Bbm6: .5
+                                    },
+                                    Ab7: {
+                                        Bbm6: .7,
+                                        Cdim: .3
+                                    },
+                                    Bbm6: {
+                                        Cdim: 1
+                                    }
+                                }
+                            }
+                        },
+                        this.styleScaleProbabilities = {
+                            pop: {
+                                major: .4,
+                                minor: .4,
+                                pentatonicMajor: .2
+                            },
+                            rock: {
+                                major: .3,
+                                minor: .4,
+                                pentatonicMinor: .3
+                            },
+                            blues: {
+                                blues: .7,
+                                pentatonicMinor: .3
+                            },
+                            jazz: {
+                                dorian: .25,
+                                mixolydian: .25,
+                                lydian: .25,
+                                harmonicMinor: .25
+                            },
+                            edm: {
+                                major: .5,
+                                minor: .4,
+                                pentatonicMinor: .1
+                            },
+                            rnb: {
+                                minor: .5,
+                                harmonicMinor: .2,
+                                major: .3
+                            },
+                            country: {
+                                major: .6,
+                                pentatonicMajor: .2,
+                                mixolydian: .2
+                            },
+                            reggae: {
+                                major: .5,
+                                mixolydian: .3,
+                                dorian: .2
+                            },
+                            metal: {
+                                minor: .4,
+                                harmonicMinor: .4,
+                                phrygian: .2
+                            },
+                            punk: {
+                                major: .5,
+                                minor: .5
+                            },
+                            funk: {
+                                dorian: .4,
+                                mixolydian: .4,
+                                minor: .2
+                            },
+                            disco: {
+                                major: .6,
+                                pentatonicMinor: .4
+                            },
+                            latin: {
+                                harmonicMinor: .3,
+                                phrygian: .3,
+                                major: .4
+                            },
+                            ambient: {
+                                major: .5,
+                                locrian: .2,
+                                phrygian: .3,
+                                minor: .5
+                            },
+                            folk: {
+                                major: .6,
+                                minor: .2,
+                                dorian: .2
+                            },
+                            trap: {
+                                minor: .5,
+                                phrygian: .3,
+                                harmonicMinor: .2
+                            },
+                            kpop: {
+                                major: .4,
+                                minor: .4,
+                                pentatonicMajor: .2
+                            },
+                            gospel: {
+                                major: .6,
+                                pentatonicMajor: .2,
+                                mixolydian: .2
+                            },
+                            soul: {
+                                major: .5,
+                                dorian: .3,
+                                mixolydian: .2
+                            },
+                            house: {
+                                major: .4,
+                                minor: .4,
+                                mixolydian: .2
+                            },
+                            chiptune: {
+                                major: .4,
+                                minor: .4,
+                                pentatonicMajor: .2
+                            },
+                            hiphop: {
+                                minor: .5,
+                                dorian: .3,
+                                phrygian: .2
+                            },
+                            rap: {
+                                minor: .5,
+                                dorian: .3,
+                                phrygian: .2
+                            }
+                        },
+                        this.popularKeys = {
+                            pop: ["C", "G", "A", "E"],
+                            rock: ["E", "A", "D", "G"],
+                            blues: ["E", "A", "C", "G"],
+                            jazz: ["F", "B♭", "E♭", "A♭"],
+                            edm: ["C", "F", "G", "D"],
+                            rnb: ["A", "E", "G", "C"],
+                            country: ["G", "D", "A", "C"],
+                            reggae: ["A", "G", "D", "E"],
+                            metal: ["E", "A", "D", "G"],
+                            punk: ["A", "E", "G", "D"],
+                            funk: ["E", "A", "G", "D"],
+                            disco: ["C", "F", "G", "D"],
+                            latin: ["C", "F", "G", "D"],
+                            ambient: ["C", "G", "D", "A"],
+                            folk: ["G", "C", "D", "A"],
+                            trap: ["A", "E", "G", "C"],
+                            kpop: ["G", "D", "A", "E"],
+                            gospel: ["C", "F", "G", "A"],
+                            soul: ["A", "E", "G", "C"],
+                            house: ["C", "F", "G", "D"],
+                            chiptune: ["C", "G", "A", "E"],
+                            hiphop: ["A", "E", "G", "C"],
+                            rap: ["A", "E", "G", "C"]
+                        },
+                        this.beatProbabilities = {
+                            hiphop: {
+                                kick: [1, .2, 0, .8, 0, .6, 0, .3, 1, .2, 0, .8, 0, .6, 0, .3],
+                                snare: [0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0],
+                                hihat: [.7, .8, .7, .9, 1, .7, 1, 1, .8, 1, .7, 1, 1, .7, 1, 1],
+                                openhat: [0, 0, 0, 0, .8, 0, 0, 0, 0, 0, 0, 0, .8, 0, 0, 0],
+                                clap: [0, 0, 0, 0, 0, 0, 0, 0, .7, 0, 0, 0, 0, 0, 0, 0],
+                                crash: [.7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                perc: [0, 0, 0, 0, 0, 0, 0, 0, .5, .8, 0, .9, 0, 1, 0, 1],
+                                tom: [0, 0, 0, 0, 0, .6, 0, .6, 0, 0, 0, 0, 0, .6, 0, .6],
+                                bpmRange: [85, 95]
+                            },
+                            rap: {
+                                kick: [1, .3, 0, .3, 1, .2, 0, 1, .3, 0, 0, 1, .3, 0, 1, 0],
+                                snare: [0, 0, 1, 0, 0, .2, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0],
+                                hihat: [1, 1, 1, 1, .9, 1, .9, 1, 1, .9, 1, 1, 1, .9, 1, 1],
+                                openhat: [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+                                clap: [0, 0, 1, 0, 0, 0, .7, 0, 0, 0, 1, 0, 0, 0, .7, 0],
+                                crash: [0, 0, 0, 0, 0, 0, 0, 0, .8, 0, 0, 0, 0, 0, 0, 0],
+                                perc: [0, 0, 0, 0, 0, 0, 0, 0, .5, .7, 0, .7, 0, 1, 0, .8],
+                                tom: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+                                bpmRange: [75, 115]
+                            },
+                            chiptune: {
+                                kick: [1, 0, 0, .4, 1, 0, 0, .4, 1, 0, 0, .4, 1, 0, 0, .4],
+                                snare: [0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0],
+                                hihat: [1, .2, 1, .3, 1, .2, 1, .3, 1, .2, 1, .3, 1, .2, 1, .3],
+                                openhat: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, .8],
+                                clap: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                crash: [0, 0, 0, 0, .7, 0, 0, 0, 0, 0, 0, 0, .7, 0, 0, 0],
+                                perc: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                tom: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                bpmRange: [100, 140]
+                            },
+                            edm: {
+                                kick: [1, 0, 0, .6, 1, 0, 0, .6, 1, 0, 0, .6, 1, 0, 0, .6],
+                                snare: [0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0],
+                                hihat: [.6, .8, .6, .8, .6, .8, .6, .8, .6, .8, .6, .8, .6, .8, .6, .8],
+                                openhat: [0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1],
+                                clap: [0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0],
+                                crash: [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                perc: [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1],
+                                tom: [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+                                bpmRange: [120, 150]
+                            },
+                            pop: {
+                                kick: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
+                                snare: [0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0],
+                                hihat: [.5, 1, .5, 1, .5, 1, .5, 1, .5, 1, .5, 1, .5, 1, .5, 1],
+                                openhat: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                clap: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                crash: [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                perc: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                tom: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                bpmRange: [100, 130]
+                            },
+                            rock: {
+                                kick: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
+                                snare: [0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0],
+                                hihat: [.5, 1, .5, 1, .5, 1, .5, 1, .5, 1, .5, 1, .5, 1, .5, 1],
+                                openhat: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                clap: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                crash: [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                perc: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                tom: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                bpmRange: [110, 140]
+                            },
+                            blues: {
+                                kick: [1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0],
+                                snare: [0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0],
+                                hihat: [.7, 1, .7, 1, .7, 1, .7, 1, .7, 1, .7, 1, .7, 1, .7, 1],
+                                openhat: [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+                                clap: [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+                                crash: [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                perc: [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1],
+                                tom: [0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1],
+                                bpmRange: [60, 90]
+                            },
+                            jazz: {
+                                kick: [.5, 0, .5, 0, .5, 0, .5, 0, .5, 0, .5, 0, .5, 0, .5, 0],
+                                snare: [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
+                                hihat: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                                openhat: [0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1],
+                                clap: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                crash: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                perc: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                tom: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                bpmRange: [120, 160]
+                            },
+                            rnb: {
+                                kick: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
+                                snare: [0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0],
+                                hihat: [.7, 1, .7, 1, .7, 1, .7, 1, .7, 1, .7, 1, .7, 1, .7, 1],
+                                openhat: [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+                                clap: [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+                                crash: [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                perc: [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1],
+                                tom: [0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1],
+                                bpmRange: [60, 80]
+                            },
+                            country: {
+                                kick: [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
+                                snare: [0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1],
+                                hihat: [.5, .5, .5, .5, .5, .5, .5, .5, .5, .5, .5, .5, .5, .5, .5, .5],
+                                openhat: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                clap: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                crash: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
+                                perc: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                tom: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                bpmRange: [110, 130]
+                            },
+                            reggae: {
+                                kick: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
+                                snare: [0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1],
+                                hihat: [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
+                                openhat: [0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0],
+                                clap: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                crash: [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                perc: [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
+                                tom: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                bpmRange: [70, 90]
+                            },
+                            metal: {
+                                kick: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                                snare: [0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1],
+                                hihat: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                                openhat: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+                                clap: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                crash: [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
+                                perc: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                tom: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                bpmRange: [100, 180]
+                            },
+                            punk: {
+                                kick: [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
+                                snare: [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
+                                hihat: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                                openhat: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                clap: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                crash: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                perc: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                tom: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                bpmRange: [130, 180]
+                            },
+                            funk: {
+                                kick: [1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0],
+                                snare: [0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1],
+                                hihat: [.7, 1, .7, 1, .7, 1, .7, 1, .7, 1, .7, 1, .7, 1, .7, 1],
+                                openhat: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+                                clap: [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1],
+                                crash: [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+                                perc: [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
+                                tom: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                bpmRange: [90, 120]
+                            },
+                            disco: {
+                                kick: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
+                                snare: [0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0],
+                                hihat: [.5, 1, .5, 1, .5, 1, .5, 1, .5, 1, .5, 1, .5, 1, .5, 1],
+                                openhat: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                clap: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                crash: [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+                                perc: [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1],
+                                tom: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                bpmRange: [120, 130]
+                            },
+                            latin: {
+                                kick: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
+                                snare: [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
+                                hihat: [.5, 1, .5, 1, .5, 1, .5, 1, .5, 1, .5, 1, .5, 1, .5, 1],
+                                openhat: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                clap: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                crash: [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+                                perc: [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
+                                tom: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                bpmRange: [100, 130]
+                            },
+                            ambient: {
+                                kick: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
+                                snare: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                hihat: [.5, .5, .5, .5, .5, .5, .5, .5, .5, .5, .5, .5, .5, .5, .5, .5],
+                                openhat: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                clap: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                crash: [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+                                perc: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                tom: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                bpmRange: [60, 90]
+                            },
+                            folk: {
+                                kick: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
+                                snare: [0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0],
+                                hihat: [.5, 1, .5, 1, .5, 1, .5, 1, .5, 1, .5, 1, .5, 1, .5, 1],
+                                openhat: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                clap: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                crash: [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+                                perc: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                tom: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                bpmRange: [100, 130]
+                            },
+                            trap: {
+                                kick: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
+                                snare: [0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0],
+                                hihat: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                                openhat: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+                                clap: [0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0],
+                                crash: [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+                                perc: [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
+                                tom: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+                                bpmRange: [70, 110]
+                            },
+                            kpop: {
+                                kick: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
+                                snare: [0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0],
+                                hihat: [.5, 1, .5, 1, .5, 1, .5, 1, .5, 1, .5, 1, .5, 1, .5, 1],
+                                openhat: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                clap: [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+                                crash: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                perc: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                tom: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                bpmRange: [90, 130]
+                            },
+                            gospel: {
+                                kick: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
+                                snare: [0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0],
+                                hihat: [.5, 1, .5, 1, .5, 1, .5, 1, .5, 1, .5, 1, .5, 1, .5, 1],
+                                openhat: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                clap: [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+                                crash: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                perc: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                tom: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                bpmRange: [90, 120]
+                            },
+                            soul: {
+                                kick: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
+                                snare: [0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0],
+                                hihat: [.5, 1, .5, 1, .5, 1, .5, 1, .5, 1, .5, 1, .5, 1, .5, 1],
+                                openhat: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                clap: [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+                                crash: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                perc: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                tom: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                bpmRange: [100, 120]
+                            },
+                            house: {
+                                kick: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
+                                snare: [0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0],
+                                hihat: [.5, 1, .5, 1, .5, 1, .5, 1, .5, 1, .5, 1, .5, 1, .5, 1],
+                                openhat: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                clap: [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+                                crash: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                perc: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                tom: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                bpmRange: [120, 130]
+                            }
+                        },
+                        this.keys = [{
+                            name: "C",
+                            transpose: 0
+                        }, {
+                            name: "C#",
+                            transpose: 1
+                        }, {
+                            name: "Db",
+                            transpose: 1
+                        }, {
+                            name: "D",
+                            transpose: 2
+                        }, {
+                            name: "D#",
+                            transpose: 3
+                        }, {
+                            name: "Eb",
+                            transpose: 3
+                        }, {
+                            name: "E",
+                            transpose: 4
+                        }, {
+                            name: "F",
+                            transpose: 5
+                        }, {
+                            name: "F#",
+                            transpose: 6
+                        }, {
+                            name: "Gb",
+                            transpose: 6
+                        }, {
+                            name: "G",
+                            transpose: 7
+                        }, {
+                            name: "G#",
+                            transpose: 8
+                        }, {
+                            name: "Ab",
+                            transpose: 8
+                        }, {
+                            name: "A",
+                            transpose: 9
+                        }, {
+                            name: "A#",
+                            transpose: 10
+                        }, {
+                            name: "Bb",
+                            transpose: 10
+                        }, {
+                            name: "B",
+                            transpose: 11
+                        }],
+                        this.availableModes = ["major", "minor", "dorian", "phrygian", "lydian", "mixolydian", "locrian"],
+                        this.elements = ["kick", "snare", "hihat", "openhat", "clap", "crash", "perc", "tom"],
+                        this.notes = this.defineNotes(),
+                        this.chords = this.defineChords(),
+                        this.bpm = this.setBPM(),
+                        this.mode = this.pickRandomMode()
+                    }
+                    pickRandomMode() {
+                        let $ = getaudioPart("mode");
+                        return -1 == $ && ($ = Math.floor(seededRandom.random() * this.availableModes.length)),
+                        this.availableModes[$]
+                    }
+                    selectScaleForStyle() {
+                        let $ = this.styleScaleProbabilities[this.style]
+                          , e = seededRandom.random()
+                          , i = 0;
+                        for (let[t,a] of Object.entries($))
+                            if (e < (i += a))
+                                return t;
+                        return null
+                    }
+                    setBPM() {
+                        return seededRandom.random(),
+                        this.beatProbabilities.length,
+                        this.beatPattern = this.beatProbabilities[this.style],
+                        Math.floor(seededRandom.random() * (this.beatPattern.bpmRange[1] - this.beatPattern.bpmRange[0] + 1)) + this.beatPattern.bpmRange[0]
+                    }
+                    getTransposedScale($) {
+                        let e = ["C", "C#", "D", "Eb", "E", "F", "F#", "G", "Ab", "A", "Bb", "B"]
+                          , i = {
+                            Db: "C#",
+                            "D#": "Eb",
+                            Gb: "F#",
+                            "G#": "Ab",
+                            "A#": "Bb"
+                        };
+                        return e.map(t=>{
+                            let a = t;
+                            i[t] && (a = i[t]);
+                            let n = e.indexOf(a)
+                              , o = (n + $ + e.length) % e.length;
+                            return e[o]
+                        }
+                        )
+                    }
+                    pickRandomPattern($) {
+                        let e = ["3", "4", "5"]
+                          , i = e[Math.floor(seededRandom.random() * e.length)]
+                          , t = this.chordPatterns[`${$}${i}`];
+                        return t[Math.floor(seededRandom.random() * t.length)]
+                    }
+                    defineNotes() {
+                        return ({
+                            major: ["C", "D", "E", "F", "G", "A", "B"],
+                            minor: ["C", "D", "Eb", "F", "G", "Ab", "Bb"],
+                            blues: ["C", "Eb", "F", "Gb", "G", "Bb"],
+                            pentatonicMajor: ["C", "D", "E", "G", "A"],
+                            pentatonicMinor: ["C", "Eb", "F", "G", "Bb"],
+                            harmonicMinor: ["C", "D", "Eb", "F", "G", "Ab", "B"],
+                            melodicMinorAsc: ["C", "D", "Eb", "F", "G", "A", "B"],
+                            dorian: ["C", "D", "Eb", "F", "G", "A", "Bb"],
+                            lydian: ["C", "D", "E", "F#", "G", "A", "B"],
+                            mixolydian: ["C", "D", "E", "F", "G", "A", "Bb"],
+                            phrygian: ["C", "Db", "Eb", "F", "G", "Ab", "Bb"],
+                            locrian: ["C", "Db", "Eb", "F", "Gb", "Ab", "Bb"]
+                        })[this.scale] || []
+                    }
+                    defineChords() {
+                        return ({
+                            major: ["Cmaj", "Dmin", "Emin", "Fmaj", "Gmaj", "Amin", "Bdim"],
+                            minor: ["Cmin", "Ddim", "Ebaug", "Fmin", "Gmin", "Abmaj", "Bbmaj"],
+                            blues: ["C7", "F7", "G7"],
+                            pentatonicMajor: ["Cmaj", "Dmin", "Emin", "Gmaj", "Amin"],
+                            pentatonicMinor: ["Cmin", "Ebaug", "Fmin", "Gmin", "Bbmin"],
+                            harmonicMinor: ["CminMaj7", "Dmin7b5", "EbaugMaj7", "Fmin7", "G7", "Abmaj7", "Bdim7"],
+                            melodicMinorAsc: ["CminMaj7", "Dmin7", "EbaugMaj7", "Fmaj7", "G7", "Amin7b5", "Bmin7b5"],
+                            dorian: ["Cmin7", "Dmin7", "Ebmaj7", "F7", "Gmin7", "Amin7b5", "Bb7"],
+                            lydian: ["Cmaj7#11", "Dmaj7#11", "Emaj7#11", "F#7", "Gmaj7#11", "Amaj7#11", "Bmaj7#11"],
+                            mixolydian: ["C7", "Dmin7", "Emin7", "Fmaj7", "G7", "Amin7", "Bb7"],
+                            phrygian: ["Cmin7", "Dbmaj7", "Eb7", "Fmin7", "Gmin7b5", "Abmaj7", "Bb7"],
+                            locrian: ["Cdim7", "Dbmin7b5", "Ebmin7b5", "Fdim", "Gbmin7b5", "Abmin7b5", "Bb7"]
+                        })[this.scale] || []
+                    }
+                    getChordsForStyle() {
+                        return ({
+                            pop: ["I", "V", "vi", "IV"],
+                            rock: ["I", "IV", "V"],
+                            blues: ["I7", "IV7", "V7"],
+                            jazz: ["IIm7", "V7", "Imaj7", "IVmaj7"],
+                            edm: ["I", "vi", "IV", "V"],
+                            rnb: ["Im7", "IVm7", "VIm7", "Vm7"],
+                            country: ["I", "IV", "I", "V"],
+                            reggae: ["I", "IV", "V", "IV"],
+                            metal: ["i", "iv", "V", "i"],
+                            punk: ["I", "V", "IV", "I"],
+                            funk: ["I7", "IV7", "I7", "IV7"],
+                            disco: ["I", "IV", "vi", "V"],
+                            latin: ["I", "IV", "ii", "V"],
+                            ambient: ["I", "ii", "iii", "IV"],
+                            folk: ["I", "IV", "V", "IV"],
+                            trap: ["i", "VII", "VI", "v"],
+                            kpop: ["I", "V", "iii", "vi"],
+                            gospel: ["I", "IV", "I", "V"],
+                            soul: ["I7", "IV7", "ii", "V7"],
+                            house: ["I", "I", "V", "IV"],
+                            hiphop: ["I", "vi", "IV", "V"],
+                            rap: ["i", "iv", "VII", "III"],
+                            chiptune: ["I", "IV", "V", "I"]
+                        })[this.style].map($=>this.translateChord($))
+                    }
+                    getNotesForBass() {
+                        return ({
+                            pop: ["I", "V", "vi", "IV"],
+                            rock: ["I", "IV", "V"],
+                            blues: ["I", "IV", "I", "V"],
+                            jazz: ["ii", "V", "I", "IV"],
+                            edm: ["I", "vi", "IV", "V"],
+                            rnb: ["I", "IV", "VI", "V"],
+                            country: ["I", "IV", "I", "V"],
+                            reggae: ["I", "IV", "V", "IV"],
+                            metal: ["i", "iv", "V", "i"],
+                            punk: ["I", "V", "IV", "I"],
+                            funk: ["I", "IV", "I", "IV"],
+                            disco: ["I", "IV", "vi", "V"],
+                            latin: ["I", "IV", "ii", "V"],
+                            ambient: ["I", "ii", "iii", "IV"],
+                            folk: ["I", "IV", "V", "IV"],
+                            trap: ["i", "VII", "VI", "v"],
+                            kpop: ["I", "V", "iii", "vi"],
+                            gospel: ["I", "IV", "I", "V"],
+                            soul: ["I", "IV", "ii", "V"],
+                            house: ["I", "I", "V", "IV"],
+                            hiphop: ["I", "vi", "IV", "V"],
+                            rap: ["i", "iv", "VII", "III"],
+                            chiptune: ["I", "V", "IV", "I"]
+                        })[this.style].map($=>this.translateBass($))
+                    }
+                    translateChord($) {
+                        let e = this.romanToInt($);
+                        return this.chords[e % this.chords.length]
+                    }
+                    translateBass($) {
+                        let e = this.romanToInt($);
+                        return this.notes[e % this.notes.length]
+                    }
+                    romanToInt($) {
+                        return ({
+                            I: 0,
+                            II: 1,
+                            III: 2,
+                            IV: 3,
+                            V: 4,
+                            VI: 5,
+                            VII: 6,
+                            i: 0,
+                            ii: 1,
+                            iii: 2,
+                            iv: 3,
+                            v: 4,
+                            vi: 5,
+                            vii: 6
+                        })[$.toUpperCase()] || 0
+                    }
+                    getNoteDurationInBeats($) {
+                        switch ($) {
+                        case "1n":
+                            return 4;
+                        case "2n":
+                            return 2;
+                        case "4n":
+                        default:
+                            return 1;
+                        case "8n":
+                            return .5;
+                        case "16n":
+                            return .25
+                        }
+                    }
+                    pickRandomModeAndPattern() {
+                        let $ = ["major", "minor", "mixolydian", "dorian", "lydian", "phrygian", "locrian"]
+                          , e = ["3", "4", "5"]
+                          , i = $[Math.floor(seededRandom.random() * $.length)]
+                          , t = e[Math.floor(seededRandom.random() * e.length)]
+                          , a = `${i}${t}`;
+                        return a
+                    }
+                    getRandomNoteDuration($) {
+                        let e = this.styleNoteDurations[this.style][$]
+                          , i = 0;
+                        for (let t in e)
+                            i += e[t];
+                        let a = seededRandom.random() * i;
+                        for (let n in e)
+                            if ((a -= e[n]) <= 0)
+                                return n;
+                        return "4n"
+                    }
+                    getRandomOctave($) {
+                        let e = this.octaveProbabilities[$]
+                          , i = Object.values(e).reduce(($,e)=>$ + e, 0)
+                          , t = seededRandom.random() * i;
+                        for (let a in e)
+                            if ((t -= e[a]) < 0)
+                                return parseInt(a);
+                        return 2
+                    }
+                    getNextElement($, e, i) {
+                        let t = this.getRandomOctave(i)
+                          , a = e.reduce(($,e)=>$ + e, 0)
+                          , n = seededRandom.random() * a;
+                        for (let o = 0; o < $.length; o++)
+                            if ((n -= e[o]) <= 0) {
+                                let r = $[o];
+                                if (Array.isArray(r))
+                                    return r.map($=>({
+                                        note: $,
+                                        octave: t
+                                    }));
+                                return {
+                                    note: r,
+                                    octave: t
+                                }
+                            }
+                        let s = $[0];
+                        return Array.isArray(s) ? s.map($=>({
+                            note: $,
+                            octave: t
+                        })) : {
+                            note: s,
+                            octave: t
+                        }
+                    }
+                    generateRiff($=this.style, e) {
+                        let i = this.selectKey($)
+                          , t = this.riffPatterns[$][e];
+                        return this.transposeRiff(t, i, e)
+                    }
+                    selectKey($) {
+                        let e = this.popularKeys[$];
+                        return e[Math.floor(seededRandom.random() * e.length)]
+                    }
+                    transposeRiff($, e, i) {
+                        let t = this.scaleDefinitions[i].notes
+                          , a = this.getScale(e, i)
+                          , n = JSON.parse(JSON.stringify($));
+                        return n.melody.forEach($=>{
+                            $.riff = $.riff.map($=>this.transposeNoteToKey($, t, a))
+                        }
+                        ),
+                        n.chords.forEach($=>{
+                            $.riff = $.riff.map($=>$.map($=>this.transposeNoteToKey($, t, a)))
+                        }
+                        ),
+                        n.bassline.forEach($=>{
+                            $.riff = $.riff.map($=>this.transposeNoteToKey($, t, a))
+                        }
+                        ),
+                        n
+                    }
+                    transposeNoteToKey($, e, i) {
+                        let t = $.note
+                          , a = $.octave
+                          , n = this.scaleDefinitions[i].notes
+                          , o = n.indexOf(t);
+                        if (-1 === o)
+                            return console.error(`Note ${t} not found in scale ${i}`),
+                            {
+                                note: t,
+                                octave: a
+                            };
+                        let r = e[o];
+                        return {
+                            note: r,
+                            octave: a
+                        }
+                    }
+                    generateVerse($) {
+                        let e = []
+                          , i = 0;
+                        for (; i < 8; ) {
+                            let t = .25 > seededRandom.random()
+                              , a = [];
+                            for (let n of (t && i <= 4 && a.push(this.pickRandomPattern($)),
+                            a.push(this.pickRandomPattern($)),
+                            a)) {
+                                let o = n.length
+                                  , r = this.patternDurations[o][Math.floor(seededRandom.random() * this.patternDurations[o].length)];
+                                for (let s = 0; s < n.length; s++)
+                                    e.push({
+                                        chord: n[s],
+                                        duration: r[s % r.length]
+                                    });
+                                i += o <= 4 ? 2 : 4
+                            }
+                        }
+                        return e.slice(0, 8)
+                    }
+                    getScale($, e) {
+                        let i = this.scaleDefinitions[e].notes
+                          , t = i.indexOf($);
+                        if (-1 === t)
+                            return console.error(`Key ${$} not found in scale ${e}`),
+                            i;
+                        let a = (t - i.indexOf("C") + i.length) % i.length
+                          , n = i.map(($,e)=>i[(e + a) % i.length]);
+                        return n
+                    }
+                    generateBeatPattern($) {
+                        let e = {};
+                        for (let i in $)
+                            "bpmRange" !== i && (e[i] = $[i].map(($,e)=>({
+                                pattern: $ >= seededRandom.random(),
+                                duration: "16n",
+                                index: e
+                            })).filter($=>$.pattern));
+                        return e
+                    }
+                    generateBeat() {
+                        let $ = {};
+                        return Object.keys(this.beatProbabilities[this.style]).forEach(e=>{
+                            "bpmRange" !== e && ($[e] = this.beatProbabilities[this.style][e].map($=>seededRandom.random() < $ ? "x" : ""))
+                        }
+                        ),
+                        $
+                    }
+                    getNearestScaleNote($, e) {
+                        let i = {
+                            C: 0,
+                            "C#": 1,
+                            Db: 1,
+                            D: 2,
+                            "D#": 3,
+                            Eb: 3,
+                            E: 4,
+                            F: 5,
+                            "F#": 6,
+                            Gb: 6,
+                            G: 7,
+                            "G#": 8,
+                            Ab: 8,
+                            A: 9,
+                            "A#": 10,
+                            Bb: 10,
+                            B: 11
+                        };
+                        e.map($=>i[$]);
+                        let t = i[$]
+                          , a = e[0]
+                          , n = Math.abs(i[a] - t);
+                        for (let o of e) {
+                            let r = Math.abs(i[o] - t);
+                            r < n && (n = r,
+                            a = o)
+                        }
+                        return a
+                    }
+                    getPassingNotes($, e) {
+                        let i = this.scaleDefinitions[e].notes
+                          , t = $.map($=>i.includes($) ? $ : (this.getNearestScaleNote($, i)))
+                          , a = [];
+                        for (let n = 0; n < t.length - 1; n++) {
+                            let o = t[n]
+                              , r = t[n + 1]
+                              , s = i.indexOf(o)
+                              , I = i.indexOf(r);
+                            if (-1 === s || -1 === I)
+                                continue;
+                            let l = I - s;
+                            if (l > 1)
+                                for (let _ = 1; _ < l; _++)
+                                    a.push(i[(s + _) % i.length]);
+                            else if (l < -1)
+                                for (let m = 1; m < Math.abs(l); m++)
+                                    a.push(i[(s - m + i.length) % i.length])
+                        }
+                        return a
+                    }
+                    getBassNoteFromChord($, e) {
+                        let i = $
+                          , t = this.getPassingNotes(i, e)
+                          , a = [...i, ...t];
+                        return a[Math.floor(seededRandom.random() * a.length)]
+                    }
+                    getMelodyNoteFromChord($, e) {
+                        let i = $
+                          , t = this.getPassingNotes(i, e)
+                          , a = [...i, ...t];
+                        return a[Math.floor(seededRandom.random() * a.length)]
+                    }
+                    preloadNextMelody($) {}
+                    preloadNextBassline($) {}
+                    generatePattern($, e) {
+                        let i = Array(GRID_SIZE).fill(null);
+                        if ("beats" === $)
+                            return this.generateBeatPattern(e);
+                        for (let {position: t, probability: a} of this.probabilityMappings[$])
+                            if (seededRandom.random() < a) {
+                                let n = this.selectPattern(e)
+                                  , o = this.getRandomNoteDuration($);
+                                i[t] = {
+                                    pattern: n,
+                                    duration: o
+                                }
+                            }
+                        return i
+                    }
+                    selectPattern($) {
+                        let e = $.reduce(($,{probability: e})=>$ + e, 0)
+                          , i = seededRandom.random() * e;
+                        for (let {riff: t, probability: a} of $)
+                            if ((i -= a) <= 0)
+                                return t;
+                        return $[0].riff
+                    }
+                    preloadNextChords($) {
+                        this.nextChords = this.generateChords($)
+                    }
+                    generateMelody($, e) {
+                        if ($ <= 0)
+                            return [];
+                        let i = this.riffPatterns[this.style][this.scale].melody;
+                        if (!i || 0 === i.length)
+                            return console.error("Invalid melody riff pattern:", i),
+                            [];
+                        let t = i[Math.floor(seededRandom.random() * i.length)];
+                        if (!t || !t.riff || !t.probabilities)
+                            return console.error("Invalid riff structure:", t),
+                            [];
+                        let a = [];
+                        for (let n = 0; n < $; n++)
+                            a.push(this.getNextElement(t.riff, t.probabilities, "melody"));
+                        let o = []
+                          , r = 0
+                          , s = ["4n", "8n", "16n"];
+                        for (let I = 0; I < 4 * $; I++) {
+                            let l = 0;
+                            for (; l < 4; ) {
+                                let _ = this.getNextElement(t.riff, t.probabilities, "melody")
+                                  , m = s[Math.floor(seededRandom.random() * s.length)]
+                                  , h = this.getNoteDurationInBeats(m);
+                                if (l + h <= 4) {
+                                    let d = .5 > seededRandom.random() ? 3 : 4;
+                                    o.push({
+                                        note: _.note,
+                                        octave: d,
+                                        duration: m
+                                    }),
+                                    l += h,
+                                    r += h
+                                }
+                            }
+                        }
+                        return o
+                    }
+                    generateBassline($, e) {
+                        if ($ <= 0)
+                            return [];
+                        let i = this.riffPatterns[this.style][this.scale].bassline;
+                        if (!i || 0 === i.length)
+                            return [];
+                        let t = i[Math.floor(seededRandom.random() * i.length)];
+                        if (!t || !t.riff || !t.probabilities)
+                            return [];
+                        let a = [];
+                        for (let n = 0; n < $; n++)
+                            a.push(this.getNextElement(t.riff, t.probabilities, "bassline"));
+                        let o = []
+                          , r = ["1n", "2n", "4n", "8n", "16n"];
+                        for (let s = 0; s < 4 * $; s++) {
+                            let I = a[s % a.length];
+                            if (I && I.note) {
+                                let l = r[Math.floor(seededRandom.random() * r.length)];
+                                this.getRandomOctave("bassline");
+                                let _ = e[s % e.length].note;
+                                o.push({
+                                    note: _,
+                                    octave: 2,
+                                    duration: l
+                                })
+                            }
+                        }
+                        return o
+                    }
+                    generateChords($, e, i) {
+                        if ($ <= 0)
+                            return [];
+                        let t = this.riffPatterns[this.style][this.scale].chords;
+                        if (!t || 0 === t.length)
+                            return [];
+                        let a = t[Math.floor(seededRandom.random() * t.length)];
+                        if (!a || !a.riff || !a.probabilities)
+                            return [];
+                        let n = [];
+                        for (let o = 0; o < $; o++) {
+                            let r = this.getNextElement(a.riff, a.probabilities, "chords");
+                            r && Array.isArray(r) && n.push(r)
+                        }
+                        let s = []
+                          , I = ["1n", "2n", "4n"];
+                        for (let l = 0; l < 4 * $; l++) {
+                            let _ = e[l % e.length]
+                              , m = i[l % i.length]
+                              , h = this.getChordFromMelodyAndBass(_, m);
+                            if (h.length > 0) {
+                                let d = I[Math.floor(seededRandom.random() * I.length)];
+                                s.push({
+                                    notes: h,
+                                    duration: d
+                                })
+                            }
+                        }
+                        return s
+                    }
+                    getChordFromPattern($, e) {
+                        let i = $[Math.floor(seededRandom.random() * $.length)];
+                        if (!i || !Array.isArray(i.riff) || !Array.isArray(i.probabilities))
+                            throw Error("Invalid chord set found in pattern.");
+                        let t = i.riff
+                          , a = i.probabilities
+                          , n = this.selectRandomIndex(a)
+                          , o = t[n];
+                        return o.map($=>({
+                            note: $,
+                            octave: 3
+                        }))
+                    }
+                    selectRandomIndex($) {
+                        let e = [];
+                        for (let i = 0; i < $.length; i++)
+                            e[i] = $[i] + (e[i - 1] || 0);
+                        let t = seddedRandom.random() * e[e.length - 1];
+                        return e.findIndex($=>t < $)
+                    }
+                    adjustChordForMelody($, e) {
+                        return $.some($=>$.note === e.note) || ($[0].note = e.note,
+                        $[0].octave = e.octave),
+                        $
+                    }
+                    getNoteFromPattern($, e) {
+                        if (!$ || !$.riff || !$.probabilities)
+                            return null;
+                        let i = $.riff
+                          , t = $.probabilities
+                          , a = e % i.length;
+                        return i[a] ? {
+                            note: i[a],
+                            probability: t[a]
+                        } : null
+                    }
+                    getChordFromMelodyAndBass($, e) {
+                        let i = []
+                          , t = e.note
+                          , a = this.getThirdNoteFromScale(t)
+                          , n = this.getFifthNoteFromScale(t)
+                          , o = 4;
+                        return $.octave >= 4 && (o = 3),
+                        t && i.push({
+                            note: t,
+                            octave: o
+                        }),
+                        a && i.push({
+                            note: a,
+                            octave: o
+                        }),
+                        n && i.push({
+                            note: n,
+                            octave: o
+                        }),
+                        this.getSeventhNoteFromScale(t),
+                        i
+                    }
+                    getThirdNoteFromScale($) {
+                        let e = this.scaleDefinitions[this.scale].notes
+                          , i = e.indexOf($)
+                          , t = (i + 2) % e.length;
+                        return e[t]
+                    }
+                    getFifthNoteFromScale($) {
+                        let e = this.scaleDefinitions[this.scale].notes
+                          , i = e.indexOf($)
+                          , t = (i + 4) % e.length;
+                        return e[t]
+                    }
+                    getSeventhNoteFromScale($) {
+                        let e = this.scaleDefinitions[this.scale].notes
+                          , i = e.indexOf($)
+                          , t = (i + 6) % e.length;
+                        return e[t]
+                    }
+                    selectPattern($) {
+                        let e = $.reduce(($,{probability: e})=>$ + e, 0)
+                          , i = seededRandom.random() * e;
+                        for (let {riff: t, probability: a} of $)
+                            if ((i -= a) <= 0)
+                                return t;
+                        return $[0].riff
+                    }
+                }
+                class LSystem {
+                    constructor($, e, i) {
+                        this.axiom = $,
+                        this.rules = e,
+                        this.iterations = i
+                    }
+                    generate() {
+                        let $ = this.axiom;
+                        for (let e = 0; e < this.iterations; e++)
+                            $ = $.split("").map($=>this.rules[$] || $).join("");
+                        return $
+                    }
+                }
+       
+
+                //document.addEventListener("DOMContentLoaded", function() {
+                    let $ = document.getElementById("begin")
+                      , e = document.getElementById("canvasContainer")
+                      , i = document.getElementById("overlay");
+                    var t = document.getElementById("blocksCanvas").transferControlToOffscreen()
+                      , a = document.getElementById("artCanvas").transferControlToOffscreen()
+                      , n = document.getElementById("textCanvas").transferControlToOffscreen();
+                    document.body.style.visibility = "visible",
+                    seededRandom.random(),
+                    seededRandom.random();
+                    let o = ["rap", "hiphop", "pop", "rock", "blues", "jazz", "edm", "rnb", "country", "reggae", "metal", "punk", "funk", "disco", "latin", "ambient", "folk", "trap", "kpop", "gospel", "soul", "house", "chiptune"];
+                    seededRandom.random();
+                    let r = ["C", "C#", "D", "Eb", "E", "F", "F#", "G", "Ab", "A", "Bb", "B"]
+                      , s = getaudioPart("style");
+                    -1 == s && (s = Math.floor(seededRandom.random() * o.length));
+                    let I = getaudioPart("key");
+                    -1 == I && (I = r[Math.floor(seededRandom.random() * r.length)]);
+                    let l = new SongGenerator(o[s],I)
+                      , _ = " "
+                      , m = Math.floor(10 * seededRandom.random());
+                    for (let h = 0; h < Math.floor(5 + 15 * seededRandom.random()); h++)
+                        _ += getRandomCharacter(m);
+                    let d, b;
+                    performance.now(),
+                    seededRandom.random(),
+                    seededRandom.random(),
+                    seededRandom.random(),
+                    parseInt(4 * l.scale.bpm);
+                    let V = new Worker(URL.createObjectURL(blob));//'/qXdzn03ZoOYnL3hLNgDPGGQqukEjHagoJZWX1aU10Fo');
+                    function p() {
+                        d = window.innerWidth,
+                        b = window.innerHeight
+                    }
+                    Promise.all([document.fonts.load('10pt "xoblk"'), document.fonts.load('10pt "xoxb"'), document.fonts.load('10pt "xoend"')]).then(function() {
+                        document.body.style.visibility = "visible",
+                        p();
+                        let e = {
+                            command: "glitched",
+                            canvas: t,
+                            artCanvas: a,
+                            textCanvas: n,
+                            bpm: l.scale.bpm,
+                            seededRandomSeed: seededRandom.seed,
+                            width: d,
+                            height: b,
+                            fonts: fontBlobs
+                        };
+                        V.postMessage(e, [t, a, n])
+                    }).catch(function($) {
+                        console.error("Font failed to load", $)
+                    }),
+                    $.addEventListener("click", async function() {
+                        if (this.classList.contains("enabled"))
+                            try {
+                                $.innerHTML = "<span>BLOX</span> LOADED",
+                                await Tone.start(),
+                                Tone.setContext(new Tone.Context({
+                                    latencyHint: "playback"
+                                })),
+                                i.style.display = "none",
+                                V.postMessage({
+                                    command: "begin"
+                                }),
+                                l.startMusic(),
+                                Tone.Transport.start()
+                            } catch (e) {
+                                console.error("Error starting AudioContext:", e)
+                            }
+                    }),
+                    V.onmessage = function($) {
+    let {command: i, data: t} = $.data;
+    if (i === "updateBackground") {
+        e.style.backgroundColor = t;
+        document.body.style.backgroundColor = t;
+    } else if (i === "workerReady") {
+        const beginButton = document.getElementById('begin');
+        beginButton.disabled = false;
+        beginButton.classList.add("enabled");
+        beginButton.innerHTML = "START <span>BLXWCO</span>";
+    } else if (i === "resetTrack") {
+        l.initialized = false;
+        l.verse = null;
+        l.chorus = null;
+        l.prechorus = null;
+        l.bridge = null;
+        l.outro = null;
+        l.intro = null;
+        l.songParts = null;
+        l.song = null;
+        l.initSongParts();
+        l.stopSong();
+        l.startMusic();
+        Tone.Transport.start();
+    } else {
+        console.log("Unknown command received:", i);
+    }
+}
+
+                    ,
+                    window.addEventListener("resize", p),
+                    document.addEventListener("fullscreenchange", p)
+                //});
+                     });
+    </script>
+</body>
+</html>
