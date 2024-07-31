@@ -66,7 +66,7 @@
             });
         
     const workerScript = `
-    function SeededRandom(e) {
+                function SeededRandom(e) {
     this.seed = e,
     this.counter = 0,
     this.random = function() {
@@ -74,6 +74,7 @@
         return e - Math.floor(e)
     }
 }
+
 function getSeedFromURL(e=3405691582) {
     let t = window.location.search
       , n = new URLSearchParams(t)
@@ -81,6 +82,7 @@ function getSeedFromURL(e=3405691582) {
       , o = parseInt(F, 16);
     return Number.isInteger(o) && o >= 0 && o <= 9007199254740991 ? o : e
 }
+
 let allWords = ["Awe", "Reverence", "Glory", "Exaltation", "Magnificence", "Splendor", "Resonance", "Harmony", "Radiance", "Majesty", "Adoration", "Wonder", "Praise", "Worship", "Glorification", "Exultation", "Devotion", "Sanctity", "Blessing", "Hallelujah", "Divinity", "Holiness", "Sanctification", "Transcendence", "Gratitude", "Elevation", "Elation", "Jubilation", "Ecstasy", "Celebration", "Illumination", "Enlightenment", "Rapture", "Fulfillment", "Consecration", "Glorify", "Adulation", "Veneration", "Homage", "Acclamation", "Triumph", "Rejoicing", "Devotion", "Elated", "Exulted", "Sanctified", "Exuberance", "Resplendence", "Benediction", "Reverence", "Splendid", "Transcendent", "Anointed", "Majestic", "Celestial", "Heavenly", "Blessed", "Exalted", "Holy", "Radiant", "Sublime", "Illuminated", "Euphoric", "Blessing", "Divine", "Hallowed", "Adored", "Praised", "Rejoiced", "Sanctify", "Wondrous", "Glorified", "Revelation", "Prophetic", "Reverent", "Worshipful", "Uplifted", "Consecrated", "Illustrious", "Magnificent", "Glorious", "Jubilant", "Elevated", "Exultant", "Ecstatic", "Raptured", "Transfigured", "Gloried", "Worshipped", "Triumphant", "Revered", "Eulogized", "Enraptured", "Resplendent", "Harmonised", "Synchronized", "Adorned", "Ornamented", "Resonated", "Proclaimed"], ctx = null, artCtx = null, textCtx = null, spiralIndices, characters = [], lastUpdateTime = 0, frameCounter = 0, letterIndex = 0, currentWordIndex = 0, cellWidth = 0, cellHeight = 0, lastEvenBeatTime = 0, currentNoteIndex = 0, lastStartTime = 0, currentTime = 0, snakePosition = -1, snakeLength = 0, fps = 60, snakeIndices = [], frameSeed, arts, charType, glitchFrames, colors, layoutType, seededRandom, portraitSeed, landscapeSeed, squareSeed, frameInterval, delayBetweenBlocks, processing, millisecondsPerBeat, framesPerBeat, framesPerHalfBeat, framesPerQuarterBeat, framesPerEighthBeat, framesPerSixteenthBeat, dropAnimationDuration, processingAnimationDuration, lastOddBeatTime, flashStartTime, transactionBlocks, transactionId, flashDurationgridHeight, gridWidth, snakeTraversalCompleted, hideBlocks, initBlocksStarted, textDrawn = !1, blocksAnimated = new Set, lastTransactionId = null;
 const transactionColors = {};
 let currentHoveredChar = null;
@@ -121,35 +123,46 @@ let canvasState = {
     fonts: null
 };
 const visitedIndices = new Set;
+
 function initializeSeeds(e, t) {
-    charType = Math.floor(10 * (seededRandom = new SeededRandom(e)).random());
-    for (let a = 0; a < Math.floor(5 + 15 * seededRandom.random()); a++)
-        arts += getRandomCharacter(charType);
-    portraitSeed = 16 * seededRandom.random() / 9,
-    landscapeSeed = 9 * seededRandom.random() / 16,
-    currentWordIndex = Math.floor(seededRandom.random() * allWords.length),
-    squareSeed = seededRandom.random(),
-    frameInterval = 1e3 / 30,
-    delayBetweenBlocks = parseInt(t),
-    processing = parseInt(4 * t),
-    millisecondsPerBeat = 6e4 / t,
-    framesPerBeat = parseInt(fps * (60 / t)),
-    framesPerHalfBeat = parseInt(framesPerBeat / 2),
-    framesPerQuarterBeat = parseInt(framesPerBeat / 4),
-    framesPerEighthBeat = parseInt(framesPerBeat / 8),
-    framesPerSixteenthBeat = parseInt(framesPerBeat / 16),
-    dropAnimationDuration = millisecondsPerBeat / 4,
-    processingAnimationDuration = millisecondsPerBeat / 2,
-    lastOddBeatTime = millisecondsPerBeat / 2,
-    flashDuration = 2 * dropAnimationDuration
-}
-function begin() {
-    requestAnimationFrame(()=>{
-        initializeCharacters(),
-        requestAnimationFrame(animate)
+    try {
+        charType = Math.floor(10 * (seededRandom = new SeededRandom(e)).random());
+        for (let a = 0; a < Math.floor(5 + 15 * seededRandom.random()); a++) {
+            arts += getRandomCharacter(charType);
+        }
+        portraitSeed = 16 * seededRandom.random() / 9,
+        landscapeSeed = 9 * seededRandom.random() / 16,
+        currentWordIndex = Math.floor(seededRandom.random() * allWords.length),
+        squareSeed = seededRandom.random(),
+        frameInterval = 1e3 / 30,
+        delayBetweenBlocks = parseInt(t),
+        processing = parseInt(4 * t),
+        millisecondsPerBeat = 6e4 / t,
+        framesPerBeat = parseInt(fps * (60 / t)),
+        framesPerHalfBeat = parseInt(framesPerBeat / 2),
+        framesPerQuarterBeat = parseInt(framesPerBeat / 4),
+        framesPerEighthBeat = parseInt(framesPerBeat / 8),
+        framesPerSixteenthBeat = parseInt(framesPerBeat / 16),
+        dropAnimationDuration = millisecondsPerBeat / 4,
+        processingAnimationDuration = millisecondsPerBeat / 2,
+        lastOddBeatTime = millisecondsPerBeat / 2,
+        flashDuration = 2 * dropAnimationDuration
+    } catch (error) {
+        console.error('Error initializing seeds:', error);
     }
-    )
 }
+
+function begin() {
+    try {
+        requestAnimationFrame(()=>{
+            initializeCharacters(),
+            requestAnimationFrame(animate)
+        });
+    } catch (error) {
+        console.error('Error starting animation:', error);
+    }
+}
+
 function getCurrentTimePalette() {
     let e = new Date
       , t = e.getHours()
@@ -157,498 +170,623 @@ function getCurrentTimePalette() {
       , n = 60 * t + a;
     return n >= 360 && n < 370 ? colorPalettes.sunrise : n >= 1080 && n < 1090 ? colorPalettes.sunset : n >= 720 && n < 750 ? colorPalettes.noon : n >= 0 && n < 30 ? colorPalettes.midnight : colorPalettes.exyozy
 }
+
 function updateColors() {
-    colors = getCurrentTimePalette(),
-    characters.forEach(e=>{
-        e.bgColor = getRandomColor(),
-        e.fgColor = getRandomColor(e.bgColor)
+    try {
+        colors = getCurrentTimePalette(),
+        characters.forEach(e=>{
+            e.bgColor = getRandomColor(),
+            e.fgColor = getRandomColor(e.bgColor)
+        }),
+        refreshCanvas()
+    } catch (error) {
+        console.error('Error updating colors:', error);
     }
-    ),
-    refreshCanvas()
 }
+
 function resizeCanvas(e, t) {
-    canvasState.canvas.width = e,
-    canvasState.canvas.height = t,
-    canvasState.artCanvas.width = canvasState.canvas.width,
-    canvasState.artCanvas.height = canvasState.canvas.height,
-    canvasState.textCanvas.width = canvasState.canvas.width,
-    canvasState.textCanvas.height = canvasState.canvas.height,
-    configureGrid()
+    try {
+        canvasState.canvas.width = e,
+        canvasState.canvas.height = t,
+        canvasState.artCanvas.width = canvasState.canvas.width,
+        canvasState.artCanvas.height = canvasState.canvas.height,
+        canvasState.textCanvas.width = canvasState.canvas.width,
+        canvasState.textCanvas.height = canvasState.canvas.height,
+        configureGrid()
+    } catch (error) {
+        console.error('Error resizing canvas:', error);
+    }
 }
+
 function configureGrid() {
     let e = cellWidth
       , t = cellHeight;
-    canvasState.canvas.width / canvasState.canvas.height > 1.3 ? (gridWidth = 16,
-    gridHeight = 9,
-    frameSeed = landscapeSeed,
-    layoutType = "16x9") : canvasState.canvas.width / canvasState.canvas.height < .75 ? (gridWidth = 9,
-    gridHeight = 16,
-    frameSeed = portraitSeed,
-    layoutType = "9x16") : (gridWidth = 12,
-    gridHeight = 12,
-    frameSeed = squareSeed,
-    layoutType = "12x12"),
-    columns = layoutConfig[layoutType].columns,
-    spiralIndices = getSpiralIndices(rows = layoutConfig[layoutType].rows, columns),
-    cellWidth = Math.ceil(canvasState.canvas.width / gridWidth),
-    cellHeight = Math.ceil(canvasState.canvas.height / gridHeight);
-    let a = getRandomColor();
-    glitchFrames = createGlitchedFrames(),
-    characters.forEach(a=>{
-        a.x = a.x / e * cellWidth,
-        a.y = a.y / t * cellHeight,
-        a.finalY = a.finalY / t * cellHeight,
-        a.fontSize = 4 * Math.min(cellWidth, cellHeight)
+    try {
+        canvasState.canvas.width / canvasState.canvas.height > 1.3 ? (gridWidth = 16,
+        gridHeight = 9,
+        frameSeed = landscapeSeed,
+        layoutType = "16x9") : canvasState.canvas.width / canvasState.canvas.height < .75 ? (gridWidth = 9,
+        gridHeight = 16,
+        frameSeed = portraitSeed,
+        layoutType = "9x16") : (gridWidth = 12,
+        gridHeight = 12,
+        frameSeed = squareSeed,
+        layoutType = "12x12"),
+        columns = layoutConfig[layoutType].columns,
+        spiralIndices = getSpiralIndices(rows = layoutConfig[layoutType].rows, columns),
+        cellWidth = Math.ceil(canvasState.canvas.width / gridWidth),
+        cellHeight = Math.ceil(canvasState.canvas.height / gridHeight);
+        let a = getRandomColor();
+        glitchFrames = createGlitchedFrames(),
+        characters.forEach(a=>{
+            a.x = a.x / e * cellWidth,
+            a.y = a.y / t * cellHeight,
+            a.finalY = a.finalY / t * cellHeight,
+            a.fontSize = 4 * Math.min(cellWidth, cellHeight)
+        });
+    } catch (error) {
+        console.error('Error configuring grid:', error);
     }
-    )
 }
+
 function refreshCanvas() {
-    ctx.clearRect(0, 0, canvasState.canvas.width, canvasState.canvas.height),
-    characters.forEach(drawCharacter)
+    try {
+        ctx.clearRect(0, 0, canvasState.canvas.width, canvasState.canvas.height),
+        characters.forEach(drawCharacter)
+    } catch (error) {
+        console.error('Error refreshing canvas:', error);
+    }
 }
+
 function getRandomCharacter(e) {
     if (9 == e)
         return .5 > seededRandom.random() ? "✗" : "⚬";
     let[t,a] = [[19968, 40869], [12353, 12447], [12449, 12543], [33, 126], [161, 255], [1536, 1791], [1872, 1919], [1024, 1279], [1280, 1327]][e];
     return String.fromCharCode(Math.floor(seededRandom.random() * (a - t + 1)) + t)
 }
+
 function initializeCharacters() {
-    let e = getCurrentTimeIndex()
-      , t = canvasState.canvas.height
-      , a = 0;
-    for (let n = gridHeight - 1; n >= 0; n--)
-        for (let o = 0; o < gridWidth; o++) {
-            let r = getRandomColor()
-              , l = getRandomColor(r);
-            characters.push({
-                index: a,
-                x: o * cellWidth,
-                y: n * cellHeight - t,
-                finalY: n * cellHeight,
-                bgColor: r,
-                fgColor: l,
-                char: getRandomCharacter(charType),
-                fontSize: 4 * Math.min(cellWidth, cellHeight),
-                startTime: lastStartTime,
-                rotation: 360 * seededRandom.random() * Math.PI / 180,
-                active: !1,
-                spinning: !0,
-                rotationSpeed: .25,
-                rotationDirection: a % 2 == 0 ? 1 : -1,
-                isVisible: !0,
-                inSnake: !1,
-                wasInSnake: !1,
-                cellWidth: cellWidth,
-                cellHeight: cellHeight,
-                isNow: a == e
-            }),
-            lastStartTime += dropAnimationDuration,
-            a++
-        }
+    try {
+        let e = getCurrentTimeIndex()
+          , t = canvasState.canvas.height
+          , a = 0;
+        for (let n = gridHeight - 1; n >= 0; n--)
+            for (let o = 0; o < gridWidth; o++) {
+                let r = getRandomColor()
+                  , l = getRandomColor(r);
+                characters.push({
+                    index: a,
+                    x: o * cellWidth,
+                    y: n * cellHeight - t,
+                    finalY: n * cellHeight,
+                    bgColor: r,
+                    fgColor: l,
+                    char: getRandomCharacter(charType),
+                    fontSize: 4 * Math.min(cellWidth, cellHeight),
+                    startTime: lastStartTime,
+                    rotation: 360 * seededRandom.random() * Math.PI / 180,
+                    active: !1,
+                    spinning: !0,
+                    rotationSpeed: .25,
+                    rotationDirection: a % 2 == 0 ? 1 : -1,
+                    isVisible: !0,
+                    inSnake: !1,
+                    wasInSnake: !1,
+                    cellWidth: cellWidth,
+                    cellHeight: cellHeight,
+                    isNow: a == e
+                }),
+                lastStartTime += dropAnimationDuration,
+                a++
+            }
+    } catch (error) {
+        console.error('Error initializing characters:', error);
+    }
 }
+
 function setupAndDraw() {
-    let e = extras.width,
-        t = extras.height;
-    
-    // Clear the canvas before drawing
-    artCtx.clearRect(0, 0, e, t);
-    
-    // Set fill style and fill the entire canvas
-    artCtx.fillStyle = colors[Math.floor(seededRandom.random() * colors.length)];
-    artCtx.fillRect(0, 0, e, t);
+    try {
+        let e = extras.width,
+            t = extras.height;
 
-    let a = Math.max(e, t),
-        n = arts.split("").map(n => {
-            let o = Math.floor(a + a / 1.5 * seededRandom.random()),
-                r = new OffscreenCanvas(e, t),
-                l = r.getContext("2d"),
-                i = seededRandom.random() * (e - o / 8),
-                s = seededRandom.random() * (t - o / 8),
-                d = Math.floor(seededRandom.random() * colors.length);
+        // Clear the canvas before drawing
+        artCtx.clearRect(0, 0, e, t);
 
-            drawArt(l, n, i, s, o, colors[d]);
+        // Set fill style and fill the entire canvas
+        artCtx.fillStyle = colors[Math.floor(seededRandom.random() * colors.length)];
+        artCtx.fillRect(0, 0, e, t);
 
-            return {
-                canvas: r,
-                char: n
-            };
+        let a = Math.max(e, t),
+            n = arts.split("").map(n => {
+                let o = Math.floor(a + a / 1.5 * seededRandom.random()),
+                    r = new OffscreenCanvas(e, t),
+                    l = r.getContext("2d"),
+                    i = seededRandom.random() * (e - o / 8),
+                    s = seededRandom.random() * (t - o / 8),
+                    d = Math.floor(seededRandom.random() * colors.length);
+
+                drawArt(l, n, i, s, o, colors[d]);
+
+                return {
+                    canvas: r,
+                    char: n
+                };
+            });
+
+        n.forEach(e => {
+            // Debugging: Log the content of each OffscreenCanvas before drawing
+            console.log('Drawing character:', e.char);
+            console.log('Canvas size:', e.canvas.width, e.canvas.height);
+            artCtx.drawImage(e.canvas, 0, 0);
         });
 
-    n.forEach(e => {
-        // Debugging: Log the content of each OffscreenCanvas before drawing
-        console.log('Drawing character:', e.char);
-        console.log('Canvas size:', e.canvas.width, e.canvas.height);
-        artCtx.drawImage(e.canvas, 0, 0);
-    });
+        let o = [];
+        for (let r = 0; r < n.length; r++) {
+            for (let l = r + 1; l < n.length; l++) {
+                let i = new OffscreenCanvas(e, t),
+                    s = i.getContext("2d");
 
-    let o = [];
-    for (let r = 0; r < n.length; r++) {
-        for (let l = r + 1; l < n.length; l++) {
-            let i = new OffscreenCanvas(e, t),
-                s = i.getContext("2d");
-            
-            s.globalCompositeOperation = "source-over";
-            s.drawImage(n[r].canvas, 0, 0);
-            s.globalCompositeOperation = "source-in";
-            s.drawImage(n[l].canvas, 0, 0);
+                 s.globalCompositeOperation = "source-in";
+                s.drawImage(n[l].canvas, 0, 0);
 
-            let d = Math.floor(seededRandom.random() * colors.length);
-            s.fillStyle = colors[d];
-            s.globalCompositeOperation = "source-atop";
-            s.fillRect(0, 0, e, t);
-            
-            o.push(i);
+
+                let d = Math.floor(seededRandom.random() * colors.length);
+                s.fillStyle = colors[d];
+                s.globalCompositeOperation = "source-atop";
+                s.fillRect(0, 0, e, t);
+
+                o.push(i);
+            }
         }
+
+        o.forEach(e => {
+            artCtx.drawImage(e, 0, 0);
+        });
+
+        artCtx.globalCompositeOperation = "source-over";
+    } catch (error) {
+        console.error('Error in setupAndDraw:', error);
     }
-
-    o.forEach(e => {
-        artCtx.drawImage(e, 0, 0);
-    });
-
-    artCtx.globalCompositeOperation = "source-over";
 }
+
 function drawArt(e, t, a, n, o, r) {
-    let l = 360 * seededRandom.random() * Math.PI / 180
-      , i = o / 4;
-    e.save(),
-    e.translate(a, n),
-    e.rotate(l),
-    e.font = \`bolder \${o}px "xoblk"\`,
-    e.fillStyle = r,
-    e.fillText(t, -i, i),
-    e.restore()
+    try {
+        let l = 360 * seededRandom.random() * Math.PI / 180
+          , i = o / 4;
+        e.save();
+        e.translate(a, n);
+        e.rotate(l);
+        e.font = \`bolder \${o}px "xoblk"\`;
+        e.fillStyle = r;
+        e.fillText(t, -i, i);
+        e.restore();
+    } catch (error) {
+        console.error('Error drawing art:', error);
+    }
 }
+
 function applyAudioGlitchEffects(e) {}
+
 function resetGlitchEffects() {}
+
 function applyGlitchEffect(e, t=1) {
-    let a = e.data
-      , n = e.width
-      , o = e.height
-      , r = 0 === Math.floor(2 * seededRandom.random()) ? -10 : 10
-      , l = r * (t + 40)
-      , i = new Uint8ClampedArray(a);
-    if (.5 > seededRandom.random())
-        for (let s = 0; s < o; s++)
-            for (let d = 0; d < n; d++) {
-                let c = (s * n + d) * 4
-                  , f = (d + l) % n
-                  , $ = (d - l) % n
-                  , m = (d + Math.floor(l / 2)) % n
-                  , h = (s * n + f) * 4
-                  , g = (s * n + $) * 4
-                  , x = (s * n + m) * 4;
-                a[c] = i[h],
-                a[c + 1] = i[g + 1],
-                a[c + 2] = i[x + 2],
-                a[c + 3] = 255
-            }
-    if (.2 > seededRandom.random()) {
-        if (.5 > seededRandom.random()) {
-            for (let u = 0; u < o; u++)
-                if (.3 > seededRandom.random()) {
-                    let C = Math.floor(seededRandom.random() * (n / 2) + n / 4)
-                      , p = Math.floor(60 * seededRandom.random() + 10)
-                      , v = Math.floor(seededRandom.random() * (n - C))
-                      , _ = Math.floor(20 * seededRandom.random() - 10);
-                    for (let S = 0; S < p && u + S < o; S++)
-                        for (let b = v; b < v + C; b++) {
-                            let R = ((u + S) * n + b) * 4
-                              , w = ((u + S) * n + (b + _ + n) % n) * 4;
-                            a[R] = a[w],
-                            a[R + 1] = a[w + 1],
-                            a[R + 2] = a[w + 2],
-                            a[R + 3] = 255
-                        }
-                    u += p - 1
+    try {
+        let a = e.data
+          , n = e.width
+          , o = e.height
+          , r = 0 === Math.floor(2 * seededRandom.random()) ? -10 : 10
+          , l = r * (t + 40)
+          , i = new Uint8ClampedArray(a);
+        if (.5 > seededRandom.random())
+            for (let s = 0; s < o; s++)
+                for (let d = 0; d < n; d++) {
+                    let c = (s * n + d) * 4
+                      , f = (d + l) % n
+                      , $ = (d - l) % n
+                      , m = (d + Math.floor(l / 2)) % n
+                      , h = (s * n + f) * 4
+                      , g = (s * n + $) * 4
+                      , x = (s * n + m) * 4;
+                    a[c] = i[h],
+                    a[c + 1] = i[g + 1],
+                    a[c + 2] = i[x + 2],
+                    a[c + 3] = 255
                 }
-        } else {
-            let y = Math.floor(50 * seededRandom.random() + 20);
-            for (let P = 0; P < o; P += y)
-                for (let k = 0; k < n; k += y)
+        if (.2 > seededRandom.random()) {
+            if (.5 > seededRandom.random()) {
+                for (let u = 0; u < o; u++)
                     if (.3 > seededRandom.random()) {
-                        let I = Math.floor(seededRandom.random() * (n - y))
-                          , T = Math.floor(seededRandom.random() * (o - y))
-                          , B = artCtx.getImageData(I, T, y, y)
-                          , E = B.data;
-                        for (let H = 0; H < y; H++)
-                            for (let A = 0; A < y; A++) {
-                                let W = ((P + H) * n + (k + A)) * 4
-                                  , D = (H * y + A) * 4;
-                                a[W] = E[D],
-                                a[W + 1] = E[D + 1],
-                                a[W + 2] = E[D + 2],
-                                a[W + 3] = 255
+                        let C = Math.floor(seededRandom.random() * (n / 2) + n / 4)
+                          , p = Math.floor(60 * seededRandom.random() + 10)
+                          , v = Math.floor(seededRandom.random() * (n - C))
+                          , _ = Math.floor(20 * seededRandom.random() - 10);
+                        for (let S = 0; S < p && u + S < o; S++)
+                            for (let b = v; b < v + C; b++) {
+                                let R = ((u + S) * n + b) * 4
+                                  , w = ((u + S) * n + (b + _ + n) % n) * 4;
+                                a[R] = a[w],
+                                a[R + 1] = a[w + 1],
+                                a[R + 2] = a[w + 2],
+                                a[R + 3] = 255
                             }
+                        u += p - 1
                     }
-        }
-    }
-    return e
-}
-function resortGlitchEffect(e, t, a, n) {
-    let o = [];
-    for (let r = 0; r < t.height; r += n)
-        for (let l = 0; l < t.width; l += a) {
-            let i = e.getImageData(l, r, a, n);
-            o.push({
-                x: l,
-                y: r,
-                piece: i
-            })
-        }
-    for (let s = o.length - 1; s > 0; s--) {
-        let d = Math.floor(seededRandom.random() * (s + 1));
-        [o[s],o[d]] = [o[d], o[s]]
-    }
-    o.forEach(t=>{
-        e.putImageData(t.piece, t.x, t.y)
-    }
-    )
-}
-function createGlitchedFrames() {
-    let e = []
-      , t = Math.floor(1 * seededRandom.random()) + 1;
-    for (let a = 0; a < t; a++) {
-        setupAndDraw();
-        let n = artCtx.getImageData(0, 0, extras.width, extras.height);
-        let m = applyGlitchEffect(n);
-        e.push(m);
-    }
-    return e
-}
-function animateFrames(e, t, a, n) {
-    let o = 1;
-    let r = 500 / n;
-    let localFrameCounter = 0;
-
-    function frameStep() {
-        if (localFrameCounter % (2 * parseInt(r)) == 0) {
-            o += 2;
-            let n = t.getImageData(0, 0, a.width, a.height);
-            n = applyGlitchEffect(n, o);
-            t.putImageData(n, 0, 0);
-            resortGlitchEffect(t, a, cellWidth, cellHeight);
-            if (!textDrawn) {
-                drawText();
-                textDrawn = !0;
+            } else {
+                let y = Math.floor(50 * seededRandom.random() + 20);
+                for (let P = 0; P < o; P += y)
+                    for (let k = 0; k < n; k += y)
+                        if (.3 > seededRandom.random()) {
+                            let I = Math.floor(seededRandom.random() * (n - y))
+                              , T = Math.floor(seededRandom.random() * (o - y))
+                              , B = artCtx.getImageData(I, T, y, y)
+                              , E = B.data;
+                            for (let H = 0; H < y; H++)
+                                for (let A = 0; A < y; A++) {
+                                    let W = ((P + H) * n + (k + A)) * 4
+                                      , D = (H * y + A) * 4;
+                                    a[W] = E[D],
+                                    a[W + 1] = E[D + 1],
+                                    a[W + 2] = E[D + 2],
+                                    a[W + 3] = 255
+                                }
+                        }
             }
         }
+        return e;
+    } catch (error) {
+        console.error('Error applying glitch effect:', error);
+        return e;
+    }
+}
 
-        if (o > 60) {
-            startAnimation = !0;
-            glitchFrames = createGlitchedFrames();
-            stopAnimation = !1;
-            textDrawn = !1;
-            frameCycleCounter = 0;
-            decayFrameCounter = 0;
-            decayStarted = !1;
-            visitedIndices.clear();
-            snakeIndices = [];
-            resetAndStartOver();
-            return;
+function resortGlitchEffect(e, t, a, n) {
+    try {
+        let o = [];
+        for (let r = 0; r < t.height; r += n)
+            for (let l = 0; l < t.width; l += a) {
+                let i = e.getImageData(l, r, a, n);
+                o.push({
+                    x: l,
+                    y: r,
+                    piece: i
+                });
+            }
+        for (let s = o.length - 1; s > 0; s--) {
+            let d = Math.floor(seededRandom.random() * (s + 1));
+            [o[s], o[d]] = [o[d], o[s]];
+        }
+        o.forEach(t => {
+            e.putImageData(t.piece, t.x, t.y);
+        });
+    } catch (error) {
+        console.error('Error resorting glitch effect:', error);
+    }
+}
+
+function createGlitchedFrames() {
+    try {
+        let e = []
+          , t = Math.floor(1 * seededRandom.random()) + 1;
+        for (let a = 0; a < t; a++) {
+            setupAndDraw();
+            let n = artCtx.getImageData(0, 0, extras.width, extras.height);
+            let m = applyGlitchEffect(n);
+            e.push(m);
+        }
+        return e;
+    } catch (error) {
+        console.error('Error creating glitched frames:', error);
+        return [];
+    }
+}
+
+function animateFrames(e, t, a, n) {
+    try {
+        let o = 1;
+        let r = 500 / n;
+        let localFrameCounter = 0;
+
+        function frameStep() {
+            if (localFrameCounter % (2 * parseInt(r)) == 0) {
+                o += 2;
+                let n = t.getImageData(0, 0, a.width, a.height);
+                n = applyGlitchEffect(n, o);
+                t.putImageData(n, 0, 0);
+                resortGlitchEffect(t, a, cellWidth, cellHeight);
+                if (!textDrawn) {
+                    drawText();
+                    textDrawn = !0;
+                }
+            }
+
+            if (o > 60) {
+                startAnimation = !0;
+                glitchFrames = createGlitchedFrames();
+                stopAnimation = !1;
+                textDrawn = !1;
+                frameCycleCounter = 0;
+                decayFrameCounter = 0;
+                decayStarted = !1;
+                visitedIndices.clear();
+                snakeIndices = [];
+                resetAndStartOver();
+                return;
+            }
+
+            localFrameCounter++;
+            requestAnimationFrame(frameStep);
         }
 
-        localFrameCounter++;
-        requestAnimationFrame(frameStep);
+        frameStep();
+    } catch (error) {
+        console.error('Error animating frames:', error);
     }
+}
 
-    frameStep();
-}
 function drawText() {
-    let e = extras.width
-      , t = extras.height;
-    textCtx.clearRect(0, 0, e, t);
-    let a = allWords[currentWordIndex]
-      , n = a[letterIndex];
-    ++letterIndex == a.length && (n = a,
-    letterIndex = 0);
-    let o = t / 20;
-    textCtx.font = \`\${o}em "xoend"\`;
-    let r = textCtx.measureText(n).width;
-    for (; r > e && o > 0; )
-        o -= .1,
-        textCtx.font = \`\${o}em "xoend"\`,
-        r = textCtx.measureText(n).width;
-    let l = 16 * o;
-    textCtx.font = \`\${o}em "xoend"\`;
-    let i = 360 * seededRandom.random();
-    textCtx.save(),
-    textCtx.translate(e / 2, t / 2),
-    textCtx.rotate(i * Math.PI / 180);
-    let s = .5 > seededRandom.random()
-      , d = s ? n.toUpperCase() : n.toLowerCase()
-      , c = (seededRandom.random() - .5) * l * .1;
-    textCtx.fillStyle = "white",
-    textCtx.textAlign = "center",
-    textCtx.fillText(d, 0, c),
-    textCtx.restore();
-    let f = textCtx.getImageData(0, 0, e, t)
-      , $ = f.data;
-    textCtx.clearRect(0, 0, e, t);
-    let m = artCtx.getImageData(0, 0, e, t)
-      , h = textCtx.createImageData(e, t)
-      , g = h.data;
-    for (let x = 0; x < $.length; x += 4)
-        $[x + 3] > 0 ? (g[x] = m.data[x],
-        g[x + 1] = m.data[x + 1],
-        g[x + 2] = m.data[x + 2],
-        g[x + 3] = m.data[x + 3]) : g[x + 3] = 0;
-    textCtx.putImageData(h, 0, 0)
+    try {
+        let e = extras.width
+          , t = extras.height;
+        textCtx.clearRect(0, 0, e, t);
+        let a = allWords[currentWordIndex]
+          , n = a[letterIndex];
+        ++letterIndex == a.length && (n = a,
+        letterIndex = 0);
+        let o = t / 20;
+        textCtx.font = \`\${o}em "xoend"\`;
+        let r = textCtx.measureText(n).width;
+        for (; r > e && o > 0; )
+            o -= .1,
+            textCtx.font = \`\${o}em "xoend"\`,
+            r = textCtx.measureText(n).width;
+        let l = 16 * o;
+        textCtx.font = \`\${o}em "xoend"\`;
+        let i = 360 * seededRandom.random();
+        textCtx.save();
+        textCtx.translate(e / 2, t / 2);
+        textCtx.rotate(i * Math.PI / 180);
+        let s = .5 > seededRandom.random()
+          , d = s ? n.toUpperCase() : n.toLowerCase()
+          , c = (seededRandom.random() - .5) * l * .1;
+        textCtx.fillStyle = "white";
+        textCtx.textAlign = "center";
+        textCtx.fillText(d, 0, c);
+        textCtx.restore();
+        let f = textCtx.getImageData(0, 0, e, t)
+          , $ = f.data;
+        textCtx.clearRect(0, 0, e, t);
+        let m = artCtx.getImageData(0, 0, e, t)
+          , h = textCtx.createImageData(e, t)
+          , g = h.data;
+        for (let x = 0; x < $.length; x += 4)
+            $[x + 3] > 0 ? (g[x] = m.data[x],
+            g[x + 1] = m.data[x + 1],
+            g[x + 2] = m.data[x + 2],
+            g[x + 3] = m.data[x + 3]) : g[x + 3] = 0;
+        textCtx.putImageData(h, 0, 0);
+    } catch (error) {
+        console.error('Error drawing text:', error);
+    }
 }
+
 function getSpiralIndices(e, t) {
-    let a = [spiralPath, zigzagPath, diagonalPath, snakePath, horizontalWavePath, verticalWavePath, checkerboardPath, randomPath]
-      , n = Math.floor(seededRandom.random() * a.length);
-    return a[n](e, t)
+    try {
+        let a = [spiralPath, zigzagPath, diagonalPath, snakePath, horizontalWavePath, verticalWavePath, checkerboardPath, randomPath]
+          , n = Math.floor(seededRandom.random() * a.length);
+        return a[n](e, t);
+    } catch (error) {
+        console.error('Error getting spiral indices:', error);
+        return [];
+    }
 }
+
 function spiralPath(e, t) {
     let a = []
       , n = 0
       , o = e - 1
       , r = 0
       , l = t - 1;
-    for (; n <= o && r <= l; ) {
-        for (let i = r; i <= l; i++)
-            a.push(n * t + i);
-        n++;
-        for (let s = n; s <= o; s++)
-            a.push(s * t + l);
-        if (l--,
-        n <= o)
-            for (let d = l; d >= r; d--)
-                a.push(o * t + d);
-        if (o--,
-        r <= l)
-            for (let c = o; c >= n; c--)
-                a.push(c * t + r);
-        r++
+    try {
+        for (; n <= o && r <= l; ) {
+            for (let i = r; i <= l; i++)
+                a.push(n * t + i);
+            n++;
+            for (let s = n; s <= o; s++)
+                a.push(s * t + l);
+            if (l--,
+            n <= o)
+                for (let d = l; d >= r; d--)
+                    a.push(o * t + d);
+            if (o--,
+            r <= l)
+                for (let c = o; c >= n; c--)
+                    a.push(c * t + r);
+            r++;
+        }
+        return a;
+    } catch (error) {
+        console.error('Error in spiralPath:', error);
+        return a;
     }
-    return a
 }
+
 function zigzagPath(e, t) {
     let a = [];
-    for (let n = 0; n < e; n++)
-        if (n % 2 == 0)
-            for (let o = 0; o < t; o++)
-                a.push(n * t + o);
-        else
-            for (let r = t - 1; r >= 0; r--)
-                a.push(n * t + r);
-    return a
+    try {
+        for (let n = 0; n < e; n++)
+            if (n % 2 == 0)
+                for (let o = 0; o < t; o++)
+                    a.push(n * t + o);
+            else
+                for (let r = t - 1; r >= 0; r--)
+                    a.push(n * t + r);
+        return a;
+    } catch (error) {
+        console.error('Error in zigzagPath:', error);
+        return a;
+    }
 }
+
 function diagonalPath(e, t) {
     let a = [];
-    for (let n = e + t - 2; n >= 0; n--) {
-        let o = Math.max(0, n - e + 1)
-          , r = Math.min(n + 1, Math.min(t - o, e));
-        for (let l = 0; l < r; l++)
-            a.push((Math.min(e, n + 1) - l - 1) * t + o + l)
+    try {
+        for (let n = e + t - 2; n >= 0; n--) {
+            let o = Math.max(0, n - e + 1)
+              , r = Math.min(n + 1, Math.min(t - o, e));
+            for (let l = 0; l < r; l++)
+                a.push((Math.min(e, n + 1) - l - 1) * t + o + l);
+        }
+        return a;
+    } catch (error) {
+        console.error('Error in diagonalPath:', error);
+        return a;
     }
-    return a
 }
+
 function snakePath(e, t) {
     let a = [];
-    for (let n = 0; n < t; n++)
-        if (n % 2 == 0)
-            for (let o = 0; o < e; o++)
-                a.push(o * t + n);
-        else
-            for (let r = e - 1; r >= 0; r--)
-                a.push(r * t + n);
-    return a
+    try {
+        for (let n = 0; n < t; n++)
+            if (n % 2 == 0)
+                for (let o = 0; o < e; o++)
+                    a.push(o * t + n);
+            else
+                for (let r = e - 1; r >= 0; r--)
+                    a.push(r * t + n);
+        return a;
+    } catch (error) {
+        console.error('Error in snakePath:', error);
+        return a;
+    }
 }
+
 function horizontalWavePath(e, t) {
     let a = [];
-    for (let n = 0; n < t; n++)
-        for (let o = 0; o < e; o++)
-            a.push(o * t + n);
-    return a
+    try {
+        for (let n = 0; n < t; n++)
+            for (let o = 0; o < e; o++)
+                a.push(o * t + n);
+        return a;
+    } catch (error) {
+        console.error('Error in horizontalWavePath:', error);
+        return a;
+    }
 }
+
 function verticalWavePath(e, t) {
     let a = [];
-    for (let n = 0; n < e; n++)
-        for (let o = 0; o < t; o++)
-            a.push(n * t + o);
-    return a
+    try {
+        for (let n = 0; n < e; n++)
+            for (let o = 0; o < t; o++)
+                a.push(n * t + o);
+        return a;
+    } catch (error) {
+        console.error('Error in verticalWavePath:', error);
+        return a;
+    }
 }
+
 function checkerboardPath(e, t) {
     let a = [];
-    for (let n = 0; n < e; n++)
-        for (let o = 0; o < t; o++)
-            (n + o) % 2 == 0 && a.push(n * t + o);
-    for (let r = 0; r < e; r++)
-        for (let l = 0; l < t; l++)
-            (r + l) % 2 != 0 && a.push(r * t + l);
-    return a
+    try {
+        for (let n = 0; n < e; n++)
+            for (let o = 0; o < t; o++)
+                (n + o) % 2 == 0 && a.push(n * t + o);
+        for (let r = 0; r < e; r++)
+            for (let l = 0; l < t; l++)
+                (r + l) % 2 != 0 && a.push(r * t + l);
+        return a;
+    } catch (error) {
+        console.error('Error in checkerboardPath:', error);
+        return a;
+    }
 }
+
 function randomPath(e, t) {
     let a = [];
-    for (let n = 0; n < e; n++)
-        for (let o = 0; o < t; o++)
-            a.push(n * t + o);
-    return a.sort(()=>seededRandom.random() - .5)
+    try {
+        for (let n = 0; n < e; n++)
+            for (let o = 0; o < t; o++)
+                a.push(n * t + o);
+        return a.sort(()=>seededRandom.random() - .5);
+    } catch (error) {
+        console.error('Error in randomPath:', error);
+        return a;
+    }
 }
+
 function getSnakeIndices(e, t) {
-    let a = [];
-    for (let n = 0; n < t; n++)
-        a.push(spiralIndices[(e + n) % spiralIndices.length]);
-    return a
+    try {
+        let a = [];
+        for (let n = 0; n < t; n++)
+            a.push(spiralIndices[(e + n) % spiralIndices.length]);
+        return a;
+    } catch (error) {
+        console.error('Error getting snake indices:', error);
+        return [];
+    }
 }
+
 function drawCharacter(e, t) {
     if (!e.isVisible)
         return;
-    let a = e.startTime + 1e3 * framesPerSixteenthBeat / 60;
-    if (t > e.startTime && !e.active && (e.active = !0),
-    void 0 === e.lastRotationTime && (e.lastRotationTime = 0),
-    void 0 === e.targetRotation && (e.targetRotation = e.rotation),
-    e.spinning && (e.index % 3 == 0 ? t - e.lastRotationTime >= 2e3 * framesPerHalfBeat / 60 && (e.targetRotation += Math.PI / 2,
-    e.lastRotationTime = t + 2e3 * framesPerHalfBeat / 60) : t - e.lastRotationTime >= 1e3 * framesPerHalfBeat / 60 && (e.targetRotation -= Math.PI / 2,
-    e.lastRotationTime = t + 1e3 * framesPerHalfBeat / 60),
-    e.rotation += (e.targetRotation - e.rotation) * .05),
-    e.active && e.y < e.finalY) {
-        let n = a - t;
-        if (n > 0) {
-            let o = e.finalY - e.y;
-            e.y += o / n * (1e3 / 60) / 8,
-            e.y > e.finalY && (e.y = e.finalY)
-        } else
-            e.y = e.finalY;
-        let r = getRandomColor()
-          , l = getRandomColor(r);
-        e.bgColor = r,
-        e.fgColor = l,
-        ctx.fillStyle = e.bgColor,
-        ctx.fillRect(e.x, e.y, cellWidth, cellHeight)
-    } else {
-        if (e.inSnake) {
+    try {
+        let a = e.startTime + 1e3 * framesPerSixteenthBeat / 60;
+        if (t > e.startTime && !e.active && (e.active = !0),
+        void 0 === e.lastRotationTime && (e.lastRotationTime = 0),
+        void 0 === e.targetRotation && (e.targetRotation = e.rotation),
+        e.spinning && (e.index % 3 == 0 ? t - e.lastRotationTime >= 2e3 * framesPerHalfBeat / 60 && (e.targetRotation += Math.PI / 2,
+        e.lastRotationTime = t + 2e3 * framesPerHalfBeat / 60) : t - e.lastRotationTime >= 1e3 * framesPerHalfBeat / 60 && (e.targetRotation -= Math.PI / 2,
+        e.lastRotationTime = t + 1e3 * framesPerHalfBeat / 60),
+        e.rotation += (e.targetRotation - e.rotation) * .05),
+        e.active && e.y < e.finalY) {
+            let n = a - t;
+            if (n > 0) {
+                let o = e.finalY - e.y;
+                e.y += o / n * (1e3 / 60) / 8,
+                e.y > e.finalY && (e.y = e.finalY);
+                let r = getRandomColor()
+                  , l = getRandomColor(r);
+                e.bgColor = r,
+                e.fgColor = l,
+                ctx.fillStyle = e.bgColor,
+                ctx.fillRect(e.x, e.y, cellWidth, cellHeight);
+            } else {
+                e.y = e.finalY;
+            }
             let i = getRandomColor()
               , s = getRandomColor(i);
             e.bgColor = i,
-            e.fgColor = s
+            e.fgColor = s;
         } else if (visitedIndices.has(e.index)) {
             let d = transactionColors[e.transactionId];
             e.bgColor = d.bgColor,
-            e.fgColor = d.fgColor
+            e.fgColor = d.fgColor;
         }
         ctx.fillStyle = e.bgColor,
-        ctx.fillRect(e.x, e.y, cellWidth, cellHeight)
+        ctx.fillRect(e.x, e.y, cellWidth, cellHeight);
+        e.active && e.y >= e.finalY && (e.y = e.finalY,
+        e.soundPlayed || (e.soundPlayed = !0));
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(e.x, e.y, cellWidth, cellHeight);
+        ctx.clip();
+        ctx.translate(e.x + cellWidth / 2, e.y + cellHeight / 2);
+        ctx.rotate(e.rotation);
+        ctx.fillStyle = e.fgColor;
+        initBlocksStarted && e.inSnake ? (ctx.font = \`\${e.fontSize / 3}px "xoblk"\`,
+        ctx.textAlign = "center",
+        ctx.textBaseline = "middle",
+        e.isNow ? ctx.fillText("𓎥", 0, 0) : ctx.fillText("✗⚬", 0, 0)) : (ctx.font = \`\${e.fontSize}px "xoxb"\`,
+        ctx.textAlign = "center",
+        ctx.textBaseline = "middle",
+        ctx.fillText(e.char, 0, 0));
+        ctx.restore();
+    } catch (error) {
+        console.error('Error drawing character:', error);
     }
-    e.active && e.y >= e.finalY && (e.y = e.finalY,
-    e.soundPlayed || (e.soundPlayed = !0)),
-    ctx.save(),
-    ctx.beginPath(),
-    ctx.rect(e.x, e.y, cellWidth, cellHeight),
-    ctx.clip(),
-    ctx.translate(e.x + cellWidth / 2, e.y + cellHeight / 2),
-    ctx.rotate(e.rotation),
-    ctx.fillStyle = e.fgColor,
-    initBlocksStarted && e.inSnake ? (ctx.font = \`\${e.fontSize / 3}px "xoblk"\`,
-    ctx.textAlign = "center",
-    ctx.textBaseline = "middle",
-    e.isNow ? ctx.fillText("𓎥", 0, 0) : ctx.fillText("✗⚬", 0, 0)) : (ctx.font = \`\${e.fontSize}px "xoxb"\`,
-    ctx.textAlign = "center",
-    ctx.textBaseline = "middle",
-    ctx.fillText(e.char, 0, 0)),
-    ctx.restore()
 }
+
 function animate(e) {
     if (!currentTime) currentTime = e;
     let t = e - currentTime,
@@ -663,155 +801,195 @@ function animate(e) {
         return;
     }
 
-    ctx.clearRect(0, 0, canvasState.canvas.width, canvasState.canvas.height);
+    try {
+        ctx.clearRect(0, 0, canvasState.canvas.width, canvasState.canvas.height);
 
-    if (frameCounter % framesPerBeat === 0 && !initBlocksStarted) {
-        let r = getRandomColor();
-        self.postMessage({
-            command: "updateBackground",
-            data: r
-        });
-    }
-
-    frameCounter++;
-
-    characters.forEach((e, r) => {
-        if (e.y < e.finalY) n = false;
-        if (!e.isVisible) o++;
-
-        if (initBlocksStarted) {
-            if (a.includes(r)) {
-                e.inSnake = true;
-                visitedIndices.add(r);
-                if (visitedIndices.has(r)) {
-                    e.spinning = false;
-                    if (hideBlocks) e.spinning = true;
-                }
-                e.bgColor = getRandomColor();
-                e.fgColor = getRandomColor(e.bgColor);
-            } else {
-                e.inSnake = false;
-                if (visitedIndices.has(r) && hideBlocks && e.spinning) e.isVisible = false;
-            }
-        }
-
-        drawCharacter(e, t);
-    });
-
-    if (n) {
-        if (initBlocksStarted) {
-            if (performance.now() - lastUpdateTime > 200 * framesPerBeat / 60) {
-                if (snakeLength < 8 && snakePosition < spiralIndices.length - snakeLength) {
-                    snakeLength++;
-                } else if (snakeLength > 0 && snakePosition > spiralIndices.length - (snakeLength + 2)) {
-                    snakeLength--;
-                }
-
-                if (!snakeTraversalCompleted) {
-                    snakePosition = (snakePosition + 1) % spiralIndices.length;
-                    lastUpdateTime = performance.now();
-                }
-            }
-
-            if (snakePosition === spiralIndices.length - 1) {
-                if (!hideBlocks) {
-                    textCtx.clearRect(0, 0, canvasState.canvas.width, canvasState.canvas.height);
-                    animateFrames(glitchFrames, artCtx, ctx.canvas, 15);
-                    self.postMessage({
-                        command: "hideArtCanvas"
-                    });
-                }
-                snakeLength = 0;
-                hideBlocks = true;
-                if (o == spiralIndices.length) snakeTraversalCompleted = true;
-            }
-        } else {
-            initBlocksStarted = true;
-            let l = 0,
-                i = Math.floor(16 * seededRandom.random()) + 1;
-
-            characters.forEach((e, t) => {
-                if (i <= 0) {
-                    l++;
-                    i = Math.floor(16 * seededRandom.random()) + 1;
-                }
-                i--;
-                e.transactionId = l;
-                e.animated = false;
-                if (!transactionColors[l]) {
-                    transactionColors[l] = {
-                        bgColor: "#1c1e1d",
-                        fgColor: "#d8d8d4"
-                    };
-                }
+        if (frameCounter % framesPerBeat === 0 && !initBlocksStarted) {
+            let r = getRandomColor();
+            self.postMessage({
+                command: "updateBackground",
+                data: r
             });
-
-            activeTransactions = new Set(characters.map(e => e.transactionId));
         }
-    }
 
-    requestAnimationFrame(animate);
+        frameCounter++;
+
+        characters.forEach((e, r) => {
+            if (e.y < e.finalY) n = false;
+            if (!e.isVisible) o++;
+
+            if (initBlocksStarted) {
+                if (a.includes(r)) {
+                    e.inSnake = true;
+                    visitedIndices.add(r);
+                    if (visitedIndices.has(r)) {
+                        e.spinning = false;
+                        if (hideBlocks) e.spinning = true;
+                    }
+                    e.bgColor = getRandomColor();
+                    e.fgColor = getRandomColor(e.bgColor);
+                } else {
+                    e.inSnake = false;
+                    if (visitedIndices.has(r) && hideBlocks && e.spinning) e.isVisible = false;
+                }
+            }
+
+            drawCharacter(e, t);
+        });
+
+        if (n) {
+            if (initBlocksStarted) {
+                if (performance.now() - lastUpdateTime > 200 * framesPerBeat / 60) {
+                    if (snakeLength < 8 && snakePosition < spiralIndices.length - snakeLength) {
+                        snakeLength++;
+                    } else if (snakeLength > 0 && snakePosition > spiralIndices.length - (snakeLength + 2)) {
+                        snakeLength--;
+                    }
+
+                    if (!snakeTraversalCompleted) {
+                        snakePosition = (snakePosition + 1) % spiralIndices.length;
+                        lastUpdateTime = performance.now();
+                    }
+                }
+
+                if (snakePosition === spiralIndices.length - 1) {
+                    if (!hideBlocks) {
+                        textCtx.clearRect(0, 0, canvasState.canvas.width, canvasState.canvas.height);
+                        animateFrames(glitchFrames, artCtx, ctx.canvas, 15);
+                        self.postMessage({
+                            command: "hideArtCanvas"
+                        });
+                    }
+                    snakeLength = 0;
+                    hideBlocks = true;
+                    if (o == spiralIndices.length) snakeTraversalCompleted = true;
+                }
+            } else {
+                initBlocksStarted = true;
+                let l = 0,
+                    i = Math.floor(16 * seededRandom.random()) + 1;
+
+                characters.forEach((e, t) => {
+                    if (i <= 0) {
+                        l++;
+                        i = Math.floor(16 * seededRandom.random()) + 1;
+                    }
+                    i--;
+                    e.transactionId = l;
+                    e.animated = false;
+                    if (!transactionColors[l]) {
+                        transactionColors[l] = {
+                            bgColor: "#1c1e1d",
+                            fgColor: "#d8d8d4"
+                        };
+                    }
+                });
+
+                activeTransactions = new Set(characters.map(e => e.transactionId));
+            }
+        }
+
+        requestAnimationFrame(animate);
+    } catch (error) {
+        console.error('Error during animation:', error);
+    }
 }
+
 function getRandomColor(e) {
-    let t = colors;
-    e && (t = colors.filter(t=>t !== e));
-    let a = Math.floor(seededRandom.random() * t.length);
-    return t[a]
+    try {
+        let t = colors;
+        e && (t = colors.filter(t => t !== e));
+        let a = Math.floor(seededRandom.random() * t.length);
+        return t[a];
+    } catch (error) {
+        console.error('Error getting random color:', error);
+        return "#000000";
+    }
 }
+
 function getCharacterAtPosition(e, t) {
-    return characters.find(a=>e >= a.x && e <= a.x + cellWidth && t >= a.y && t <= a.y + cellHeight)
+    try {
+        return characters.find(a => e >= a.x && e <= a.x + cellWidth && t >= a.y && t <= a.y + cellHeight);
+    } catch (error) {
+        console.error('Error getting character at position:', error);
+        return null;
+    }
 }
+
 function swapColors(e) {
-    if (e.colorsSwapped) {
-        let t = e.bgColor;
-        e.bgColor = e.fgColor,
-        e.fgColor = t,
-        e.colorsSwapped = !1
-    } else {
-        let a = e.bgColor;
-        e.bgColor = e.fgColor,
-        e.fgColor = a,
-        e.colorsSwapped = !0
+    try {
+        if (e.colorsSwapped) {
+            let t = e.bgColor;
+            e.bgColor = e.fgColor,
+            e.fgColor = t,
+            e.colorsSwapped = !1;
+        } else {
+            let a = e.bgColor;
+            e.bgColor = e.fgColor,
+            e.fgColor = a,
+            e.colorsSwapped = !0;
+        }
+        drawCharacter(e);
+    } catch (error) {
+        console.error('Error swapping colors:', error);
     }
-    drawCharacter(e)
 }
+
 function getCurrentTimeIndex() {
-    let e = new Date
-      , t = e.getHours()
-      , a = e.getMinutes()
-      , n = 12 * t + Math.floor(a / 5);
-    return n > 143 ? n - 143 : n
+    try {
+        let e = new Date
+          , t = e.getHours()
+          , a = e.getMinutes()
+          , n = 12 * t + Math.floor(a / 5);
+        return n > 143 ? n - 143 : n;
+    } catch (error) {
+        console.error('Error getting current time index:', error);
+        return 0;
+    }
 }
+
 function refreshCanvas() {
-    ctx.clearRect(0, 0, canvasState.canvas.width, canvasState.canvas.height),
-    characters.forEach(e=>{
-        drawCharacter(e)
+    try {
+        ctx.clearRect(0, 0, canvasState.canvas.width, canvasState.canvas.height),
+        characters.forEach(e=>{
+            drawCharacter(e);
+        });
+    } catch (error) {
+        console.error('Error refreshing canvas:', error);
     }
-    )
 }
+
 function resetAndStartOver() {
-    initBlocksStarted = !1,
-    updateColors(),
-    lastStartTime = 0,
-    currentTime = 0,
-    characters = [],
-    activeTransactions.clear(),
-    initializeCharacters(),
-    requestAnimationFrame(animate),
-    self.postMessage({
-        command: "resetTrack"
-    })
-}
-// async function loadFonts(e){let t=Object.keys(e).map(t=>new FontFace(t,\`url(\${e[t]})\`));await Promise.all(t.map(e=>e.load())),t.forEach(e=>{self.fonts.add(e)})}
-async function loadFonts(fonts) {
-    const fontPromises = Object.entries(fonts).map(async([name,url])=>{
-        const fontFace = new FontFace(name,\`url(\${url})\`);
-        await fontFace.load();
-        self.fonts.add(fontFace);
+    try {
+        initBlocksStarted = !1,
+        updateColors(),
+        lastStartTime = 0,
+        currentTime = 0,
+        characters = [],
+        activeTransactions.clear(),
+        initializeCharacters(),
+        requestAnimationFrame(animate),
+        self.postMessage({
+            command: "resetTrack"
+        });
+    } catch (error) {
+        console.error('Error resetting and starting over:', error);
     }
-    );
+}
+
+async function loadFonts(fonts) {
+    const fontPromises = Object.entries(fonts).map(async([name, url]) => {
+        try {
+            const fontFace = new FontFace(name, \`url(\${url})\`);
+            await fontFace.load();
+            self.fonts.add(fontFace);
+        } catch (error) {
+            console.error('Error loading font:', error);
+        }
+    });
     return Promise.all(fontPromises);
 }
+
 self.onmessage = async function(e) {
     let {
         command: t,
@@ -855,40 +1033,45 @@ self.onmessage = async function(e) {
         });
     }
 
-    switch (t) {
-        case "glitched":
-            initializeSeeds(extras.seededRandomSeed, extras.bpm);
-            updateColors();
-            let randomColor = getRandomColor();
-            self.postMessage({
-                command: "updateBackground",
-                data: randomColor
-            });
-            await loadFonts(extras.fonts);
-            textCtx.font = 'bold 20px "xoxb"';
-            artCtx.font = 'bolder 20px "xoblk"';
-            resizeCanvas(extras.width, extras.height);
-            self.postMessage({
-                command: "workerReady"
-            });
-            break;
-        
-        case "begin":
-            begin();
-            break;
+    try {
+        switch (t) {
+            case "glitched":
+                initializeSeeds(extras.seededRandomSeed, extras.bpm);
+                updateColors();
+                let randomColor = getRandomColor();
+                self.postMessage({
+                    command: "updateBackground",
+                    data: randomColor
+                });
+                await loadFonts(extras.fonts);
+                textCtx.font = 'bold 20px "xoxb"';
+                artCtx.font = 'bolder 20px "xoblk"';
+                resizeCanvas(extras.width, extras.height);
+                self.postMessage({
+                    command: "workerReady"
+                });
+                break;
 
-        case "resetAndStartOver":
-            resetAndStartOver();
-            break;
+            case "begin":
+                begin();
+                break;
 
-        case "resize":
-            resizeCanvas(extras.width, extras.height);
-            break;
+            case "resetAndStartOver":
+                resetAndStartOver();
+                break;
 
-        default:
-            console.error("Unknown command:", t);
+            case "resize":
+                resizeCanvas(extras.width, extras.height);
+                break;
+
+            default:
+                console.error("Unknown command:", t);
+        }
+    } catch (error) {
+        console.error('Error in onmessage:', error);
     }
-};`;
+};
+`;
 
     const blob = new Blob([workerScript], { type: 'application/javascript' });
     //const manifest = {"manifest":"arweave/paths","version":"0.1.0","index":{"path":"index.html"},"paths":{"manifest.json":{"id":"TOr9Y_fBePuz8vXJMx0VJDwDScnr3JrgK1sK0aX1pb0"},"C4.mp3":{"id":"VgVZm5eQ9_HwYrRz0UTenFE8KO2qqYh3-barLsPlbic"},"perc-808.mp3":{"id":"qT2Y3BTCNU7GfeUSA4tbdjtIWOI3QSAMhNBUV71QVL8"},"kick-deep.mp3":{"id":"leCEJguCW399eVX45axBld8disAsu-_YLvNUnsZw__M"},"hihat-digital.mp3":{"id":"XmOazOsH6LY1zOAsdpmiVKVFgOODxfBrTfrt5C7fM4o"},"Asnare.mp3":{"id":"tAEBK3ikF-EE1K6CEAvU6NxO9xtL-wB51XuHLpq6haw"},"melody12.mp3":{"id":"16Xv3f8rbXFzB3IEfnETMLTxkiYbRkY2oV9pZgkbSL0"},"snare-dist03.mp3":{"id":"RHpwZA0ghkNCEu9oRFEMgD7iqmMXRG6gIza_nI8KvQ8"},"snare-vinyl02.mp3":{"id":"FuPImu0tiFU8AOpObPIzCkU3VqvNHKks3VHUjNP2jVg"},"pop.mp3":{"id":"c7sH1lZiqccWNHR2fLZ-qtnLm806Dwg0NPBToYucWgU"},"Akick.mp3":{"id":"DtpEW91kWx-WuE5eTnY9G7DABoHrASikw3lOIddJ-hU"},"melody4.mp3":{"id":"xR_geCAnYE-KQPYzZlDJgl1VYfY9bud9BR5Ibf2wwJQ"},"snare-lofi01.mp3":{"id":"9OirUfPwWLiPA4PiTFzruPFkrHuk4-Wyv2EhTTIzeHY"},"hihat-dist01.mp3":{"id":"fOF1B8Ev6AXSJQoJIJ2604MwelyAphmbj8ZhidT9p0k"},"kick-gritty.mp3":{"id":"EtPFn4mADbHKWY6Tkuf0j1D4fM7eJ1ebkXvpsj9JDW0"},"snare-smasher.mp3":{"id":"RYGKr_-xhfAU5jV6-9skHZ_rnQZN6UsZFf4QSdCKYEA"},"snare-pinch.mp3":{"id":"uwGhlSB7LGbamrNJMvZ_1pNMEVhD0Jw6zTHJZybV2EA"},"hum8.mp3":{"id":"lHw1mDuJx2bWrN2DuLfLJtLbZRxW5a6e6LAGnmyEwEU"},"cowbell-808.mp3":{"id":"qXXSmBetAu_73rLsmwej8XW5mmpqOaqRaUJxWJGdbZk"},"melody47.mp3":{"id":"_sdnmUyqNAS_-RaiCt2y5fyhLBWNKy9005-AOPO_QW8"},"chord14.mp3":{"id":"15C-1285uK2he3EuqZ87lzktbpbNmvpFfOz2pphIP6Q"},"shaker-analog.mp3":{"id":"5LcVWrEYEpjQkuu54TBsbzNFkUvdxSDm1bqeBlvFTkA"},"melody50.mp3":{"id":"mbF4nJJpJQjFiAT4pcDAV985mdaxLhwJXchES410D4E"},"melody54.mp3":{"id":"3CpBD9J18SzM-REdSsFk_44RMaoAXHIUY_aVj6UJpvc"},"ride-acoustic01.mp3":{"id":"thJbGvkuhEodUYMUvbPOPTcM302rseq9fs3WpAuBqMg"},"openhihat.mp3":{"id":"2x3Lx_gBqSE5TOO1ludJkNhdbaPumbQEP5pseges2Kc"},"melody48.mp3":{"id":"xd9kaJkV8I3ctnlUo7emyh_yt7yk7e2aAoLncDAwL9E"},"kick-slapback.mp3":{"id":"F6k4VXYrbyZ8_CLD3gk5pZyc_I-fDZqmkC3b_zQeU9M"},"xoBlack.woff2":{"id":"OyB2RYKnZYhUsRBfrA9Bhx5WQIX3P0yuowVp_Q3BEUo"},"Ahihat.mp3":{"id":"4GMOhBZx7RJVUZWvNYGuvsrrAUH-12JXRXa_Ctbgk5A"},"kick-heavy.mp3":{"id":"BZcPi7Xwgngyl6fVpS4P4Kaut1RUxgYLZMDAeonBTCA"},"kick-electro02.mp3":{"id":"8LJdQa2B9oXNpZ41_Mndr3T-iHjQj0hoD8C5wTJUOGg"},"melody26.mp3":{"id":"OXzUTVKF3ZkeTuKUHjwt2ok-IfbGuVQ-JQNdlgjFly8"},"melody49.mp3":{"id":"7pl6YcvyVPOHxsGUBgXAQQlOU68quT0xR7oEjiW8iAo"},"melody46.mp3":{"id":"ZoLeYzQ6NAWA5fJQVEFS7n0wktAhb1xF7EDhEK5lYOM"},"melody77.mp3":{"id":"WCmOoQ99q88n4QRp1YcUJ_n_zu5kVzEU0csWGoOgSE4"},"snare.mp3":{"id":"Pa-rOw3GJdDRr6UxDzNU25KYkHii03OPd63N74OFfuE"},"snare-modular.mp3":{"id":"Ev199tjR5RBfg12tRVAvkTRBzyi9j2troZbcmzaqef4"},"kick-thump.mp3":{"id":"7AG4NhiR--a5Eprpuj9c9qZE3pf80q3pqfOZrZnaiJ8"},"tom-short.mp3":{"id":"c88vCnwwmTpGNisGR-6tp-p10x7nGrHlKo8sPieI5bE"},"favicon.ico":{"id":"xeUo5wa_bzv3WBPAzpAg-Nh275Y85lLXiFw2bV3ubB0"},"exyboxy.woff":{"id":"KU5QBQzz4b4htKw-galBcs8ni7OTb32cFCk5Y7exJQU"},"xoend.woff":{"id":"37WEqfxqYTVppj1SPlu3mRF_gUj6j6jFNBxtNaI1UtQ"},"Bclap.mp3":{"id":"uzSCr3AG07GO-P-Jbcda0pxUdD_I940bYm2SvCOIkLc"},"chord9.mp3":{"id":"waO0DTaLMVqfc3402qDD40pJ38MylLevLR-nEK0sBGI"},"melody2.mp3":{"id":"6NxL8K6Q1OS8YC0BMkXQ1RbOwA8VhlPXU9UsOpQ52Vc"},"melody31.mp3":{"id":"TfnysYfEZotptNqfw7kdbKbx9OuE7P-nkngsPDDFieo"},"kick.mp3":{"id":"QP1ybh2YETviP8Gy7vBHrMD6rzBorCWrBh1weaGxtIs"},"kick-softy.mp3":{"id":"reJinunSI6-V5mvHjD8Xozczjij_W9bAWo7I2YG9lqk"},"melody59.mp3":{"id":"oCrrKz5NQf7LqhWHyal9B17WjhWDIFr6OFL-Hck5naM"},"chord3.mp3":{"id":"mJErEyx7fhrOABLUrbRCGy8gab2N6Ilz2d9m1t8QFqE"},"melody13.mp3":{"id":"dtOjmXKAHn3lBNwf6sZyhLDr_jMfHfSQjttHhvMFPPc"},"melody14.mp3":{"id":"hkc-Qn4jQH2V-guO4Xgbh9_457SFtqZc9FtVeXFOHwU"},"tom-lofi.mp3":{"id":"oGKzrvWpKuYqWZvp1viY1WaN60-bOzJ2xlQlVscYNgY"},"Aclap.mp3":{"id":"r4UQee0_A6ojKLOwdLaBpGo84v7c0iWKUW4N2XFWoB0"},"melody68.mp3":{"id":"PGHXz2Hs0P4lYpJfsD7mE_XK4tNhpPejwwtGYy8OiUE"},"kick-big.mp3":{"id":"sP075CX6h55Tr_h-FblVhc5rZYaRqQiIf9ueue94XWM"},"snare-acoustic01.mp3":{"id":"H_8YTxsiLOz5DeRbhvYUa7CR_BcIxNxOpCqcuRVPCGU"},"melody0.mp3":{"id":"alq0LYrukx2wtdRihKJyGa97ekKIAGAQjyh1xcGkOE0"},"melody1.mp3":{"id":"99EU7tIllsaJjdezKHhIMMfrIGrT3LWTcr6_X38AAT4"},"hihat-ring.mp3":{"id":"K25H0RxsQVo3dq9l7tYmOgPRB2sGTmpvjkP8CYxn9Fo"},"perc-hollow.mp3":{"id":"bvJHpEdK12mLFjmyK4CqNZSb_j-crH39riQ2AXOgiMA"},"bass4.mp3":{"id":"GHbo1QQDKSH2bNKNlGQGByQwvu22Dh26cbLb_qPCjp8"},"clap-crushed.mp3":{"id":"taavzc5ICAfsxnhUIJYBTzoWkz2riekXBR45SGbXS6E"},"seeded.js":{"id":"GejH3nHejA8FhxVRRmrLMzi6jxNDYhJ93Nf-YHybMzg"},"xoend.woff2":{"id":"Rg9MNWdhgXIDPL6A8cQ6A2c_JiRu2GIO43fnnBC6LaI"},"melody64.mp3":{"id":"w6HsCmlQnrl5xz_U0rOaybhErWSA-6YRobJv6EUx8gA"},"snare-acoustic02.mp3":{"id":"RIx4IlFZaHdGwevJs45XGXn15JRfL6E7dKd4kNF-SLU"},"melody10.mp3":{"id":"D3lsymq_Beikeaav-fihSWYW8tz4gjgPN9w37amrF5E"},"android-chrome-512x512.png":{"id":"KpYgzSR0LL8Q8JHLkqZh8JHbNq_n_piIDANG34wFVIo"},"snare-electro.mp3":{"id":"uBZa8E8ej8n5mAZNl086EZ2B-YgQ1GFsbATJtH8FTuE"},"melody3.mp3":{"id":"Hs5AMXsQuXntBeWb7tLIfJFWfmweXsjVfO-4kq5o6G4"},"perc-tribal.mp3":{"id":"0Ox9StBtwWINTZZ7ecbxq9TFEWAJukbd58_eUru41kg"},"melody58.mp3":{"id":"RsBWnVetT0l2WvFDdXaw9Gwy5DomK8kP_kgoc_wqpBs"},"hihat-analog.mp3":{"id":"h2lqDZJVXg4XDbulgLvGibRXTXS4IeXykJCR0IyIIOw"},"hum5.mp3":{"id":"VOPn-5bW5_VXorhi_DU99juYJxzOjrNkqGvoFWjvshY"},"snap.mp3":{"id":"fJYOe0h4T6D0rlk0SVtPFbUW785ulEUB8elxNbrxIrU"},"perc-short.mp3":{"id":"F9JMpPJQI9s9oZ_eaGaeCDq-EOaKAL7iCgvnocRTcwg"},"bass1.mp3":{"id":"tUdHyg0wuWO0-ywoqp38Wgw07YvPLxHW4ZEf5DWb1QU"},"perc-chirpy.mp3":{"id":"MG0nMD_0sj5CUec9KXgVdc8i_hAraEwcamhZnSkGH3E"},"melody69.mp3":{"id":"orYa0yf-NuYEARzMaPTLLk8IFtzcKdTuomTr_DByNAc"},"melody45.mp3":{"id":"n0RRLJzHq-p13bh65KAXEtGnd6yxMyTFORxmXbBKDg0"},"HiraMaruProN-W4-AlphaNum.woff":{"id":"hlm71dazehZAZ7qLbHalvwwaoFuS3HZKhRCkGhgvBWg"},"audioWorker.js":{"id":"fLQdF9yf3CEf2JLHgkMIX6-YkasJUuM-pGj_B45n4KA"},"chord8.mp3":{"id":"ZD7taVbuSoyUyXc4foopSIK9KZjvkOt8dqT-mnkVdbE"},"kick-electro01.mp3":{"id":"EUQc0fzYEGSERIuMcVdDOK7kfjfeCj3TBKtV0EzU_I4"},"kick-dry.mp3":{"id":"RuaqGI9g99AcQbLg6vVoXiGaUGaHgBrL3AEMw-RWpIM"},"hihat-plain.mp3":{"id":"1LoVIrC9Ldw4zXdKp-FtmcQ7RTm4hBn7-HQFB8rFQzk"},"hum2.mp3":{"id":"T1A1mg66LHIL8yxg3XbZW3hzq7ogCa_DSFev31ekt7M"},"hum11.mp3":{"id":"oEtMzemzxfP4xsYCeoIn91R1kmar27o_FSP5_UUgiiE"},"kick-cultivator.mp3":{"id":"JGJiCIAXgpOPxzHEkvwvMvolIQ3EOf8gp8Wn2UFkhmI"},"audio.js":{"id":"wVw8vQ2YlNz4hzpfejUcYWA0xjhG6wu-5E9XDk7oB58"},"Aride.mp3":{"id":"JeWwMbUK47uJ6Xhde5s_2X6XdNyNgPI9nZ91tBRsOHA"},"melody16.mp3":{"id":"zP_NeOK51SYigUowHhSuY1KYLiRngzFa0EBhbhWh3OU"},"melody72.mp3":{"id":"muhsqdnfcyP61OYqdv7sOS5bUEAFkzbv9puXC04zbFk"},"chord10.mp3":{"id":"MZJ_5Su3t2LU9ToMXQvW5qg_0RgxUDkkUgk6El7Y6QM"},"melody66.mp3":{"id":"wGZuDaMCK76cq9Syco9QOGfSvtc7kY4K8BeIdAhSdp8"},"melody75.mp3":{"id":"n_q4hgBfb8a4MOJO0dHz8xhmWaUItfB0eEQrHcCu-z4"},"xoBlack.woff":{"id":"6tYVmXIYwHU7XKTzSgTBKzKrgQ7VkEkvYKa4v5Igqfw"},"openhat-slick.mp3":{"id":"Tme71jMDcvE5lQPLxA065TVtmRQW_0Hyosga3FSzPw0"},"kick-floppy.mp3":{"id":"molvC5LXPV6yKLjeUErdkDPyKgoAZDObxkXdUZYWUsw"},"Bperc1.mp3":{"id":"ABYEPl7Xl_9GY6DB615JeZRKxegVec3hPcqUob-PY0E"},"Bride.mp3":{"id":"dyLDOM2FhK-UbBwxEVIEbLd35z5kMCXREAYgVYihXRc"},"ride-acoustic02.mp3":{"id":"5dsgDl7S2xdz_0Ak2mcSyqmV8qiEuGLXpa4q-zQXCeA"},"melody70.mp3":{"id":"ks1M1wzHG0SzDZSFA4dMXm7a3CBaBnNvtN_1cdk5kpo"},"snare-analog.mp3":{"id":"gvwGa-9eEfADbbDUH4mwkp7t9DdwahYl1gvOruiAMtE"},"kick-808.mp3":{"id":"qNAKP-y0okOQnB0TMkQajsfjzk9I6ubfhNadM8j4oSs"},"perc-metal.mp3":{"id":"jgMaP1gFQfwnZ6YFYAeSejgfZLNE5VXu1IIRbDOekBA"},"chord6.mp3":{"id":"CnM5Q_O9wgLO4ThWtytw2LBkD6atFWnbYcwEN2Q7g9U"},"xoExtraBold.woff":{"id":"tBKzdVTNE78rxg4knWh3ATVGMSiqTf5G5sonHMEvbU0"},"perc-nasty.mp3":{"id":"VX931r1YKjwi37o383pOwqv5232QTHSRVF9Je5H9O0s"},"chord4.mp3":{"id":"6FwhuWR0VEy-F0N76N-hx0w8sfEDghR-YMKkoszIKlc"},"hihat-acoustic02.mp3":{"id":"Fiw4ya4L4qN10kAYwHNhM7mauXBhbNgb-kBq9e8BvI8"},"gamehighC.mp3":{"id":"GUIDmMMka5E4LxmWFeEF8eQ0unPB1h4Pca5mSuHYy9Y"},"kick-tape.mp3":{"id":"rRt6j9EzSLYy8ECZFm_1XXAfOVZZYrs-cG6XzZ8kpbo"},"favicon-32x32.png":{"id":"DzvY3TnpipWOSF7a2IPJDliyUicpl7V9OGut4VTwMVs"},"kick-classic.mp3":{"id":"N7Yjz5AHGE5S2V9tAoo9DYKNhtDIC7l9q30gDK8KIEw"},"melody42.mp3":{"id":"Mj4XzFOijJbZiMIvgAEiRFBND6SYhW6Qalm18OId5Rc"},"Bkick.mp3":{"id":"GozFi-MQJHI6nY0fzdS7wc0AR7GkCBNRLD_QWtZcU24"},"snare-noise.mp3":{"id":"AqYPujFEItAyMQ8RLwSg_VC_kxfHZFMfGrBW3utwKLA"},"melody51.mp3":{"id":"qj83hl2uPNmOiFviaYHL2aUjmJ2mbS014-n55Nfum4E"},"bass7.mp3":{"id":"HyGjR4eXa6pFDZshloElmTJcqUZ_VV_9J0nrWj_hQus"},"perc-tambo.mp3":{"id":"oS9GL8BgMvjAMNqktTpA_k45ZyrCLhnd4-AEQGHMlw4"},"crash-acoustic.mp3":{"id":"-UNS7zajEW1FlB3ayGZk09IdveSPj7Lg3Fe2R1-Xy1w"},"snare-dist02.mp3":{"id":"Wf-YxSCWyH5kmUTtiZrPNvCmxdmxe-BLr-h4BFflI70"},"tom-fm.mp3":{"id":"B2nzozwb2ze9I0dNhIqRII3SuP1Ump5ZVDpON2GBmgI"},"chord2.mp3":{"id":"S87Rq5-nvRoHYJ6-PWxXxZHvyBIi8xEwUVs-HUXE5rY"},"tom-acoustic01.mp3":{"id":"q15GRNC7UuakszMZAAombqoe00o9zJcyWyfOXI_JUQ4"},"hihat-808.mp3":{"id":"-72AObU_JsRR6BK48-N5gOi7H-6hFjrj2hpEofHoRKA"},"melody30.mp3":{"id":"WWVF9ZdPsvI7d2MIBemzrjprqU231ORCqh8bX9akomY"},"apple-touch-icon.png":{"id":"eO2atx4p8ZU-4wN19HHTCFfrZnerTnMobmom3TxGFQg"},"favicon-16x16.png":{"id":"1nAM1Ma0DGuRBYk9bcllBX-wgZgdSu8mMfmy2UA_epM"},"Bperc.mp3":{"id":"8CBGV3fuIMqEtLytovGDanZ3CrL1ly966BVOI69HZPY"},"clap-808.mp3":{"id":"t7QmW-CrB3PJ8T6Wr5Uk2od5trHTG5gDgpTU34xrGvc"},"melody43.mp3":{"id":"eSAqd5YqMp-i3wVmuyuvjCt0UUiwPBJr68r7InZRV-w"},"shaker-suckup.mp3":{"id":"GCNBfOp7DSOUrSKykJLyRpaNINx36dbzeAWDeT0NA4w"},"Aopenhat.mp3":{"id":"V-C9fQzeUiFHyZBwHp27ElTh5baz0hnDQguvgJqkLVM"},"chord11.mp3":{"id":"ZITQmQCk33TpcZXYtsBfJboEYIRqkiqN-Y2AojoUSd8"},"tom-analog.mp3":{"id":"agEtkvs7DELUhf6AqbvVUcBkrkUvG0G8-2tZdghuMtE"},"melody34.mp3":{"id":"shAaUkRUDsZhGIv5siSbA0EMJKLmKkhFiDKD6YvH4d8"},"melody76.mp3":{"id":"saWn3_VtwITwsYOnMccsDSp3fQcblIBgv3QoiAz7H2A"},"melody38.mp3":{"id":"611Drq-sPkqzu3QB-QNOMYwO321QVTIsZWWgBw6ZC2o"},"kick-vinyl02.mp3":{"id":"B4uPIHyfN_py8YKznsHxZAvB6kBuEmqvWe-OKZE7T08"},"crash-808.mp3":{"id":"a62Zlp7QjNkwWJs3EtjZ1xNbdb2-PNdrKCDCTxjqUC4"},"snare-brute.mp3":{"id":"-YAQuopmrBIE244m_iSG6ccWcUQ_EvDgI9fe6JrHg1A"},"melody28.mp3":{"id":"3rKG_uj_RcR3WlCnI4oUz0M9wARz3L0NZAvGeCZLVFA"},"chord1.mp3":{"id":"tlK4juDtlQElDHsJKm701QfFKbb8De7Jhs5K42iN7EA"},"clap-fat.mp3":{"id":"-bohX_MRw88TGPr7EHghCy1r3fr_A-vEaMJuHwNMn1I"},"kick-acoustic01.mp3":{"id":"UxRAujc1jpGv1WU1uGNdOD4McoXgJ6aKaOzL_jDNoJA"},"melody62.mp3":{"id":"YdPR6ehItbggqHGaUcVMP4Dty_TTsZJma53hOkKmFZs"},"melody71.mp3":{"id":"2L8Kktni7re4zf19My69_-wx_y6bDhFlbUX-O7xLbEw"},"snare-lofi02.mp3":{"id":"PmUSWzpHM34lXXLXWw3-8lo6G2FXZ1KkkS2eQdOhHto"},"melody27.mp3":{"id":"7tw2w4_zTTQ7nchwmDiyxphXbGuUadVJuavb3qMayCM"},"melody25.mp3":{"id":"wIUHQ4jgsBDl4tnUYuXirJcSUCuq9x60gcT2zQ9puSQ"},"melody18.mp3":{"id":"lMsQR0k6ZcYAic0cbeMYeXi1BSrPIRzDXePKjllKNXk"},"melody74.mp3":{"id":"IXCZmlqLBMyseiCSwL4wUfgcA4Lr-61XL8DLpReRygM"},"melody21.mp3":{"id":"ChLGYSMEkh4UtjY5kxBH3_LCNtaK_xW3tq0SyrnNjWY"},"snare-vinyl01.mp3":{"id":"Yr4n5nl9Xj5teb6ffjnHKg-CPqCoELGeYDMOIx92vZ8"},"melody55.mp3":{"id":"whQFPC11kNptpJaul-vjDqdzsf9OvKmvw7iY7w1CTVI"},"crash-noise.mp3":{"id":"box0uGaWxUuYiTKzqNVOUuVjGFQmUjcoDCT8bSbJSnQ"},"melody29.mp3":{"id":"nymEpjynRJFpNjN6JcRQSUoB4OzzW_oT8sEDRJ5cc9g"},"HiraMaruProN-W4-AlphaNum.woff2":{"id":"F4WDYWwDbIksYP1Un0pKF5JJgdC2jt1dvOmXq1Lor9k"},"kick-tight.mp3":{"id":"mmML5CZTrMIBRGOcZ0psvhJOy1X0uAPOKPDYwNG1uEo"},"melody73.mp3":{"id":"DHwrh4llkcTdqiuX63h6hk_2VoICMQEFMZsuiXDB5Ls"},"openhat-analog.mp3":{"id":"BQJeiGHROuS05GOeyVavTawhSSbhq2PY_w84Uh0I030"},"kick-plain.mp3":{"id":"6OgsYlDBE2b577xbn5zvqURLvu-OasAb2wBnsOc5qqw"},"hum4.mp3":{"id":"1xIGpUXRnx3crqxp0F8CxdkcbI0NvpEBmeYr-VZUMeY"},"Tone.js":{"id":"NOFOHRWypZw6nY7K-J8jl5eR7rKas3pA9SqmnlT1ego"},"hum1.mp3":{"id":"gisU-WlaNTiqc5M8wYTxxot5bb-c3Hjz8UctCK-nU1o"},"melody36.mp3":{"id":"RTwofJT79_beCMpTE1D2sdrgnmy9In_CUd8KN0ObRz4"},"chord12.mp3":{"id":"RRJirHYmYSHldOh4KNsIadJhE4xAZHnFNUKQkXb3ukA"},"melody9.mp3":{"id":"IJh8puYOrYfUn65cgFIx68MoOzSWqrHMeN4NWd5jtqY"},"snare-808.mp3":{"id":"hqDXIdgBNRheQBrQdsu0849QK60EZdINelrCKcmYY-Q"},"hum12.mp3":{"id":"6U1H7QSddhNSRggJNbZxfXKnyVDQTjpOSw2oh73j4Ys"},"Bhihat.mp3":{"id":"AqvDCzRZ3nGgvmDHLlLucC8JeTppA1img_eCj2UAIws"},"shaker-shuffle.mp3":{"id":"B7J-a0QarHLyyvG8-AWdz8TTuL3xsdk_mDNCOTBkYrI"},"clap-analog.mp3":{"id":"gLofoUWSnGiG3xj3ziCp6svmBlJVsXvSrtf6lR7FCTc"},"melody32.mp3":{"id":"qUn4r7rkEoVxImryvbdph-A_twxh42JJ0msLqqi7Z-8"},"kick-vinyl01.mp3":{"id":"NEDOuN662qxfrzGJZWV7VP2p70kNqH9PmhUsk-VSRmg"},"crash-tape.mp3":{"id":"fqaHc0fw1EbW88mnMNlUmgyDhjAdMvlFHAhZexOqzMQ"},"melody44.mp3":{"id":"TyF8vmCzme59QmVSDk-9Rfx6geKCIsBBX7ax5NXO16w"},"snare-big.mp3":{"id":"aaVV3xR4oziLi6auq9ddgYZKRo_HEPZXkj8zofT_l1g"},"shake.mp3":{"id":"N2On63fAJfDxvsS7_HN8eU2vHIbV1HpHA5mCSiXnEvI"},"hum10.mp3":{"id":"0VHTRJAqy2eJHj-P_9cKfo-TuEjjGFrBVD5-OPQblH4"},"hum14.mp3":{"id":"3MyQLsxopPSIlgpmOOAkYQJz17zSMZzId3zrSrZODZc"},"snare-dist01.mp3":{"id":"NPDw_yA0HJoSadKthlkLYEVLo3o5PagqDAjM-ZqaUPw"},"kick-oldschool.mp3":{"id":"-7bGqMoOVFT1tf5I4FgYeZpXa1fld34rSTntLe12eBc"},"chord13.mp3":{"id":"RQoMmlC4WQLdnGnDPLxFERqmqeblVKfBBS6pHiV5ktE"},"tom-acoustic02.mp3":{"id":"WM3EIYgul9S18Qi6X3z_v9t4ux6CH0a66U51rzldHrY"},"tom-chiptune.mp3":{"id":"BXhAMZ4ewo8JSaJNhECi5MzDUmW7QnqekldtVaBfvn0"},"xoExtraBold.woff2":{"id":"GO7xgqK4iWq3YUlPpy0P0jlNZ5gBcaLEtNYFsKMDZYc"},"hum3.mp3":{"id":"ZqLI71AdUqM4iihztKXhLhSwyGve334dYmH60YIOUAc"},"snare-punch.mp3":{"id":"9fJR73dkVvcnBcTXJVzl9mi_7OMS2ONJlJ71YsmdRBU"},"melody37.mp3":{"id":"LFgXgh8vwZu4PvYLtR_QsHC--xFLhIImdYK81DcJ0YI"},"chord0.mp3":{"id":"NkVPzqFEByN4mJrJeMLPcmSA09a3N4WQ9tEHCw9mrDY"},"melody8.mp3":{"id":"BO7UkyVdA8WLfOcwzNC_szCFwnYjB1UD61AFU7ME_B4"},"bass3.mp3":{"id":"NIMP6Skov1RP9mDwfC4Qghym4Hiih77eu4_KqMrUp4U"},"hum7.mp3":{"id":"p9oU2YqJKNdoe-UeGkmkAnTyBsu33eBLbOsXftcs3nY"},"melody23.mp3":{"id":"TUv3DzM-zsU0FTMEhY4mGdfXZImc_6g_CA2QeE-Dv1c"},"bass9.mp3":{"id":"xLcHMtzvmuBpZ49bhB__VZ013_4vSl_ajzuOJTXeiAs"},"melody53.mp3":{"id":"OibssoRQPpHMeJGNMFKG0csJpekFfiiZV4HPUeWlBUs"},"melody17.mp3":{"id":"aW1JFqyPEZZOC2009VQ-TNy_Y0bwjGuRmGJo4PNrW08"},"chord5.mp3":{"id":"_bS6Jju4-jpbS-OCEJywjhaQe-niHFb8GH6Gdz72wlY"},"clap-slapper.mp3":{"id":"XinBZjJ5SeHEx4Bs1UaXcrF8NFhVFml2Ionnw74sNoI"},"clap-tape.mp3":{"id":"Qra4604MxpS6pWkYDwsfkHThfH154UySPUDwgv18ypw"},"exyboxy.woff2":{"id":"jL_Z07kySVPUghEjFlxlwXvSeGR537kOKK6I7LYWSo4"},"bass6.mp3":{"id":"KYIgzL3ajFQjp8vV0nyMDFHQ8PS9g07k_nx92SW3p78"},"bass5.mp3":{"id":"O-pCAt9D3eZvFFzAVUq6S_wchhYxDvKGHTxehd1FAj4"},"kick-zapper.mp3":{"id":"gPzZgibFh-5sxH6GClut8uxlxfOF-_3sGunPMIzrb1s"},"hum9.mp3":{"id":"ydDFTLOW4fAGi6vWuj7jRiR05gFL8V9T6-bYP_Ts8rc"},"melody24.mp3":{"id":"QN4pR67OGimSEICZQsAJcgOU1gR0ixJAPD54ALrxJxQ"},"tom-808.mp3":{"id":"tEPN6TNHomVFUY6YSLgCgkaWwdUUiHJExHrbzsH8iN8"},"melody11.mp3":{"id":"nMYU3_LvUOmNauTQs5w-9alaTpIqp7StInnm4Sc6bYQ"},"android-chrome-192x192.png":{"id":"KkIGboIANbXWfEpGnI-D99656qzE2gpHOTWeGnkQYqA"},"melody6.mp3":{"id":"Ounqgiwf9QfsY6exbj55aHGRWy8FS2UkjVF9DUYpt7E"},"melody52.mp3":{"id":"XVM1cDAD7FOh2yCyHabwqpfASeAoqcYE1iPEA-Ugdhk"},"bass8.mp3":{"id":"4bvUd58IB_tPACVCg0wew_gwF6Hy5383sOE0C_NJW6E"},"animationWorker.js":{"id":"85vRP4Fuhc3ClrJqoaZuFjtpG9ouEMZbwcUAvrur__E"},"hum0.mp3":{"id":"fWkjH5xC_bhHlSGYhM8HpLcvCBZ7IOwimqhSULS7CW4"},"kick-acoustic02.mp3":{"id":"c8qtk5tt-u_ANh4Ssyibr-uVIUOpQhRzIQsKF5DrgeA"},"hihat-reso.mp3":{"id":"IT14QaSFDirhZ_zieJueA9kC7HtnLc5Px-Nn7YiVoyQ"},"perc-laser.mp3":{"id":"PXz6QPTwtlC2cc3a5XaNvz4ODykiDoN2Pxo2GZ31Es4"},"melody22.mp3":{"id":"VGheg3TZGifiZRygU3sKmBU3_AhvzWWyU2sQrW7ENMc"},"openhat-tight.mp3":{"id":"ZeXb8pfqsjOgrFaXKdkCBx7138xZsVzODadV0MntA68"},"melody40.mp3":{"id":"ndA6H0jqHIGJ6IX3y-3JptD1eMmQpfe5ecpOWwGXLsc"},"melody20.mp3":{"id":"pp_YdHt3eMw6ZNoanG493QDpt07xzeBJlMzYTyBEO7M"},"kick-newwave.mp3":{"id":"nXOdOMjMPAJnbg3pQI1qPipt0o-DjZ5uR5NLccUXmT4"},"chord7.mp3":{"id":"rJU4q1Y4RzFHwXth2gIbh3WwcWy1KsFHgyLqivZVTx8"},"Aperc.mp3":{"id":"bKRfKAUcVozXedyTHDDbnA367B2zXHRdXFwqC5lLfrU"},"melody56.mp3":{"id":"DYNXkKlEWE0iBrdZ7KLwqc8f6llr_AHxZkIjHReULQ4"},"melody5.mp3":{"id":"Rg3t2cKzWS4e5ff8BmV0-poyQlKmG1XZr7IkQO7qvg8"},"melody65.mp3":{"id":"07enxodZyoC0XOk0xIle9z5xHj6-RPEv88pDtC5AagM"},"clap.mp3":{"id":"Nr_Ii_wjS9LoGqszFbvKtEad8y1RIy4F4NqrAszV6lI"},"hihat-electro.mp3":{"id":"jq6lY4Ghq10awOKmEdW8EWIg_Olkq7vSDABQg3jeJOE"},"melody57.mp3":{"id":"4v233kJTcnby_-MHQp81lZHdcBAmt0qCxqX8YUMbfKs"},"index.html":{"id":"7sPlV2ptTFU_dLxCICpKB1_TcstYdZN1Sv9dbw3RBXg"},"hihat.mp3":{"id":"zcXvM54Gcrmx3zmsf1Ol3jEHTJ5EnCbFc064QNsq3dk"},"bass2.mp3":{"id":"iTFKDsuAVsDjTGkGoy9oqkRwfUzSa0l2jYt0Ulhk_kE"},"openhat-acoustic01.mp3":{"id":"96mAsy7dohpRtxAT77JajON4JQDejWVgVrLI4xSlflo"},"snare-tape.mp3":{"id":"FVP_qwiu-CjmvockrZ7_5oxdyKZaQCfzwZ-ql8ZhSTA"},"hihat-acoustic01.mp3":{"id":"Vm9B_UCbFT25mjP3v3RXwT0-BPVN3vrgzK4YPaUYvY0"},"melody15.mp3":{"id":"wTQFtTAFFs_ccH9VKE0lPfmd5Uou8fd9lA61NpLw8uY"},"melody67.mp3":{"id":"GPEalFxOiXyO5q7z0nRDK1w4pP84m0XGWBwVriLmpQY"},"hum6.mp3":{"id":"Cck4mIYsbDtpNIetI2v-ev7zBlyPBC-9VrQrnYx84bo"},"melody39.mp3":{"id":"3uQ787Yc8MjlK4WT13MOboqGk6dxAveTeayfdGRyTCg"},"openhat-808.mp3":{"id":"aoUGr_jCXiiuEWTH478UjIHYqQArYExraqNZl8OppJ4"},"kick-tron.mp3":{"id":"RGVQk9PwUoUcp2CqtX0tPEPVrKI0g21_25ioJcm__n4"},"Atom.mp3":{"id":"72gAmFn-oU5G9fm7qYup5Mw_I035H1XLQSEjer5-MbQ"},"snare-sumo.mp3":{"id":"w0z36vY3UvXOaU41RaP42Z2oH2nMYi1F5Py_pn0Aq5A"},"Bcrash.mp3":{"id":"SAQePIZzKZNSxr7Maigk0d-xOUDwxBosL6YEAuGkT8I"},"snare-block.mp3":{"id":"zihtTtB3Oc22NiZjV1aIAeUIglDgHeXMeSXH8-6T4aA"},"melody35.mp3":{"id":"_X38SltsuzMBXn9BwYYKnXDut51t25vLrhhQyhNLBOE"},"melody7.mp3":{"id":"h6Az9gRLnEZakbcuSFaKYbZ6qkmgGdUBFbaufVkm_N4"},"tom-rototom.mp3":{"id":"Lk_DpKNuygolETp7VADFMcCEiZohLP82yXq8we3AfY0"},"melody63.mp3":{"id":"iNWcCyBO_N3Zo-LKtvJhAXVtsa0mX2aohBSdtDbzjMo"},"Bhatopen.mp3":{"id":"DvqgwLua8g6KL-P_NvmQQy7ZIbdV-nGe51uDgr00srI"},"melody19.mp3":{"id":"9DbjaKCQ1Ny2XdhrNFElLn7gHtJxtvXhCqy2XVvqD8c"},"kick-stomp.mp3":{"id":"6FxjyPGxtOXP9tbHS4W8FEltMvRE3wGBpQK0BF7HHAE"},"melody41.mp3":{"id":"XeOtSCcP8sAxLYqOPIVkK0TMsDWHQAWLfV6kAUnX1yg"},"Bsnare.mp3":{"id":"z4nOkPMqIIhALR5srDowMj5WRB2hR0A3wJz6CKlSlw8"},"hihat-dist02.mp3":{"id":"A97MT031rGzl0cYcjfSaBqOWn4KaKXgXpbn1Z8WI74c"},"perc-weirdo.mp3":{"id":"dFfBU6bnEbrsmCoB8Fw9Xh3lhElyImIr3EB8hX1Fa1s"},"melody33.mp3":{"id":"cWMfzNqo9EL3rYPsbsJUV6trizKKC0m74duuPEPauHE"},"melody61.mp3":{"id":"31XDeqBwjH2RjexYFi_45qWDc78pQTxVkcbbe41ci7I"},"bass0.mp3":{"id":"AxHhJAZ_KHMOY74RqL7o82F_eietul0VNUV_f_FF0H8"},"melody60.mp3":{"id":"Aw1h_fL5gAaRWw1Eazmdcb7Mai0BL_nuwCogHczqsTI"},"hum13.mp3":{"id":"fJw1DnJUHosesudnzkgI7z6_1aM8b-32U7hsghi44vQ"}}}

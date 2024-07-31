@@ -21,8 +21,8 @@ canvas {
 
 @font-face {
     font-family: 'xoblk';
-    src: url('https://arweave.net/OyB2RYKnZYhUsRBfrA9Bhx5WQIX3P0yuowVp_Q3BEUo') format('woff2'),
-        url('https://arweave.net/6tYVmXIYwHU7XKTzSgTBKzKrgQ7VkEkvYKa4v5Igqfw') format('woff');
+    src: url('/xoBlack.woff2') format('woff2'),
+        url('/xoBlack.woff') format('woff');
     font-weight: normal;
     font-style: normal;
     font-display: swap;
@@ -30,8 +30,8 @@ canvas {
 
 @font-face {
     font-family: 'xoxb';
-    src: url('https://arweave.net/GO7xgqK4iWq3YUlPpy0P0jlNZ5gBcaLEtNYFsKMDZYc') format('woff2'),
-        url('https://arweave.net/6tYVmXIYwHU7XKTzSgTBKzKrgQ7VkEkvYKa4v5Igqfw') format('woff');
+    src: url('/xoExtraBold.woff2') format('woff2'),
+        url('/xoExtraBold.woff') format('woff');
     font-weight: normal;
     font-style: normal;
     font-display: swap;
@@ -39,8 +39,8 @@ canvas {
 
 @font-face {
     font-family: 'xoend';
-    src: url('https://arweave.net/Rg9MNWdhgXIDPL6A8cQ6A2c_JiRu2GIO43fnnBC6LaI') format('woff2'),
-        url('https://arweave.net/37WEqfxqYTVppj1SPlu3mRF_gUj6j6jFNBxtNaI1UtQ') format('woff');
+    src: url('/xoend.woff2') format('woff2'),
+        url('/xoend.woff') format('woff');
     font-weight: normal;
     font-style: normal;
     font-display: swap;
