@@ -2345,6 +2345,8 @@ const seededRandom = new SeededRandom(getSeedFromURL())
                     let l = new SongGenerator(o[s],I)
                       , _ = " "
                       , m = Math.floor(10 * seededRandom.random());
+                    let sp = getaudioPart("spiral");
+                    -1 == sp && (sp = Math.floor(8 * seededRandom.random()));
                     for (let h = 0; h < Math.floor(5 + 15 * seededRandom.random()); h++)
                         _ += getRandomCharacter(m);
                     let d, b;
@@ -2370,7 +2372,8 @@ const seededRandom = new SeededRandom(getSeedFromURL())
                             seededRandomSeed: seededRandom.seed,
                             width: d,
                             height: b,
-                            fonts: fontBlobs
+                            fonts: fontBlobs,
+                            spiral: sp
                         };
                         V.postMessage(e, [t, a, n])
                     }).catch(function($) {

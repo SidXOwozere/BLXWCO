@@ -52,7 +52,8 @@ let canvasState = {
     seededRandomSeed: 0,
     width: 0,
     height: 0,
-    fonts: null
+    fonts: null,
+    spiral: 0
 };
 const visitedIndices = new Set;
 
@@ -438,54 +439,76 @@ function animateFrames(e, t, a, n) {
 
 function drawText() {
     try {
-        let e = extras.width
-          , t = extras.height;
+        let e = extras.width;
+        let t = extras.height;
         textCtx.clearRect(0, 0, e, t);
-        let a = allWords[currentWordIndex]
-          , n = a[letterIndex];
-        ++letterIndex == a.length && (n = a,
-        letterIndex = 0);
+
+        let a = allWords[currentWordIndex];
+        let n = a[letterIndex];
+        ++letterIndex == a.length && (n = a, letterIndex = 0);
+
+        // Set font size in pixels based on height
         let o = t / 20;
-        textCtx.font = `${o}em "xoend"`;
+        let fontSizePx = o * 16; // Convert rem to px (assuming 1rem = 16px)
+        textCtx.font = `${fontSizePx}px "xoend"`;
+
         let r = textCtx.measureText(n).width;
-        for (; r > e && o > 0; )
-            o -= .1,
-            textCtx.font = `${o}em "xoend"`,
+
+        // Adjust font size to fit within the width of the canvas
+        while (r > e && o > 0) {
+            o -= 0.1;
+            fontSizePx = o * 16;
+            textCtx.font = `${fontSizePx}px "xoend"`;
             r = textCtx.measureText(n).width;
+        }
+
         let l = 16 * o;
-        textCtx.font = `${o}em "xoend"`;
+        textCtx.font = `${fontSizePx}px "xoend"`;
+
         let i = 360 * seededRandom.random();
         textCtx.save();
         textCtx.translate(e / 2, t / 2);
         textCtx.rotate(i * Math.PI / 180);
-        let s = .5 > seededRandom.random()
-          , d = s ? n.toUpperCase() : n.toLowerCase()
-          , c = (seededRandom.random() - .5) * l * .1;
+
+        let s = seededRandom.random() < 0.5;
+        let d = s ? n.toUpperCase() : n.toLowerCase();
+        let c = (seededRandom.random() - 0.5) * l * 0.1;
+
         textCtx.fillStyle = "white";
         textCtx.textAlign = "center";
         textCtx.fillText(d, 0, c);
         textCtx.restore();
-        let f = textCtx.getImageData(0, 0, e, t)
-          , $ = f.data;
+
+        let f = textCtx.getImageData(0, 0, e, t);
+        let $ = f.data;
         textCtx.clearRect(0, 0, e, t);
-        let m = artCtx.getImageData(0, 0, e, t)
-          , h = textCtx.createImageData(e, t)
-          , g = h.data;
-        for (let x = 0; x < $.length; x += 4)
-            $[x + 3] > 0 ? (g[x] = m.data[x],
-            g[x + 1] = m.data[x + 1],
-            g[x + 2] = m.data[x + 2],
-            g[x + 3] = m.data[x + 3]) : g[x + 3] = 0;
+
+        let m = artCtx.getImageData(0, 0, e, t);
+        let h = textCtx.createImageData(e, t);
+        let g = h.data;
+
+        for (let x = 0; x < $.length; x += 4) {
+            if ($[x + 3] > 0) {
+                g[x] = m.data[x];
+                g[x + 1] = m.data[x + 1];
+                g[x + 2] = m.data[x + 2];
+                g[x + 3] = m.data[x + 3];
+            } else {
+                g[x + 3] = 0;
+            }
+        }
+
         textCtx.putImageData(h, 0, 0);
     } catch (error) {
         console.error('Error drawing text:', error);
     }
 }
 
+
 function getSpiralIndices(e, t) {
     try {
         let a = [spiralPath, zigzagPath, diagonalPath, snakePath, horizontalWavePath, verticalWavePath, checkerboardPath, randomPath]
-          , n = Math.floor(seededRandom.random() * a.length);
+          , n = extras.spiral;
         return a[n](e, t);
     } catch (error) {
         console.error('Error getting spiral indices:', error);
@@ -973,7 +996,8 @@ self.onmessage = async function(e) {
         seededRandomSeed: l,
         width: i,
         height: s,
-        fonts: z
+        fonts: z,
+        spiral: sp,
     } = e.data;
 
     if (a) canvasState.canvas = a;
@@ -984,6 +1008,7 @@ self.onmessage = async function(e) {
     if (i) extras.width = i;
     if (s) extras.height = s;
     if (z) extras.fonts = z;
+    if (sp) extras.spiral = sp;
 
     if (canvasState.canvas && !ctx) {
         ctx = canvasState.canvas.getContext("2d", {
