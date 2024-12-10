@@ -18,6 +18,12 @@ function getSeedFromURL(e=3405691582) {
 let allWords = ["Awe", "Reverence", "Glory", "Exaltation", "Magnificence", "Splendor", "Resonance", "Harmony", "Radiance", "Majesty", "Adoration", "Wonder", "Praise", "Worship", "Glorification", "Exultation", "Devotion", "Sanctity", "Blessing", "Hallelujah", "Divinity", "Holiness", "Sanctification", "Transcendence", "Gratitude", "Elevation", "Elation", "Jubilation", "Ecstasy", "Celebration", "Illumination", "Enlightenment", "Rapture", "Fulfillment", "Consecration", "Glorify", "Adulation", "Veneration", "Homage", "Acclamation", "Triumph", "Rejoicing", "Devotion", "Elated", "Exulted", "Sanctified", "Exuberance", "Resplendence", "Benediction", "Reverence", "Splendid", "Transcendent", "Anointed", "Majestic", "Celestial", "Heavenly", "Blessed", "Exalted", "Holy", "Radiant", "Sublime", "Illuminated", "Euphoric", "Blessing", "Divine", "Hallowed", "Adored", "Praised", "Rejoiced", "Sanctify", "Wondrous", "Glorified", "Revelation", "Prophetic", "Reverent", "Worshipful", "Uplifted", "Consecrated", "Illustrious", "Magnificent", "Glorious", "Jubilant", "Elevated", "Exultant", "Ecstatic", "Raptured", "Transfigured", "Gloried", "Worshipped", "Triumphant", "Revered", "Eulogized", "Enraptured", "Resplendent", "Harmonised", "Synchronized", "Adorned", "Ornamented", "Resonated", "Proclaimed"], ctx = null, artCtx = null, textCtx = null, spiralIndices, characters = [], lastUpdateTime = 0, frameCounter = 0, letterIndex = 0, currentWordIndex = 0, cellWidth = 0, cellHeight = 0, lastEvenBeatTime = 0, currentNoteIndex = 0, lastStartTime = 0, currentTime = 0, snakePosition = -1, snakeLength = 0, fps = 60, snakeIndices = [], frameSeed, arts, charType, glitchFrames, colors, layoutType, seededRandom, portraitSeed, landscapeSeed, squareSeed, frameInterval, delayBetweenBlocks, processing, millisecondsPerBeat, framesPerBeat, framesPerHalfBeat, framesPerQuarterBeat, framesPerEighthBeat, framesPerSixteenthBeat, dropAnimationDuration, processingAnimationDuration, lastOddBeatTime, flashStartTime, transactionBlocks, transactionId, flashDurationgridHeight, gridWidth, snakeTraversalCompleted, hideBlocks, initBlocksStarted, textDrawn = !1, blocksAnimated = new Set, lastTransactionId = null;
 const transactionColors = {};
 let currentHoveredChar = null;
+let startTimestamp = null; // To track the start time
+let lastInterval = null; // Tracks the last two-hour interval
+let lastCycleDay = null; // Tracks the last cycle day
+let currentDay = new Date().getDate(); // Initial day
+const lastDayOfMonth = getLastDayOfMonth(); // Determine last day of the month dynamically
+
 const decayDuration = 60
   , layoutConfig = {
     "12x12": {
@@ -85,16 +91,243 @@ function initializeSeeds(e, t) {
     }
 }
 
+
+function animateProgressionWithGlitch(timestamp, glitchIntensity) {
+    // Increment frame counter
+    frameCounter++;
+	const { twoHourInterval, cycleDay } = getThreeDayCycle();
+    // Refresh every 6 frames
+    if (frameCounter % (23-twoHourInterval) === 0) {
+        runGlitchAnimation(timestamp, glitchIntensity);
+    }
+
+    // Continue the animation loop
+    requestAnimationFrame((newTimestamp) =>
+        animateProgressionWithGlitch(newTimestamp, glitchIntensity)
+    );
+}
+
+// Example `runGlitchAnimation` implementation
+function runGlitchAnimation(timestamp, intensity) {
+    const canvas = canvasState.artCanvas;
+    const tempCanvas = new OffscreenCanvas(canvas.width, canvas.height);
+    tempCanvas.width = canvas.width;
+    tempCanvas.height = canvas.height;
+
+    const numLayers = intensity + 2; // Add layers based on intensity, minimum of 2
+
+    // Generate layered glitches
+    for (let i = 0; i < numLayers; i++) {
+        const charCanvas = new OffscreenCanvas(canvas.width, canvas.height);
+        charCanvas.width = canvas.width;
+        charCanvas.height = canvas.height;
+        charCanvas.font = 'bolder 20px "xoblk"';
+
+        const charType = Math.floor(seededRandom.random() * characters.length);
+        const character = getRandomCharacter(charType);
+        
+        const textColor = colors[Math.floor(seededRandom.random() * colors.length)];
+
+        drawSeedGlitchArt(charCanvas, character, canvas.width * 1.5, textColor);
+        applyStrongGlitchEffect(charCanvas);
+        compositeImages(tempCanvas, charCanvas);
+    }
+
+    // Apply a final glitch effect
+    applyStrongGlitchEffect(tempCanvas);
+
+    // Composite the result onto the main canvas
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(tempCanvas, 0, 0);
+}
+
+
+function drawSeedGlitchArt(canvas, character, fontSize, color) {
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.font = `${fontSize}px "xoxb"`; // Replace with loaded font if needed
+            ctx.fillStyle = color;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+
+            const x = canvas.width / 2;
+            const y = canvas.height / 2;
+
+            const angle = seededRandom.random() * 360;
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate((angle * Math.PI) / 180);
+            ctx.fillText(character, 0, 0);
+            ctx.restore();
+        }
+
+        function applyStrongGlitchEffect(canvas) {
+            const ctx = canvas.getContext('2d');
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const pixels = imageData.data;
+            const tempPixels = new Uint8ClampedArray(pixels);
+
+            const width = canvas.width;
+            const height = canvas.height;
+
+            // Chromatic Aberration
+            const shiftAmount = seededRandom.random() < 0.5 ? -20 : 20;
+            for (let y = 0; y < height; y++) {
+                for (let x = 0; x < width; x++) {
+                    const index = (y * width + x) * 4;
+
+                    const rShift = (x + shiftAmount) % width;
+                    const gShift = (x - shiftAmount) % width;
+                    const bShift = (x + Math.floor(shiftAmount / 2)) % width;
+
+                    const rIndex = (y * width + ((rShift + width) % width)) * 4;
+                    const gIndex = (y * width + ((gShift + width) % width)) * 4;
+                    const bIndex = (y * width + ((bShift + width) % width)) * 4;
+
+                    pixels[index] = tempPixels[rIndex];
+                    pixels[index + 1] = tempPixels[gIndex + 1];
+                    pixels[index + 2] = tempPixels[bIndex + 2];
+                }
+            }
+
+            // Block Glitch
+            const blockSize = Math.floor(seededRandom.random() * 51) + 10; // Random size between 10 and 60
+            for (let y = 0; y < height; y += blockSize) {
+                for (let x = 0; x < width; x += blockSize) {
+                    if (seededRandom.random() < 0.4) {
+                        const srcX = Math.floor(seededRandom.random() * (width - blockSize));
+                        const srcY = Math.floor(seededRandom.random() * (height - blockSize));
+
+                        for (let yy = 0; yy < blockSize; yy++) {
+                            for (let xx = 0; xx < blockSize; xx++) {
+                                const srcIndex = ((srcY + yy) * width + (srcX + xx)) * 4;
+                                const destIndex = ((y + yy) * width + (x + xx)) * 4;
+
+                                if (srcIndex < tempPixels.length && destIndex < pixels.length) {
+                                    pixels[destIndex] = tempPixels[srcIndex];
+                                    pixels[destIndex + 1] = tempPixels[srcIndex + 1];
+                                    pixels[destIndex + 2] = tempPixels[srcIndex + 2];
+                                    pixels[destIndex + 3] = tempPixels[srcIndex + 3];
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            ctx.putImageData(imageData, 0, 0);
+        }
+
+        function compositeImages(baseCanvas, overlayCanvas) {
+            const baseCtx = baseCanvas.getContext('2d');
+            baseCtx.drawImage(overlayCanvas, 0, 0);
+        }
+
+        async function generateNFT(layersCount) {
+            const canvas = canvasState.artCanvas;
+            const tempCanvas = new OffscreenCanvas(canvas.width, canvas.height);
+
+            tempCanvas.width = canvas.width;
+            tempCanvas.height = canvas.height;
+
+            for (let i = 0; i < layersCount; i++) {
+                const charCanvas = new OffscreenCanvas(canvas.width, canvas.height);
+                charCanvas.width = canvas.width;
+                charCanvas.height = canvas.height;
+        		charCanvas.font = 'bolder 20px "xoblk"';
+
+                const charType = Math.floor(seededRandom.random() * characters.length);
+                const character = getRandomCharacter(charType);
+                const textColor = colors[Math.floor(seededRandom.random() * colors.length)];
+
+                drawSeedGlitchArt(charCanvas, character, canvas.width * 1.5, textColor);
+                applyStrongGlitchEffect(charCanvas);
+                compositeImages(tempCanvas, charCanvas);
+            }
+
+            applyStrongGlitchEffect(tempCanvas);
+
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(tempCanvas, 0, 0);
+        }
+
+function getLastDayOfMonth() {
+    const now = new Date();
+    return new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate(); // Last day of the current month
+}
+
 function begin() {
     try {
-        requestAnimationFrame(()=>{
-            initializeCharacters(),
-            requestAnimationFrame(animate)
-        });
+    	requestAnimationFrame(animateProgression);
     } catch (error) {
         console.error('Error starting animation:', error);
     }
 }
+function getThreeDayCycle(date = new Date()) {
+    const startOfYear = new Date(date.getFullYear(), 0, 1); // January 1st of the current year
+    const diffInMs = date - startOfYear; // Difference in milliseconds
+    const dayOfYear = Math.floor(diffInMs / (24 * 60 * 60 * 1000)) + 1; // Convert to days and add 1
+
+    // Determine the 3-day cycle
+    const cycleDay = ((dayOfYear - 1) % 3) + 1; // Cycle through 1, 2, 3
+
+    // Calculate the hours elapsed since midnight
+    const startOfDay = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0); // Midnight today
+    const elapsedHoursToday = Math.floor((date - startOfDay) / (60 * 60 * 1000));
+
+    // Determine the 2-hour interval within the current day
+    const twoHourInterval = Math.floor(elapsedHoursToday / 2); // 12 intervals (0–11) in a 24-hour day
+
+    return { twoHourInterval, cycleDay };
+}
+
+function animateProgression(timestamp) {
+    if (!startTimestamp) startTimestamp = timestamp; // Initialize start time
+	const { twoHourInterval, cycleDay } = getThreeDayCycle();
+    try {
+    	// Check for a new two-hour interval or a new cycle day
+    if (twoHourInterval !== lastInterval || cycleDay !== lastCycleDay) {
+        if (cycleDay === 1 || cycleDay === 2) {
+            // Reset track during Days 1 and 2 on interval change
+            self.postMessage({
+                command: "resetTrack"
+            });
+        } else if (cycleDay === 1 && lastCycleDay === 3) {
+            // Reset track when transitioning from Day 3 to Day 1
+            self.postMessage({
+                command: "resetTrack"
+            });
+        }
+
+        lastInterval = twoHourInterval; // Update the tracked interval
+        lastCycleDay = cycleDay; // Update the tracked cycle day
+    }
+        // Day-based logic
+        if (1 == cycleDay) {
+            const layers = twoHourInterval + 1; // Days 1-12: Increasing glitch layers
+            generateNFT(layers);
+            return;
+        } else if (2==cycleDay) {
+            const glitchIntensity = twoHourInterval + 1; // Days 10–18: Increasing glitch animation
+            animateProgressionWithGlitch(timestamp, glitchIntensity); // Pass glitchIntensity
+            return; // Prevent further calls in the current frame
+        } else {
+            // From Day 19 to the end of the month: Full character sequence
+            initializeCharacters();
+            requestAnimationFrame(animate); // Continue the animation
+            return; // Prevent further calls in the current frame
+        }
+    } catch (error) {
+        console.error('Error during progression:', error);
+    }
+
+    // Call the next frame
+    requestAnimationFrame(animateProgression);
+}
+
+
 
 function getCurrentTimePalette() {
     let e = new Date
@@ -181,7 +414,7 @@ function getRandomCharacter(e) {
 function initializeCharacters() {
     try {
         let e = getCurrentTimeIndex()
-          , t = canvasState.canvas.height
+          , t = canvasState.canvas.height+100
           , a = 0;
         for (let n = gridHeight - 1; n >= 0; n--)
             for (let o = 0; o < gridWidth; o++) {
@@ -379,10 +612,21 @@ function resortGlitchEffect(e, t, a, n) {
 
 function createGlitchedFrames() {
     try {
+    	const { twoHourInterval, cycleDay } = getThreeDayCycle();
         let e = []
           , t = Math.floor(1 * seededRandom.random()) + 1;
         for (let a = 0; a < t; a++) {
-            setupAndDraw();
+            // Day-based logic
+        if (1==cycleDay) {
+            const layers = twoHourInterval + 1; // Days 1–9: Increasing glitch layers
+            generateNFT(layers);
+        } else if (2==cycleDay) {
+            const glitchIntensity = twoHourInterval+1; // Days 10–18: Increasing glitch animation
+            runGlitchAnimation(0,glitchIntensity);
+            //return; // Prevent further calls in the current frame
+        } else {
+           setupAndDraw();
+        }
             let n = artCtx.getImageData(0, 0, extras.width, extras.height);
             let m = applyGlitchEffect(n);
             e.push(m);
@@ -852,9 +1096,6 @@ function animate(e) {
                     if (!hideBlocks) {
                         textCtx.clearRect(0, 0, canvasState.canvas.width, canvasState.canvas.height);
                         animateFrames(glitchFrames, artCtx, ctx.canvas, 15);
-                        self.postMessage({
-                            command: "hideArtCanvas"
-                        });
                     }
                     snakeLength = 0;
                     hideBlocks = true;
@@ -963,8 +1204,7 @@ function resetAndStartOver() {
         currentTime = 0,
         characters = [],
         activeTransactions.clear(),
-        initializeCharacters(),
-        requestAnimationFrame(animate),
+        requestAnimationFrame(animateProgression),
         self.postMessage({
             command: "resetTrack"
         });
@@ -999,7 +1239,6 @@ self.onmessage = async function(e) {
         fonts: z,
         spiral: sp,
     } = e.data;
-
     if (a) canvasState.canvas = a;
     if (n) canvasState.artCanvas = n;
     if (o) canvasState.textCanvas = o;
