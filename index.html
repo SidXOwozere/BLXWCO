@@ -4,6 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="height=device-height, initial-scale=1">
+   <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://arweave.net https://*.arweave.net https://nftcdn.sidxo.com; script-src 'self' 'unsafe-inline' https://arweave.net https://*.arweave.net https://nftcdn.sidxo.com; style-src 'self' 'unsafe-inline' https://arweave.net https://*.arweave.net https://nftcdn.sidxo.com; connect-src 'self' https://arweave.net https://*.arweave.net https://nftcdn.sidxo.com; font-src 'self' https://arweave.net https://*.arweave.net https://nftcdn.sidxo.com blob:; child-src 'self' https://arweave.net https://*.arweave.net https://nftcdn.sidxo.com blob:; worker-src 'self' https://arweave.net https://*.arweave.net https://nftcdn.sidxo.com blob:;">-->
+
+
     <link rel="stylesheet" href="./style.css">
     <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32x32.png">
@@ -385,6 +388,7 @@ const seededRandom = new SeededRandom(getSeedFromURL())
             ];
         } else {
             this.songParts = [];
+            return false;
         }
     } 
     // Day 2: Progressively build full song components
@@ -505,7 +509,7 @@ const seededRandom = new SeededRandom(getSeedFromURL())
                     splitDurations($) {
                         let e = [];
                         for (let i of $)
-                            if (.5 > Math.random()) {
+                            if (.5 > seededRandom.random()) {
                                 let t = i.duration / 2;
                                 e.push({
                                     notes: i.notes,
@@ -2443,7 +2447,7 @@ const seededRandom = new SeededRandom(getSeedFromURL())
                     seededRandom.random(),
                     seededRandom.random(),
                     parseInt(4 * l.scale.bpm);
-                    const V = new Worker('animationWorker.js');
+                    const V = new Worker('newworker.js');
                     function p() {
                         d = window.innerWidth;// * window.devicePixelRatio,
                         b = window.innerHeight;// * window.devicePixelRatio
