@@ -123,7 +123,6 @@ function runGlitchAnimation(timestamp, intensity) {
         charCanvas.height = canvas.height;
         charCanvas.font = 'bolder 20px "xoblk"';
 
-        const charType = Math.floor(seededRandom.random() * characters.length);
         const character = getRandomCharacter(charType);
         
         const textColor = colors[Math.floor(seededRandom.random() * colors.length)];
@@ -237,7 +236,6 @@ function drawSeedGlitchArt(canvas, character, fontSize, color) {
                 charCanvas.height = canvas.height;
         		charCanvas.font = 'bolder 20px "xoblk"';
 
-                const charType = Math.floor(seededRandom.random() * characters.length);
                 const character = getRandomCharacter(charType);
                 const textColor = colors[Math.floor(seededRandom.random() * colors.length)];
 
@@ -260,6 +258,7 @@ function getLastDayOfMonth() {
 
 function begin() {
     try {
+    	charType = Math.floor(10 * (seededRandom = new SeededRandom(e)).random());
     	requestAnimationFrame(animateProgression);
     } catch (error) {
         console.error('Error starting animation:', error);
