@@ -2445,7 +2445,7 @@ const seededRandom = new SeededRandom(getSeedFromURL())
                     seededRandom.random(),
                     seededRandom.random(),
                     parseInt(4 * l.scale.bpm);
-                    const V = new Worker('newworker.js');
+                    const V = new Worker('animationWorker.js');
                     function p() {
                         d = window.innerWidth;// * window.devicePixelRatio,
                         b = window.innerHeight;// * window.devicePixelRatio
