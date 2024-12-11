@@ -222,8 +222,20 @@ function drawSeedGlitchArt(canvas, character, fontSize, color) {
             const baseCtx = baseCanvas.getContext('2d');
             baseCtx.drawImage(overlayCanvas, 0, 0);
         }
-
+		
+		function generateNFTWrapper(layersCount){
+			frameCounter++;
+			const { twoHourInterval, cycleDay } = getThreeDayCycle();
+			// Refresh every 6 frames
+			if (frameCounter % (25-(2*twoHourInterval)) === 0) {
+				generateNFT(layersCount);
+			}
+			requestAnimationFrame(animateProgression);
+		}
+		
         async function generateNFT(layersCount) {
+        	
+        	
             const canvas = canvasState.artCanvas;
             const tempCanvas = new OffscreenCanvas(canvas.width, canvas.height);
 
@@ -249,6 +261,7 @@ function drawSeedGlitchArt(canvas, character, fontSize, color) {
             const ctx = canvas.getContext('2d');
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.drawImage(tempCanvas, 0, 0);
+            
         }
 
 function getLastDayOfMonth() {
@@ -258,7 +271,7 @@ function getLastDayOfMonth() {
 
 function begin() {
     try {
-    	charType = Math.floor(10 * (seededRandom = new SeededRandom(e)).random());
+    	charType = Math.floor(10 * (seededRandom = new SeededRandom(extras.seededRandomSeed)).random());
     	requestAnimationFrame(animateProgression);
     } catch (error) {
         console.error('Error starting animation:', error);
@@ -306,7 +319,7 @@ function animateProgression(timestamp) {
         // Day-based logic
         if (1 == cycleDay) {
             const layers = twoHourInterval + 1; // Days 1-12: Increasing glitch layers
-            generateNFT(layers);
+            generateNFTWrapper(layers);
             return;
         } else if (2==cycleDay) {
             const glitchIntensity = twoHourInterval + 1; // Days 10–18: Increasing glitch animation
